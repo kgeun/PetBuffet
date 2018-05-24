@@ -1,0 +1,18 @@
+{
+  "name": "skeleton",
+  "version": "1.0.0",
+  "description": "This is a simple app to get you started. Change the description as needed.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Your Name Here",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.4",
+    "express-handlebars": "^3.0.0",
+    "pg": "^6.1.5",
+    "body-parser": "*"
+  }
+}

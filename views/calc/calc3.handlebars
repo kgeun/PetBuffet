@@ -1,0 +1,66 @@
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
+          <h4>계산 결과</h4>
+          <hr class="hr-bold mb-3">
+          <div class="row mb-5">
+            <div class="col-md-1"></div>
+            <div class="col-md-10 col-xs-12">
+              <div class="mb-3">
+                <img style="max-width:100%;max-height:100%;" src="/images/dogschef_scale.png"/>
+              </div>
+              <div class="mb-3">
+                <p class="font_big lead_weight text-center">
+                  당신의 반려견에게 권장하는 사료 양은 <strong>{{petfood_ml}}ml</strong>입니다.
+                <br>
+                  200ml 종이컵 기준으로 <strong>{{petfood_cup}}컵</strong>입니다.
+                </p>
+              </div>
+            </div>
+          </div>
+          <a href="/calc/calc1"><button type="submit" class="btn btn-dark btn-lg right-box col-md-5 mg-1">처음으로</button></a>
+          <!--<button onclick="location.href='calc/calc1'" class="btn btn-lg left-box col-md-5 mg-1">BACK</button>-->
+        </div>
+      </div>
+    </div>
+
+  <script>
+  $(document).ready(function(){
+    let petfood_company_html;
+    let petfood_html;
+    let petfood_company_list = {{{petfood_company}}};
+    let petfood = {{{petfood}}};
+
+    petfood_company_html = "";
+    petfood_company_html += "<option value='0'>사료회사명</option>";
+
+    let x;
+    for (x in petfood_company_list){
+      let company_element = petfood_company_list[x];
+      petfood_company_html += "<option value='"+ company_element.petfood_company_id +"'>"+ company_element.petfood_company_name +"</option>";
+    }
+
+    petfood_company_html += "<option value='0'></option>";
+    petfood_company_html += "<option value='0'>기타</option>";
+
+    $("#petfood_company").html(petfood_company_html);
+
+    $( "#petfood_company" ).change(function() {
+      let selected_position = $("#petfood_company option:selected").index();
+
+      petfood_html = "";
+      petfood_html += "<option value='0'>사료명</option>";
+
+      let petfood_result = petfood.filter(petfood => selected_position == petfood.petfood_company_id);
+
+      for (let x in petfood_result){
+        let petfood_element = petfood_result[x];
+        petfood_html += "<option petfood_id='"+petfood_element.petfood_id+"' value='"+ petfood_element.petfood_id +"'>"+ petfood_element.petfood_name +"</option>";
+      }
+
+      $("#petfood").html(petfood_html);
+
+    });
+  });
+  </script>
