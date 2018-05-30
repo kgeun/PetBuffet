@@ -1,0 +1,140 @@
+<!-- Main jumbotron for a primary marketing message or call to action -->
+
+<div class="container">
+  <div class="card-deck mb-3 text-center">
+    <div class="card mb-4 box-shadow">
+      <div class="card-header">
+        <span>새로운 사료 정보 추가</span>
+      </div>
+
+      <div class="card-body">
+        <div class="row mb-4">
+          <div class="col-3">이미지 업로드</div>
+          <div class="col-9">
+            <form id="submit_petfood_image_form" enctype="multipart/form-data">
+              <input type="file" name="petfood_image" />
+              <input type="submit" name="submit" id="submit_petfood_image" value="업로드" />
+            </form>
+          </div>
+        </div>
+        <form {{#if petfood_data}}action="/modify_petfood"{{else}}action="/upload_petfood"{{/if}} method="post">
+          <input id="petfood_photo_addr" type="hidden" name="petfood_photo_addr" />
+          {{#if petfood_data}}<input id="petfood_id" type="hidden" name="petfood_id" value="{{petfood_data.petfood_id}}" />{{/if}}
+          <div class="row mb-4">
+            <div class="col-3">업로드된 이미지</div>
+            <div class="col-9">
+              <div id="uploaded_petfood_image">
+                {{#if petfood_data}}
+                  <img src="/petfood_images/{{petfood_data.petfood_photo_addr}}" style="width:100px;"/>
+                {{/if}}
+              </div>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-3">사료 이름</div>
+            <div class="col-9">
+              <input value="{{petfood_data.petfood_name}}" name="petfood_name" type="text" class="form-control" placeholder="">
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-3">사료 브랜드</div>
+            <div class="col-9">
+              <select name="petfood_company_id" class="form-control" id="exampleFormControlSelect2">
+                {{#each petfood_company}}
+                <option value="{{petfood_company_id}}" {{#ifCond petfood_company_id '==' ../petfood_data.petfood_company_id}}selected{{/ifCond}}>{{petfood_company_name}}</option>
+                {{/each}}
+              </select>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-3">대상 연령</div>
+            <div class="col-9">
+              <select name="target_age_id" class="form-control" id="exampleFormControlSelect2">
+                {{#each petfood_target_age}}
+                <option value="{{target_age_id}}" {{#ifCond target_age_id '==' ../petfood_data.target_age_id}}selected{{/ifCond}}>{{target_age}}</option>
+                {{/each}}
+              </select>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-3">단백질</div>
+            <div class="col-3">
+              <input value="{{petfood_data.protein}}" name="protein" type="number" step="0.01" class="form-control" id="exampleFormControlInput1" placeholder="">
+            </div>
+            <div class="col-3">지방</div>
+            <div class="col-3">
+              <input value="{{petfood_data.fat}}" name="fat" type="number" step="0.01" class="form-control" id="exampleFormControlInput1" placeholder="">
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-3">칼슘</div>
+            <div class="col-3">
+              <input value="{{petfood_data.calcium}}" name="calcium" type="number" step="0.01" class="form-control" id="exampleFormControlInput1" placeholder="">
+            </div>
+            <div class="col-3">인</div>
+            <div class="col-3">
+              <input value="{{petfood_data.phosphorus}}" name="phosphorus" type="number" step="0.01" class="form-control" id="exampleFormControlInput1" placeholder="">
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-3">주원료 (,로 구분)</div>
+            <div class="col-9">
+              <input value="{{petfood_data.ingredients}}" name="ingredients" type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
+            </div>
+          </div>
+
+          <a href="/"><button type="button" class="btn btn-lg btn-light" style="float:left;">목록으로</button></a>
+          <input type="submit" id="submit_petfood" class="btn btn-lg btn-dark" style="float:right;" value="제출"/>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+  $(document).ready(function() {
+    {{#unless petfood_data}}$("#submit_petfood").hide();{{/unless}}
+    $("#submit_petfood_image_form").submit(function (e) {
+      e.preventDefault();
+      var formData = new FormData(this);
+      console.log(formData);
+      $.ajax({
+          type: "POST",
+          url: "/upload_petfood_image",
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(r){
+              if(r.status === "OK"){
+                var img = $('<img/>');
+                img.attr("src","/petfood_images/" + r.filename);
+                img.css("width","100px");
+                $("#petfood_photo_addr").attr("value",r.filename);
+                $("#uploaded_petfood_image").html(img);
+                $("#submit_petfood_image").hide();
+                $("#submit_petfood").show();
+              }
+          },
+          error: function (e) {
+              console.log("some error", e);
+          }
+        });
+      });
+
+      $("#submit_petfood").on('click',function(){
+
+      });
+  }); // pre-submit callback
+
+  function showRequest(formData, jqForm, options)
+  {
+    alert('Uploading is starting.');
+    return true;
+  }   // post-submit callback
+  function showResponse(responseText, statusText, xhr, $form)
+  {
+    alert('status: ' + statusText + '\n\nresponseText: \n' + responseText );
+  }
+  </script>

@@ -1,18 +1,26 @@
 {
-  "name": "skeleton",
+  "name": "petbuffet",
   "version": "1.0.0",
-  "description": "This is a simple app to get you started. Change the description as needed.",
   "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
-  },
-  "author": "Your Name Here",
-  "license": "ISC",
   "dependencies": {
-    "express": "^4.15.4",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
     "express-handlebars": "^3.0.0",
-    "pg": "^6.1.5",
-    "body-parser": "*"
-  }
+    "handlebars-loop": "^1.0.3",
+    "mysql": "^2.15.0",
+    "npm": "^6.1.0",
+    "multer": "^1.3.0",
+    "handlebars": "*"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://kyunggeun.lee:Nsky!!44fall@oss.navercorp.com/nbp-internship-2018-team3/kyunggeun.lee.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

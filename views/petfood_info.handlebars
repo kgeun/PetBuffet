@@ -1,0 +1,228 @@
+<!-- Main jumbotron for a primary marketing message or call to action -->
+
+<div class="container mb-4">
+    <div class="row">
+      <div class="col-12">
+        <a href="/petfood_list/{{current_page}}">
+          <button type="button" class="btn btn-lg btn-secondary" style="float:left;">&lt; 사료 목록</button>
+        </a>
+        <a href="/delete_petfood/{{petfood_id}}">
+          <button type="button" class="btn btn-link" style="float:right;">삭제</button>
+        </a>
+        <a href="/modify_petfood/{{petfood_id}}">
+          <button type="button" class="btn btn-info mr-3" style="float:right;">수정</button>
+        </a>
+      </div>
+    </div>
+</div>
+<div class="container">
+  <div class="jumbotron">
+    <div class="row">
+      <div class="col-4">
+        <img style="width:80%;" src="/petfood_images/{{petfood_photo_addr}}">
+      </div>
+      <div class="col-8 mt-4 text-center">
+        <h3 class="mb-3">{{petfood_name}}</h3>
+        <h5 class="mb-3">영양 점수 : {{nutrition_score}} / 소비자평점 : {{customer_score}}</h5>
+        <h5 class="mb-3">제조사 : {{petfood_company_name}}</h5>
+        <h5 class="mb-3">대상연령 : {{target_age}}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="card-deck mb-4">
+    <div class="card mb-4 box-shadow">
+      <div class="card-header  text-center">
+        <h5>영양성분</h5>
+      </div>
+      <div class="card-body" style="padding:50px;">
+        <div class="row text-center mb-4">
+          <div class="col-12">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col" style="width:25%;"><h5>단백질</h5></th>
+                  <th scope="col" style="width:25%;"><h5>지방</h5></th>
+                  <th scope="col" style="width:25%;"><h5>칼슘</h5></th>
+                  <th scope="col" style="width:25%;"><h5>인</h5></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:10px;">
+                    <div style="display:inline;width:100px;height:100px;margin:10px;">
+                        <input data-max="50" type="text" class="knob" value="{{protein}}" data-width="150" data-height="150"
+                        data-fgcolor="{{#ifCond eval_protein '==' 0}}#00a65a{{else}}#f56954{{/ifCond}}" data-readonly="true" readonly="readonly"
+                        style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
+                    </div>
+                  </td>
+                  <td style="padding:10px;">
+                    <div style="display:inline;width:100px;height:100px;">
+                        <input data-max="50" type="text" class="knob" value="{{fat}}" data-width="150" data-height="150"
+                        data-fgcolor="{{#ifCond eval_fat '==' 0}}#00a65a{{else}}#f56954{{/ifCond}}" data-readonly="true" readonly="readonly"
+                        style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(245, 105, 84); padding: 0px; -webkit-appearance: none;"/>
+                    </div>
+                  <td style="padding:10px;">
+                    <div style="display:inline;width:100px;height:100px;">
+                        <input data-max="2.5" type="text" class="knob" value="{{calcium}}" data-width="150" data-height="150"
+                        data-fgcolor="{{#ifCond eval_calcium '==' 0}}#00a65a{{else}}#f56954{{/ifCond}}" data-readonly="true" readonly="readonly"
+                        style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
+                    </div>
+                  </td>
+                  <td style="padding:10px;">
+                    <div style="display:inline;width:100px;height:100px;">
+                        <input data-max="1.6" type="text" class="knob" value="{{phosphorus}}" data-width="150" data-height="150"
+                        data-fgcolor="{{#ifCond eval_phosphorus '==' 0}}#00a65a{{else}}#f56954{{/ifCond}}" data-readonly="true" readonly="readonly"
+                        style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  {{#ifCond eval_protein '==' 0}}
+                    <td style="background-color:rgb(252, 255, 245);color:#2C662D;"><h5><i class="fas fa-check"></i> 적당</h5></td>
+                  {{/ifCond}}
+                  {{#ifCond eval_protein '==' -1}}
+                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 부족</h5></td>
+                  {{/ifCond}}
+                  {{#ifCond eval_protein '==' 1}}
+                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 과다</h5></td>
+                  {{/ifCond}}
+
+                  {{#ifCond eval_fat '==' 0}}
+                    <td style="background-color:rgb(252, 255, 245);color:#2C662D;"><h5><i class="fas fa-check"></i> 적당</h5></td>
+                  {{/ifCond}}
+                  {{#ifCond eval_fat '==' -1}}
+                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 부족</h5></td>
+                  {{/ifCond}}
+                  {{#ifCond eval_fat '==' 1}}
+                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 과다</h5></td>
+                  {{/ifCond}}
+
+                  {{#ifCond eval_calcium '==' 0}}
+                    <td style="background-color:rgb(252, 255, 245);color:#2C662D;"><h5><i class="fas fa-check"></i> 적당</h5></td>
+                  {{/ifCond}}
+                  {{#ifCond eval_calcium '==' -1}}
+                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 부족</h5></td>
+                  {{/ifCond}}
+                  {{#ifCond eval_calcium '==' 1}}
+                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 과다</h5></td>
+                  {{/ifCond}}
+
+                  {{#ifCond eval_phosphorus '==' 0}}
+                    <td style="background-color:rgb(252, 255, 245);color:#2C662D;"><h5><i class="fas fa-check"></i> 적당</h5></td>
+                  {{/ifCond}}
+                  {{#ifCond eval_phosphorus '==' -1}}
+                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 부족</h5></td>
+                  {{/ifCond}}
+                  {{#ifCond eval_phosphorus '==' 1}}
+                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 과다</h5></td>
+                  {{/ifCond}}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="text-center">
+            <span style="color: #919191; font-size: 1.2em; font-weight: bold;  text-decoration: none;   border-bottom: 1px solid #919191;   padding-bottom: 5px;">왜 영양성분을 봐야하나요?<br></span>
+            <br style="line-height: 10%;">
+            </div>
+            <span style="color: #919191; font-size: 1em;">
+            PetBuffet은 사료규제기구 AAFCO의 성분별 권장량을 기준으로 영양성분을 분석한 결과를 안내드립니다. 이 기준은 반려동물의 생존에 필요한 최저 권장량으로, 기준에 미달되는 경우 충분한 영양 공급이 어려울 수 있습니다. 그렇다면, 이 영양성분들은 왜 생존에 필요한가요?
+            <br><br>
+            <span style="color: #8091ad; font-weight: bold;">단백질</span><br>
+            단백질은 반려견이 체내에서 생산할 수 없지만 생존에는 꼭 필요한 10가지 필수 아미노산의 원천입니다. 또한 일상의 활동을 위한 에너지원으로도 사용됩니다.
+            <br><br>
+            <span style="color: #8091ad; font-weight: bold;">지방</span><br>
+            지방은 열량이 가장 큰 에너지원이며, 반려견의 체내에서 합성되지 않는 필수 지방산을 보충합니다. 필수 지방산은 반려견의 피부와 모질, 시력, 학습능력, 생리적 기능을 건강하게 유지하는 데 필요합니다.
+            <br><br>
+            <span style="color: #8091ad; font-weight: bold;">칼슘, 인</span><br>
+            칼슘 인 모두 튼튼한 뼈와 골격 형성에 중요한 역할을 하며, 부족한 경우 갑상선 기능 이상, 뼈 이상 등의 증상이 생길 수 있습니다. 칼슘과 인은 효과적으로 흡수되기 위해 1:1 ~ 2:1의 비율을 유지해야 합니다.
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="card-deck mb-3 text-center">
+    <div class="card mb-4 box-shadow">
+      <div class="card-header">
+        <h5>원재료 목록</h5>
+      </div>
+      <div class="card-body" style="padding:50px;">
+        <div class="row">
+          <div class="col-12">
+            {{ingredients}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-knob/js/jquery.knob.js"></script>
+<script>
+    $(function () {
+      /* jQueryKnob */
+      $(".knob").knob({
+        /*change : function (value) {
+         //console.log("change : " + value);
+         },
+         release : function (value) {
+         console.log("release : " + value);
+         },
+         cancel : function () {
+         console.log("cancel : " + this.value);
+         },*/
+        draw: function () {
+
+          // "tron" case
+          if (this.$.data('skin') == 'tron') {
+
+            var a = this.angle(this.cv)  // Angle
+                , sa = this.startAngle          // Previous start angle
+                , sat = this.startAngle         // Start angle
+                , ea                            // Previous end angle
+                , eat = sat + a                 // End angle
+                , r = true;
+
+            this.g.lineWidth = this.lineWidth;
+
+            this.o.cursor
+            && (sat = eat - 0.3)
+            && (eat = eat + 0.3);
+
+            if (this.o.displayPrevious) {
+              ea = this.startAngle + this.angle(this.value);
+              this.o.cursor
+              && (sa = ea - 0.3)
+              && (ea = ea + 0.3);
+              this.g.beginPath();
+              this.g.strokeStyle = this.previousColor;
+              this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sa, ea, false);
+              this.g.stroke();
+            }
+
+            this.g.beginPath();
+            this.g.strokeStyle = r ? this.o.fgColor : this.fgColor;
+            this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sat, eat, false);
+            this.g.stroke();
+
+            this.g.lineWidth = 2;
+            this.g.beginPath();
+            this.g.strokeStyle = this.o.fgColor;
+            this.g.arc(this.xy, this.xy, this.radius - this.lineWidth + 1 + this.lineWidth * 2 / 3, 0, 2 * Math.PI, false);
+            this.g.stroke();
+
+            return false;
+          }
+        }
+      });
+    });
+</script>
