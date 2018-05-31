@@ -9,6 +9,8 @@ let mysql = require('mysql');
 let multer = require('multer');
 let hbs = require('handlebars');
 let bcrypt = require('bcrypt');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 let saltRounds = 10;
 
 hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
@@ -44,8 +46,16 @@ app.set('port', 80);
 
 app.use(express.static(__dirname + '/public'));
 app.use(require("body-parser").urlencoded({extended: true}));
+app.use(cookieParser());
+app.use(session({
+  key: 'sid', // 세션키
+  secret: 'secret', // 비밀키
+  cookie: {
+    maxAge: 1000 * 60 * 60 // 쿠키 유효기간 1시간
+  }
+}));
 
-var Storage = multer.diskStorage({
+let Storage = multer.diskStorage({
      destination: function(req, file, callback) {
          callback(null, "./public/petfood_images");
      },
@@ -58,7 +68,7 @@ let upload = multer({
 		storage: Storage
 }).single("petfood_image"); //Field name and max count
 
-var client = mysql.createConnection({
+let client = mysql.createConnection({
   host: '10.105.185.181',
   user: 'root',
   database: 'petbuffet',
@@ -68,16 +78,15 @@ var client = mysql.createConnection({
 
 client.connect(function(err) {
   if (err) {
-    console.log('mysql connection error');
+  	console.log('mysql connection error');
     throw err;
-   }else {
-      console.log("연결에 성공하였습니다.");
-    }
+  } else {
+  	console.log("연결에 성공하였습니다.");
   }
-);
+});
 
 app.get('/', function(req, res) {
-		res.redirect('/petfood/list/1');
+		return res.redirect('/petfood/list/1');
 });
 
 app.get('/petfood/list/:page', function(req, res) {
@@ -85,7 +94,13 @@ app.get('/petfood/list/:page', function(req, res) {
 			if (err) throw err;
 			client.query("SELECT COUNT(*) as amount FROM petfood ORDER BY petfood_id DESC", function (err2, result2, fields2) {
 				if (err2) throw err2;
+
 				let data = {};
+
+				if(req.session.userid) {
+					data.session = req.session;
+					console.log("LOGED SES : " + JSON.stringify(req.session));
+				}
 
 				data.result = result;
 				data.number_of_page = parseInt((result2[0]['amount']/5)+1);
@@ -97,8 +112,8 @@ app.get('/petfood/list/:page', function(req, res) {
 
 				let paging = [];
 
-				for(var i = 1 ; i <= data.number_of_page ; i++) {
-					var page = {};
+				for(let i = 1 ; i <= data.number_of_page ; i++) {
+					let page = {};
 					page.paging_page = i;
 					if(i == data.current_page){
 						page.paging_currentpage = true;
@@ -109,20 +124,20 @@ app.get('/petfood/list/:page', function(req, res) {
 				}
 
 				data.paging = paging;
-				console.log(data);
-				res.render('home',data);
+				return res.render('home',data);
 			});
 			});
 });
 
 app.get('/petfood/info/:petfood_id', function(req, res) {
-		console.log("petfoodid : " + req.params.petfood_id);
 	  client.query("SELECT * FROM petfood,petfood_company,petfood_target_age WHERE petfood_target_age.target_age_id = petfood.target_age_id AND petfood.petfood_company_id = petfood_company.petfood_company_id AND petfood_id = " + req.params.petfood_id, function (err, result, fields) {
 				if (err) throw err;
-				console.log(result);
-				var data;
+				let data = {};
 				data = result[0];
-				console.log("DTATA : " + result[0]);
+				if(req.session.userid) {
+					data.session = req.session;
+					console.log("LOGED SES : " + JSON.stringify(req.session));
+				}
 				if(req.query.current_page) {
 					data.current_page = req.query.current_page;
 				} else {
@@ -130,63 +145,60 @@ app.get('/petfood/info/:petfood_id', function(req, res) {
 				}
 				//let data = {};
 				//data.result = result;
-				res.render('petfood_info',data);
+				return res.render('petfood_info',data);
 			});
 });
 
 app.get('/petfood/modify/:petfood_id', function(req, res) {
-		console.log("petfoodid : " + req.params.petfood_id);
+		if(req.session.user_level != 2) {
+			return res.redirect("/");
+		}
 	  client.query("SELECT * FROM petfood WHERE petfood_id = " + req.params.petfood_id, function (err, result, fields) {
 				if (err) throw err;
 				client.query("SELECT * FROM petfood_company", function (err2, result2, fields2) {
 					client.query("SELECT * FROM petfood_target_age", function (err3, result3, fields3) {
 						if (err) throw err;
 						let data = {};
+						if(req.session.userid) {
+							data.session = req.session;
+						}
 						data.petfood_data = result[0];
 						data.petfood_company = result2;
 						data.petfood_target_age = result3;
 
-						res.render('upload_petfood',data);
+						return res.render('upload_petfood',data);
 						});
 					});
-				console.log(result);
 			});
 });
 
 app.get('/petfood/upload', function(req, res) {
+	if(req.session.user_level != 2) {
+		return res.redirect("/");
+	}
 	client.query("SELECT * FROM petfood_company", function (err, result, fields) {
 		client.query("SELECT * FROM petfood_target_age", function (err, result2, fields) {
 			if (err) throw err;
 			let data = {};
+			if(req.session.userid) {
+				data.session = req.session;
+			}
 			data.petfood_company = result;
 			data.petfood_target_age = result2;
-			res.render('upload_petfood',data);
+			return res.render('upload_petfood',data);
 			});
 		});
 });
 
 app.post('/petfood/upload', function(req, res) {
 
-	var protein = req.body.protein;
-	var fat = req.body.fat;
-	var calcium = req.body.calcium;
-	var phosphorus = req.body.phosphorus;
-	var target_age_id = req.body.target_age_id;
-	var nutrition_info = calculate_nutrition(target_age_id,protein,fat,calcium,phosphorus);
-	var main_ingredient = req.body.ingredients.split(',')[0];
-
-	console.log("INSERT INTO petfood (petfood_company_id, petfood_name, protein, fat, "
-	+ "calcium, phosphorus, ingredients, target_age_id, nutrition_score, customer_score, "
-	+ "petfood_photo_addr, eval_protein, eval_fat, eval_calcium, eval_phosphorus, main_ingredient"
-	+ ") VALUES (" + req.body.petfood_company_id + ",'" + req.body.petfood_name + "',"
-	+ req.body.protein + "," + req.body.fat + "," + req.body.calcium + ","
-	+ req.body.phosphorus + ",'" + req.body.ingredients + "',"
-	+ req.body.target_age_id + "," + nutrition_info.nutrition_score + ","
-	+ "0" + ",'" + req.body.petfood_photo_addr + "'," + nutrition_info.eval_protein + "," +
-	nutrition_info.eval_fat + "," + nutrition_info.eval_calcium + "," +
-	nutrition_info.eval_phosphorus + ",'" + main_ingredient + "')");
-
-	console.log(nutrition_info);
+	let protein = req.body.protein;
+	let fat = req.body.fat;
+	let calcium = req.body.calcium;
+	let phosphorus = req.body.phosphorus;
+	let target_age_id = req.body.target_age_id;
+	let nutrition_info = calculate_nutrition(target_age_id,protein,fat,calcium,phosphorus);
+	let main_ingredient = req.body.ingredients.split(',')[0];
 
 	client.query("INSERT INTO petfood (petfood_company_id, petfood_name, protein, fat, "
 	+ "calcium, phosphorus, ingredients, target_age_id, nutrition_score, customer_score, "
@@ -205,16 +217,19 @@ app.post('/petfood/upload', function(req, res) {
 });
 
 app.post('/petfood/modify', function(req, res) {
+	if(req.session.user_level != 2){
+		return res.redirect("/");
+	}
 
-	var protein = req.body.protein;
-	var fat = req.body.fat;
-	var calcium = req.body.calcium;
-	var phosphorus = req.body.phosphorus;
-	var target_age_id = req.body.target_age_id;
-	var nutrition_info = calculate_nutrition(target_age_id,protein,fat,calcium,phosphorus);
-	var main_ingredient = req.body.ingredients.split(',')[0];
+	let protein = req.body.protein;
+	let fat = req.body.fat;
+	let calcium = req.body.calcium;
+	let phosphorus = req.body.phosphorus;
+	let target_age_id = req.body.target_age_id;
+	let nutrition_info = calculate_nutrition(target_age_id,protein,fat,calcium,phosphorus);
+	let main_ingredient = req.body.ingredients.split(',')[0];
 
-	var updating_query = "UPDATE petfood SET petfood_company_id=" + req.body.petfood_company_id + ", "
+	let updating_query = "UPDATE petfood SET petfood_company_id=" + req.body.petfood_company_id + ", "
 	+ "petfood_name='" + req.body.petfood_name + "', protein="+ req.body.protein + ", "
 	+ "fat=" + req.body.fat + ", calcium=" + req.body.calcium + ", phosphorus="+ req.body.phosphorus  + ", "
 	+ "ingredients='" + req.body.ingredients + "', target_age_id=" + req.body.target_age_id + ", "
@@ -233,8 +248,11 @@ app.post('/petfood/modify', function(req, res) {
 });
 
 app.get('/petfood/delete/:petfood_id', function(req, res) {
-	var finding_name_query = "SELECT "
-	var deleting_query = "DELETE FROM petfood WHERE petfood_id=" + req.params.petfood_id;
+
+	if(req.session.user_level != 2){
+		return res.redirect("/");
+	}
+	let deleting_query = "DELETE FROM petfood WHERE petfood_id=" + req.params.petfood_id;
 
 	client.query(deleting_query, function (err, result, fields) {
 			if (err) throw err;
@@ -334,7 +352,7 @@ function calculate_nutrition(target_age_id,protein,fat,calcium,phosphorus) {
 }
 
 app.post('/petfood/upload_image',	upload, function(req, res) {
-	var data = {};
+	let data = {};
 	data.filename = req.file.filename;
 	data.status = "OK";
 	res.json(data);
@@ -342,37 +360,74 @@ app.post('/petfood/upload_image',	upload, function(req, res) {
 
 app.get('/review/list/:petfood_id',	function(req, res) {
 
-
 });
 
 app.get('/user/login',	function(req, res) {
 	res.render("login_and_register");
 });
 
+app.post('/user/login',	function(req, res) {
+	let userid = req.body.userid;
+	let password = req.body.password;
+
+	if(!userid || !password) {
+		return res.json({
+			statusCode: 401,
+			message: "아이디나 패스워드를 입력하지 않았습니다."
+		});
+	}
+
+	client.query(`SELECT username, userid, password, user_level FROM user_info WHERE userid='${userid}'`, function (err, result, fields) {
+		let user = result[0];
+    if(!user || !user.hasOwnProperty('password')) {
+    	return res.json({
+      	statusCode: 401,
+        message: "존재하지 않는 아이디 입니다."
+      });
+    }
+
+		bcrypt.compare(password, user.password, function(err, r) {
+		    	if(r) {
+						req.session.userid = user.userid;
+						req.session.user_level = user.user_level;
+						req.session.username = user.username;
+						return res.json({
+							status : 200,
+							message : '로그인에 성공했습니다.'
+						});
+					}
+		      else {
+						return res.json({
+							status : 400,
+							message : '비밀번호가 틀렸습니다.'
+						});
+		    	}
+		});
+	});
+
+});
+
 app.post('/user/register', function(req, res) {
 	//const {userid, username, password} = req.body;
 	let user = req.body;
-	console.log("req.body : " + JSON.stringify(user));
 	if(!user || !user.userid || !user.username || !user.password) {
-		res.json({
+		return res.json({
 			status : 400,
 			message : '모든 항목이 입력되지 않았습니다.'
 		});
 	}
-
   bcrypt.hash(user.password, saltRounds, function(err, hash) {
 		client.query(`SELECT count(*) as count FROM user_info WHERE userid = '${user.userid}'`, function (err, result, fields) {
-			console.log("result count : " + result[0].count);
 			if(!result[0].count) { // No Duplicated
 	    	client.query(
 					`INSERT INTO user_info VALUES (NULL, '${user.userid}', '${hash}', '${user.username}', 1)`, function (err2, result2, fields2) {
-					res.json({
+					return res.json({
 						status : 200,
 						message : '가입에 성공했습니다.'
 					});
 				});
 			} else {
-				res.json({
+				return res.json({
 					status : 400,
 					message : 'id가 중복되었습니다.'
 				})
@@ -381,17 +436,23 @@ app.post('/user/register', function(req, res) {
 	});
 });
 
+app.get('/user/logout', function(req, res) {
+	req.session.destroy();  // 세션 삭제
+	res.clearCookie('sid'); // 세션 쿠키 삭제
+	return res.redirect("/");
+});
+
 // 404 catch-all handler (middleware)
 app.use(function(req, res, next){
 	res.status(404);
-	res.render('404');
+	return res.render('404');
 });
 
 // 500 error handler (middleware)
 app.use(function(err, req, res, next){
 	console.error(err.stack);
 	res.status(500);
-	res.render('500');
+	return res.render('500');
 });
 
 app.listen(app.get('port'), function(){

@@ -19,24 +19,24 @@
     <script src="/css/popper.min.js"></script>
     <script src="/css/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
-
-
   </head>
-
   <body>
-
     <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
       <h5 class="my-0 mr-md-auto font-weight-normal"><a href="/">PetBuffet</a></h5>
       <nav class="my-2 my-md-0 mr-md-3">
         <a class="p-2 text-dark" href="#">사료 정보</a>
         <a class="p-2 text-dark" href="#">리뷰 보기</a>
       </nav>
-      <a class="btn btn-outline-primary" href="/user/login">로그인</a>
+      {{#if session}}
+        <a class="btn btn-outline-primary" href="/user/logout">로그아웃</a>
+      {{else}}
+        <a class="btn btn-outline-primary" href="/user/login">로그인 / 회원가입</a>
+      {{/if}}
     </div>
 
     {{{body}}}
-    <div class="container">
 
+  <div class="container">
     <footer class="pt-4 my-md-5 pt-md-5 border-top">
       <div class="row">
         <div class="col-12 col-md">
@@ -80,6 +80,5 @@
   ================================================== -->
   <!-- Placed at the end of the document so the pages load faster -->
 
-
-
-</body></html>
+</body>
+</html>
