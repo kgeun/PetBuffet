@@ -6,12 +6,14 @@
         <a href="/petfood/list/{{current_page}}">
           <button type="button" class="btn btn-lg btn-secondary" style="float:left;">&lt; 사료 목록</button>
         </a>
+        {{#ifCond session.user_level '==' 2}}
         <a href="/petfood/delete/{{petfood_id}}">
           <button type="button" class="btn btn-link" style="float:right;">삭제</button>
         </a>
         <a href="/petfood/modify/{{petfood_id}}">
           <button type="button" class="btn btn-info mr-3" style="float:right;">수정</button>
         </a>
+        {{/ifCond}}
       </div>
     </div>
 </div>
