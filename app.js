@@ -11,6 +11,7 @@ let hbs = require('handlebars');
 let bcrypt = require('bcrypt');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var fs = require("fs");
 let saltRounds = 10;
 
 hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
@@ -40,6 +41,11 @@ hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
     }
 });
 
+fs.readFile("./partial/review_petfood_item_partial.handlebars", function (err, data) {
+    if (err) throw err;
+    hbs.registerPartial('review_petfood_item', data.toString())
+});
+
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 app.set('port', 80);
@@ -51,7 +57,7 @@ app.use(session({
   key: 'sid', // 세션키
   secret: 'secret', // 비밀키
   cookie: {
-    maxAge: 1000 * 60 * 60 // 쿠키 유효기간 1시간
+    maxAge: 6 * 1000 * 60 * 60 // 쿠키 유효기간 1시간
   }
 }));
 
@@ -99,7 +105,6 @@ app.get('/petfood/list/:page', function(req, res) {
 
 				if(req.session.userid) {
 					data.session = req.session;
-					console.log("LOGED SES : " + JSON.stringify(req.session));
 				}
 
 				data.result = result;
@@ -136,7 +141,6 @@ app.get('/petfood/info/:petfood_id', function(req, res) {
 				data = result[0];
 				if(req.session.userid) {
 					data.session = req.session;
-					console.log("LOGED SES : " + JSON.stringify(req.session));
 				}
 				if(req.query.current_page) {
 					data.current_page = req.query.current_page;
@@ -359,7 +363,141 @@ app.post('/petfood/upload_image',	upload, function(req, res) {
 });
 
 app.get('/review/list/:petfood_id',	function(req, res) {
+	let page;
+	if(!req.query.page){
+		page = 1;
+	} else {
+		page = req.query.page;
+	}
 
+	client.query(`SELECT
+									*
+								FROM
+									petfood,petfood_company
+								WHERE
+									petfood.petfood_company_id = petfood_company.petfood_company_id
+								AND
+									petfood_id = ` + req.params.petfood_id
+								,function (err, result, fields) {
+									client.query(`SELECT
+																	petfood_review_id, petfood_review_title, username, petfood_rcmd_value,
+																	DATE_FORMAT(creation_datetime, '%Y-%m-%d') as creation_datetime
+																FROM
+																	petfood_review,user_info,petfood_rcmd
+																WHERE
+																	petfood_review.user_pk = user_info.user_pk
+																AND
+																	petfood_review.petfood_rcmd_id = petfood_rcmd.petfood_rcmd_id
+																ORDER BY
+																	petfood_review_id
+																DESC LIMIT 10 OFFSET ` + (page-1)*10
+																, function (err2, result2, fields2) {
+																	let data = {};
+																	data.session = req.session;
+																	data.petfood_info = result[0];
+																	data.review_list = result2;
+																	console.log("DATA :" + JSON.stringify(data));
+																	res.render("review_list",data);
+									});
+	});
+
+});
+
+
+app.get('/review/content/:petfood_review_id',	function(req, res) {
+
+	client.query(`SELECT
+									*, DATE_FORMAT(creation_datetime, '%Y-%m-%d') as creation_date
+								FROM
+									petfood_review,user_info,petfood_rcmd
+								WHERE
+									petfood_review.user_pk = user_info.user_pk
+								AND
+									petfood_review.petfood_rcmd_id = petfood_rcmd.petfood_rcmd_id
+								AND
+									petfood_review_id=${req.params.petfood_review_id}`
+								,function (err, result, fields) {
+									client.query(`SELECT
+																	*
+																FROM
+																	petfood,petfood_company
+																WHERE
+																	petfood.petfood_company_id = petfood_company.petfood_company_id
+																AND
+																	petfood_id = ${result[0].petfood_id}`
+																, function (err2, result2, fields2) {
+																	let data = {};
+																	data.session = req.session;
+																	data.review_item = result[0];
+																	data.petfood_info = result2[0];
+																	res.render("review_content",data);
+									});
+	});
+});
+
+app.get('/review/write/:petfood_id',	function(req, res) {
+	client.query(`SELECT
+									*
+								FROM
+									petfood,petfood_company
+								WHERE
+									petfood.petfood_company_id = petfood_company.petfood_company_id
+								AND
+									petfood_id = ` + req.params.petfood_id
+								,function (err, result, fields) {
+									let data = {};
+									data.petfood_info = result[0];
+									data.session = req.session;
+									console.log("DATA : " + JSON.stringify(data));
+									res.render("review_write",data);
+	});
+});
+
+app.post('/review/write/:petfood_id',	function(req, res) {
+	//console.log("잘 올라왔나 : " + req.body);
+	let review_item = req.body;
+	console.log("review itesm : " + JSON.stringify(req.body));
+
+	console.log("review itesm22 : " + review_item.petfood_id);
+
+	let query = `INSERT INTO
+									petfood_rcmd
+								VALUES
+									(NULL, ${req.session.user_pk}, ${review_item.petfood_id}, ${review_item.petfood_rcmd_value})`;
+
+	console.log("Q : " + query);
+
+	client.query(`INSERT INTO
+									petfood_rcmd
+								VALUES
+									(NULL, ${req.session.user_pk}, ${review_item.petfood_id}, ${review_item.petfood_rcmd_value})`
+								,function (err, result, fields) {
+									console.log("result : " + JSON.stringify(result));
+									return res.redirect("/review/write/" + review_item.petfood_id );
+									/*
+									console.log("insertID1 : " + JSON.stringify(result));
+									client.query(`INSERT INTO
+																	petfood_review
+																VALUES
+																	(NULL, ${review_item.petfood_review_title}, ${review_item.petfood_review_content}, ${req.session.user_pk}, ${review_item.petfood_id},${result.insertId}, now())`
+																,function (err2, result2, fields2) {
+																	res.redirect("/review/content/" + result2.insertId );
+									});*/
+	});
+
+/*
+	client.query(`SELECT
+									*
+								FROM
+									petfood,petfood_company
+								WHERE
+									petfood.petfood_company_id = petfood_company.petfood_company_id
+								AND
+									petfood_id = ` + req.params.petfood_id
+								,function (err, result, fields) {
+									return res.json(req.body);
+	});
+	*/
 });
 
 app.get('/user/login',	function(req, res) {
@@ -377,7 +515,13 @@ app.post('/user/login',	function(req, res) {
 		});
 	}
 
-	client.query(`SELECT username, userid, password, user_level FROM user_info WHERE userid='${userid}'`, function (err, result, fields) {
+	client.query(`SELECT
+									username, userid, password, user_level
+								FROM
+									user_info
+								WHERE
+									userid='${userid}'`
+									, function (err, result, fields) {
 		let user = result[0];
     if(!user || !user.hasOwnProperty('password')) {
     	return res.json({
@@ -387,21 +531,22 @@ app.post('/user/login',	function(req, res) {
     }
 
 		bcrypt.compare(password, user.password, function(err, r) {
-		    	if(r) {
-						req.session.userid = user.userid;
-						req.session.user_level = user.user_level;
-						req.session.username = user.username;
-						return res.json({
-							status : 200,
-							message : '로그인에 성공했습니다.'
-						});
-					}
-		      else {
-						return res.json({
-							status : 400,
-							message : '비밀번호가 틀렸습니다.'
-						});
-		    	}
+    	if(r) {
+				req.session.userid = user.userid;
+				req.session.user_level = user.user_level;
+				req.session.username = user.username;
+				req.session.user_pk = user.user_pk;
+				return res.json({
+					status : 200,
+					message : '로그인에 성공했습니다.'
+				});
+			}
+      else {
+				return res.json({
+					status : 400,
+					message : '비밀번호가 틀렸습니다.'
+				});
+    	}
 		});
 	});
 

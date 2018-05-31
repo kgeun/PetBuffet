@@ -1,0 +1,29 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      {{> review_petfood_item }}
+      <table class="table">
+        <thead class="thead-dark text-center">
+          <tr>
+            <th scope="col" style="width:10%">번호</th>
+            <th scope="col" style="width:10%">평점</th>
+            <th scope="col" style="width:50%">제목</th>
+            <th scope="col" style="width:15%">작성자</th>
+            <th scope="col" style="width:15%">날짜</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each review_list}}
+          <tr>
+            <th class="text-center" scope="row">{{petfood_review_id}}</th>
+            <th class="text-center">{{petfood_rcmd_value}}</th>
+            <td><a href="/review/content/{{petfood_review_id}}">{{petfood_review_title}}</a></td>
+            <td class="text-center">{{username}}</td>
+            <td class="text-center">{{creation_datetime}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

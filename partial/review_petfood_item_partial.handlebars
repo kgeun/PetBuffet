@@ -1,0 +1,20 @@
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+    <div class="jumbotron">
+      <div class="row">
+        <div class="col-md-4">
+          <img src="/petfood_images/{{petfood_info.petfood_photo_addr}}" style="width:100%"/>
+        </div>
+        <div class="col-md-8 text-center">
+          <h4 class="mb-4">{{petfood_info.petfood_name}}</h4>
+          <h6>브랜드 : {{petfood_info.petfood_company_name}}</h6>
+          <h6>소비자 평점 : 0</h6>
+          <h6 class="mb-3">영양점수 : {{petfood_info.nutrition_score}} </h6>
+          <a href="/petfood/info/{{petfood_info.petfood_id}}">
+            <button type="button" class="btn btn-dark">정보 보러가기</button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
