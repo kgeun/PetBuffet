@@ -9,37 +9,14 @@ let mysql = require('mysql');
 let multer = require('multer');
 let hbs = require('handlebars');
 let bcrypt = require('bcrypt');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var fs = require("fs");
+let cookieParser = require('cookie-parser');
+let session = require('express-session');
+let fs = require("fs");
+let redis = require("redis");
+let redisStore = require("connect-redis")(session);
 let saltRounds = 10;
 
-hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
-    switch (operator) {
-        case '==':
-            return (v1 == v2) ? options.fn(this) : options.inverse(this);
-        case '===':
-            return (v1 === v2) ? options.fn(this) : options.inverse(this);
-        case '!=':
-            return (v1 != v2) ? options.fn(this) : options.inverse(this);
-        case '!==':
-            return (v1 !== v2) ? options.fn(this) : options.inverse(this);
-        case '<':
-            return (v1 < v2) ? options.fn(this) : options.inverse(this);
-        case '<=':
-            return (v1 <= v2) ? options.fn(this) : options.inverse(this);
-        case '>':
-            return (v1 > v2) ? options.fn(this) : options.inverse(this);
-        case '>=':
-            return (v1 >= v2) ? options.fn(this) : options.inverse(this);
-        case '&&':
-            return (v1 && v2) ? options.fn(this) : options.inverse(this);
-        case '||':
-            return (v1 || v2) ? options.fn(this) : options.inverse(this);
-        default:
-            return options.inverse(this);
-    }
-});
+hbs.registerHelper('ifCond', require('./helper'));
 
 fs.readFile("./partial/review_petfood_item_partial.handlebars", function (err, data) {
     if (err) throw err;
@@ -53,12 +30,14 @@ app.set('port', 80);
 app.use(express.static(__dirname + '/public'));
 app.use(require("body-parser").urlencoded({extended: true}));
 app.use(cookieParser());
+
+//var redisClient = redis.createClient(6379, 'localhost');
+
 app.use(session({
   key: 'sid', // 세션키
   secret: 'secret', // 비밀키
-  cookie: {
-    maxAge: 6 * 1000 * 60 * 60 // 쿠키 유효기간 1시간
-  }
+	saveUninitialized : false,
+	resave : false
 }));
 
 let Storage = multer.diskStorage({
@@ -96,9 +75,23 @@ app.get('/', function(req, res) {
 });
 
 app.get('/petfood/list/:page', function(req, res) {
-	  client.query("SELECT petfood_photo_addr,petfood_id,petfood_name,nutrition_score,customer_score FROM petfood ORDER BY petfood_id DESC LIMIT 5 OFFSET " + (req.params.page-1)*5, function (err, result, fields) {
+	  client.query(`SELECT
+										petfood_photo_addr,petfood_id,petfood_name,nutrition_score,customer_score
+									FROM
+										petfood
+									ORDER BY
+										petfood_id
+									DESC LIMIT 5 OFFSET ${(req.params.page-1)*5}`
+									, function (err, result, fields) {
 			if (err) throw err;
-			client.query("SELECT COUNT(*) as amount FROM petfood ORDER BY petfood_id DESC", function (err2, result2, fields2) {
+			client.query(`SELECT
+				 							COUNT(*) as amount
+										FROM
+											petfood
+										ORDER BY
+											petfood_id
+										DESC`
+										, function (err2, result2, fields2) {
 				if (err2) throw err2;
 
 				let data = {};
@@ -379,26 +372,26 @@ app.get('/review/list/:petfood_id',	function(req, res) {
 								AND
 									petfood_id = ` + req.params.petfood_id
 								,function (err, result, fields) {
-									client.query(`SELECT
-																	petfood_review_id, petfood_review_title, username, petfood_rcmd_value,
-																	DATE_FORMAT(creation_datetime, '%Y-%m-%d') as creation_datetime
-																FROM
-																	petfood_review,user_info,petfood_rcmd
-																WHERE
-																	petfood_review.user_pk = user_info.user_pk
-																AND
-																	petfood_review.petfood_rcmd_id = petfood_rcmd.petfood_rcmd_id
-																ORDER BY
-																	petfood_review_id
-																DESC LIMIT 10 OFFSET ` + (page-1)*10
-																, function (err2, result2, fields2) {
-																	let data = {};
-																	data.session = req.session;
-																	data.petfood_info = result[0];
-																	data.review_list = result2;
-																	console.log("DATA :" + JSON.stringify(data));
-																	res.render("review_list",data);
-									});
+		client.query(`SELECT
+										petfood_review_id, petfood_review_title, username, petfood_rcmd_value,
+										DATE_FORMAT(creation_datetime, '%Y-%m-%d') as creation_datetime
+									FROM
+										petfood_review,user_info,petfood_rcmd
+									WHERE
+										petfood_review.user_pk = user_info.user_pk
+									AND
+										petfood_review.petfood_rcmd_id = petfood_rcmd.petfood_rcmd_id
+									ORDER BY
+										petfood_review_id
+									DESC LIMIT 10 OFFSET ` + (page-1)*10
+									, function (err2, result2, fields2) {
+			let data = {};
+			data.session = req.session;
+			data.petfood_info = result[0];
+			data.review_list = result2;
+			console.log("DATA :" + JSON.stringify(data));
+			res.render("review_list",data);
+		});
 	});
 
 });
@@ -456,9 +449,9 @@ app.get('/review/write/:petfood_id',	function(req, res) {
 app.post('/review/write/:petfood_id',	function(req, res) {
 	//console.log("잘 올라왔나 : " + req.body);
 	let review_item = req.body;
-	console.log("review itesm : " + JSON.stringify(req.body));
+	console.log("review item : " + JSON.stringify(req.body));
 
-	console.log("review itesm22 : " + review_item.petfood_id);
+	console.log("review item22 : " + review_item.petfood_id);
 
 	let query = `INSERT INTO
 									petfood_rcmd
@@ -508,7 +501,7 @@ app.post('/user/login',	function(req, res) {
 	let userid = req.body.userid;
 	let password = req.body.password;
 
-	if(!userid || !password) {
+	if (!userid || !password) {
 		return res.json({
 			statusCode: 401,
 			message: "아이디나 패스워드를 입력하지 않았습니다."
@@ -516,7 +509,7 @@ app.post('/user/login',	function(req, res) {
 	}
 
 	client.query(`SELECT
-									username, userid, password, user_level
+									username, userid, password, user_level, user_pk
 								FROM
 									user_info
 								WHERE

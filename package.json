@@ -11,9 +11,11 @@
     "npm": "^6.1.0",
     "multer": "^1.3.0",
     "handlebars": "*",
-    "bcrypt" : "^2.0.1",
-    "cookie-parser" : "^1.4.3",
-    "express-session" : "^1.15.6"
+    "bcrypt": "^2.0.1",
+    "cookie-parser": "^1.4.3",
+    "express-session": "^1.15.6",
+    "connect-redis": "^3.3.3",
+    "redis": "^2.8.0"
   },
   "devDependencies": {},
   "scripts": {
