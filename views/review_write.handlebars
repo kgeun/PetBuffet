@@ -28,10 +28,10 @@
                   <h5 style="margin-top:5px;">제목</h5>
                 </div>
                 <div class="col-9">
-                  <input class="form-control" name="petfood_review_title" id="petfood_review_title" type="text">
+                  <input id="petfood_review_title" class="form-control" name="petfood_review_title" type="text">
                 </div>
                 <div class="col-2">
-                  <select name="petfood_rcmd_value" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
+                  <select id="petfood_rcmd_value" name="petfood_rcmd_value" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
                     <option selected>평점주기</option>
                     <option value="1">1점</option>
                     <option value="2">2점</option>
@@ -47,7 +47,7 @@
             </li>
           </ul>
           <div class="card-body">
-            <input style="float:right;" type="submit" class="btn btn-primary" value="제출">
+            <input id="btn-form-submit" style="float:right;" type="submit" class="btn btn-primary" value="제출">
             <button style="float:left;" type="button" class="btn btn-light">취소</button>
           </div>
         </div>
@@ -55,3 +55,17 @@
     </div>
   </div>
 </div>
+<script>
+$("#btn-form-submit").on('click', e => {
+    e.preventDefault();
+    if($("#petfood_rcmd_value option:selected").text() == '평점주기') {
+        alert('평점을 선택하지 않으셨습니다.');
+    } else if ($("#petfood_review_title").val() == '') {
+        alert('제목을 입력하지 않으셨습니다.');
+    } else if ($("#petfood_review_content").val() == '') {
+        alert('내용을 입력하지 않으셨습니다.'); 
+    } else {
+        $("#review_form").submit();
+    }
+})
+</script>

@@ -28,9 +28,21 @@
         <h5 class="mb-3">영양 점수 : {{nutrition_score}} / 소비자평점 : {{customer_score}}</h5>
         <h5 class="mb-3">제조사 : {{petfood_company_name}}</h5>
         <h5 class="mb-3">대상연령 : {{target_age}}</h5>
-      </div>
+        </div>
     </div>
   </div>
+</div>
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-6">
+            <button type="button" style ="width:100%;" class="btn btn-lg btn-dark">이 사료에 대한 별점 주기</button>
+        </div>
+        <div class="col-6">
+            <a href="/review/write/{{petfood_id}}">
+                <button type="button" style ="width:100%;" class="btn btn-lg btn-dark">이 사료에 대한 리뷰 쓰기</button>
+            </a>
+        </div>
+    </div>
 </div>
 
 <div class="container">
@@ -168,63 +180,43 @@
   </div>
 </div>
 
+<div class="container">
+    <div class="card mb-4 box-shadow">
+        <div class="card-header text-center">
+            <h5>최신 리뷰</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <h5>제목 : 이런 내맘모르고 너무해 너무해</h5>
+                    유어마이 티티 저스트락 티티
+                    <hr>
+                    <h5>제목 : 이런 내맘모르고 너무해 너무해</h5>
+                    유어마이 티티 저스트락 티티
+                    <hr>
+                    <div class="text-center pt-2">
+                        <h5><span style="font-weight: bold;"><a href="/review/list/{{petfood_id}}">전체 리뷰 목록</a></span></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5 mt-5">
+    <div class="row">
+        <div class="col-6">
+            <button type="button" style ="width:100%;" class="btn btn-lg btn-dark">이 사료에 대한 별점 주기</button>
+        </div>
+        <div class="col-6">
+            <a href="/review/write/{{petfood_id}}">
+                <button type="button" style ="width:100%;" class="btn btn-lg btn-dark">이 사료에 대한 리뷰 쓰기</button>
+            </a>
+        </div>
+    </div>
+</div>
+
 <script src="/js/jquery-knob/js/jquery.knob.js"></script>
 <script>
-    $(function () {
-      /* jQueryKnob */
-      $(".knob").knob({
-        /*change : function (value) {
-         //console.log("change : " + value);
-         },
-         release : function (value) {
-         console.log("release : " + value);
-         },
-         cancel : function () {
-         console.log("cancel : " + this.value);
-         },*/
-        draw: function () {
-
-          // "tron" case
-          if (this.$.data('skin') == 'tron') {
-
-            var a = this.angle(this.cv)  // Angle
-                , sa = this.startAngle          // Previous start angle
-                , sat = this.startAngle         // Start angle
-                , ea                            // Previous end angle
-                , eat = sat + a                 // End angle
-                , r = true;
-
-            this.g.lineWidth = this.lineWidth;
-
-            this.o.cursor
-            && (sat = eat - 0.3)
-            && (eat = eat + 0.3);
-
-            if (this.o.displayPrevious) {
-              ea = this.startAngle + this.angle(this.value);
-              this.o.cursor
-              && (sa = ea - 0.3)
-              && (ea = ea + 0.3);
-              this.g.beginPath();
-              this.g.strokeStyle = this.previousColor;
-              this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sa, ea, false);
-              this.g.stroke();
-            }
-
-            this.g.beginPath();
-            this.g.strokeStyle = r ? this.o.fgColor : this.fgColor;
-            this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sat, eat, false);
-            this.g.stroke();
-
-            this.g.lineWidth = 2;
-            this.g.beginPath();
-            this.g.strokeStyle = this.o.fgColor;
-            this.g.arc(this.xy, this.xy, this.radius - this.lineWidth + 1 + this.lineWidth * 2 / 3, 0, 2 * Math.PI, false);
-            this.g.stroke();
-
-            return false;
-          }
-        }
-      });
-    });
+    $(".knob").knob();
 </script>

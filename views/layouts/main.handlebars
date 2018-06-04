@@ -9,16 +9,18 @@
     <title>PetBuffet</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="/css/pricing.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/AdminLTE.css">
+    <link href="/css/petbuffet.css" rel="stylesheet">
 
-    <script src="/css/jquery-3.3.1.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
     <script src="/css/popper.min.js"></script>
-    <script src="/css/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
   </head>
   <body>
@@ -28,7 +30,7 @@
         <a class="p-2 text-dark" href="/petfood/list/1">사료 정보</a>
         <a class="p-2 text-dark" href="#">리뷰 보기</a>
       </nav>
-      {{#if session}}
+      {{#if session.userid}}
         <a class="btn btn-outline-primary" href="/user/logout">로그아웃</a>
       {{else}}
         <a class="btn btn-outline-primary" href="/user/login">로그인 / 회원가입</a>

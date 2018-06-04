@@ -1,4 +1,11 @@
 <div class="container">
+    <div class="row mb-3">
+      <div class="col-12">
+        <a href="/petfood/info/{{petfood_info.petfood_id}}">
+          <button type="button" class="btn btn-lg btn-secondary">&lt; 사료 정보</button>
+        </a>
+      </div>
+    </div>
   <div class="row">
     <div class="col-12">
       {{> review_petfood_item }}
@@ -24,6 +31,9 @@
           {{/each}}
         </tbody>
       </table>
+      <a href="/review/write/{{petfood_info.petfood_id}}">
+          <button style="float:right;" type="button" class="btn btn-secondary">새 리뷰 작성</button>
+      </a>
     </div>
   </div>
 </div>

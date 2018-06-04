@@ -1,14 +1,14 @@
 <div class="container">
+    <div class="row mb-3">
+      <div class="col-12">
+        <a href="/review/list/{{petfood_info.petfood_id}}">
+          <button type="button" class="btn btn-lg btn-secondary">&lt; 리뷰 목록</button>
+        </a>
+      </div>
+    </div>
   <div class="row">
     <div class="col-12">
       {{> review_petfood_item }}
-      <div class="row mb-3">
-        <div class="col-12">
-          <a href="/review/list/{{petfood_info.petfood_id}}">
-            <button type="button" class="btn btn-secondary">&lt; 이 사료에 대한 리뷰 목록</button>
-          </a>
-        </div>
-      </div>
 
       <div class="card">
         <!--<div class="card-body">

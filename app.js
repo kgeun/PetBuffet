@@ -8,7 +8,7 @@ let handlebars = require('express-handlebars')
 let mysql = require('mysql');
 let multer = require('multer');
 let hbs = require('handlebars');
-let bcrypt = require('bcrypt-nodejs');
+let bcrypt = require('bcryptjs');
 let cookieParser = require('cookie-parser');
 let session = require('express-session');
 let fs = require("fs");
@@ -36,8 +36,9 @@ app.use(cookieParser());
 app.use(session({
     key: 'sid', // 세션키
     secret: 'secret', // 비밀키
-    saveUninitialized : false,
-    resave : false
+    cookie: {
+      maxAge: 1000 * 60 * 60 // 쿠키 유효기간 1시간
+    }
 }));
 
 let Storage = multer.diskStorage({
@@ -71,23 +72,23 @@ client.connect(function(err) {
 });
 
 app.get('/', function(req, res) {
-        return res.redirect('/petfood/list/1');
+    return res.redirect('/petfood/list/1');
 });
 
 app.get('/petfood/list/:page', function(req, res) {
-      client.query(`SELECT
-                                        petfood_photo_addr,petfood_id,petfood_name,nutrition_score,customer_score
-                                    FROM
-                                        petfood
-                                    ORDER BY
-                                        petfood_id
-                                    DESC LIMIT 5 OFFSET ${(req.params.page-1)*5}`
-                                    , function (err, result, fields) {
-            if (err) throw err;
+    client.query(`SELECT
+                    petfood_photo_addr,petfood_id,petfood_name,nutrition_score,customer_score
+                  FROM
+                    petfood
+                  ORDER BY
+                    petfood_id
+                  DESC LIMIT 5 OFFSET ${(req.params.page-1)*5}`
+                    , function (err, result, fields) {
+                        if (err) throw err;
             client.query(`SELECT
-                                             COUNT(*) as amount
-                                        FROM
-                                            petfood
+                             COUNT(*) as amount
+                        FROM
+                                petfood
                                         ORDER BY
                                             petfood_id
                                         DESC`
@@ -373,17 +374,19 @@ app.get('/review/list/:petfood_id',	function(req, res) {
                                     petfood_id = ` + req.params.petfood_id
                                 ,function (err, result, fields) {
         client.query(`SELECT
-                                        petfood_review_id, petfood_review_title, username, petfood_rcmd_value,
-                                        DATE_FORMAT(creation_datetime, '%Y-%m-%d') as creation_datetime
-                                    FROM
-                                        petfood_review,user_info,petfood_rcmd
-                                    WHERE
-                                        petfood_review.user_pk = user_info.user_pk
-                                    AND
-                                        petfood_review.petfood_rcmd_id = petfood_rcmd.petfood_rcmd_id
-                                    ORDER BY
-                                        petfood_review_id
-                                    DESC LIMIT 10 OFFSET ` + (page-1)*10
+                        petfood_review_id, petfood_review_title, username, petfood_rcmd_value,
+                      DATE_FORMAT(creation_datetime, '%Y-%m-%d') as creation_datetime
+                        FROM
+                      petfood_review,user_info,petfood_rcmd
+                        WHERE
+                      petfood_review.user_num = user_info.user_num
+                        AND
+                      petfood_review.petfood_rcmd_id = petfood_rcmd.petfood_rcmd_id
+                        AND
+                      petfood_id = ${req.params.petfood_id}
+                        ORDER BY
+                      petfood_review_id
+                        DESC LIMIT 10 OFFSET ` + (page-1)*10
                                     , function (err2, result2, fields2) {
             let data = {};
             data.session = req.session;
@@ -404,7 +407,7 @@ app.get('/review/content/:petfood_review_id',	function(req, res) {
                                 FROM
                                     petfood_review,user_info,petfood_rcmd
                                 WHERE
-                                    petfood_review.user_pk = user_info.user_pk
+                                    petfood_review.user_num = user_info.user_num
                                 AND
                                     petfood_review.petfood_rcmd_id = petfood_rcmd.petfood_rcmd_id
                                 AND
@@ -453,29 +456,18 @@ app.post('/review/write/:petfood_id',	function(req, res) {
 
     console.log("review item22 : " + review_item.petfood_id);
 
-    let query = `INSERT INTO
-                                    petfood_rcmd
-                                VALUES
-                                    (NULL, ${req.session.user_pk}, ${review_item.petfood_id}, ${review_item.petfood_rcmd_value})`;
-
-    console.log("Q : " + query);
-
     client.query(`INSERT INTO
-                                    petfood_rcmd
-                                VALUES
-                                    (NULL, ${req.session.user_pk}, ${review_item.petfood_id}, ${review_item.petfood_rcmd_value})`
+                    petfood_rcmd ( user_num , petfood_num, petfood_rcmd_value )
+                  VALUES
+                    ( ${req.session.user_num}, ${review_item.petfood_id}, ${review_item.petfood_rcmd_value} )`
                                 ,function (err, result, fields) {
-                                    console.log("result : " + JSON.stringify(result));
-                                    return res.redirect("/review/write/" + review_item.petfood_id );
-                                    /*
-                                    console.log("insertID1 : " + JSON.stringify(result));
                                     client.query(`INSERT INTO
-                                                                    petfood_review
-                                                                VALUES
-                                                                    (NULL, ${review_item.petfood_review_title}, ${review_item.petfood_review_content}, ${req.session.user_pk}, ${review_item.petfood_id},${result.insertId}, now())`
+                                                    petfood_review ( petfood_review_title, petfood_review_content, user_num, petfood_id, petfood_rcmd_id, creation_datetime )
+                                                  VALUES
+                                                    ( '${review_item.petfood_review_title}', '${review_item.petfood_review_content}', ${req.session.user_num}, ${review_item.petfood_id},${result.insertId}, now() )`
                                                                 ,function (err2, result2, fields2) {
                                                                     res.redirect("/review/content/" + result2.insertId );
-                                    });*/
+                                    });
     });
 
 /*
@@ -489,8 +481,7 @@ app.post('/review/write/:petfood_id',	function(req, res) {
                                     petfood_id = ` + req.params.petfood_id
                                 ,function (err, result, fields) {
                                     return res.json(req.body);
-    });
-    */
+    });*/
 });
 
 app.get('/user/login',	function(req, res) {
@@ -509,13 +500,13 @@ app.post('/user/login',	function(req, res) {
     }
 
     client.query(`SELECT
-                                    username, userid, password, user_level, user_pk
-                                FROM
-                                    user_info
-                                WHERE
-                                    userid='${userid}'`
+                    username, userid, password, user_level, user_num
+                  FROM
+                    user_info
+                  WHERE
+                    userid='${userid}'`
                                     , function (err, result, fields) {
-        let user = result[0];
+    let user = result[0];
     if(!user || !user.hasOwnProperty('password')) {
         return res.json({
           statusCode: 401,
@@ -528,13 +519,12 @@ app.post('/user/login',	function(req, res) {
                 req.session.userid = user.userid;
                 req.session.user_level = user.user_level;
                 req.session.username = user.username;
-                req.session.user_pk = user.user_pk;
+                req.session.user_num = user.user_num;
                 return res.json({
                     status : 200,
                     message : '로그인에 성공했습니다.'
                 });
-            }
-      else {
+            } else {
                 return res.json({
                     status : 400,
                     message : '비밀번호가 틀렸습니다.'
@@ -554,7 +544,7 @@ app.post('/user/register', function(req, res) {
             message : '모든 항목이 입력되지 않았습니다.'
         });
     }
-  bcrypt.hash(user.password, saltRounds, function(err, hash) {
+    bcrypt.hash(user.password, saltRounds, function(err, hash) {
         client.query(`SELECT count(*) as count FROM user_info WHERE userid = '${user.userid}'`, function (err, result, fields) {
             if(!result[0].count) { // No Duplicated
             client.query(
