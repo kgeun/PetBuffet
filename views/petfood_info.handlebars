@@ -1,19 +1,20 @@
-<!-- Main jumbotron for a primary marketing message or call to action -->
-
 <div class="container mb-4">
     <div class="row">
       <div class="col-12">
         <a href="/petfood/list/{{current_page}}">
           <button type="button" class="btn btn-lg btn-secondary" style="float:left;">&lt; 사료 목록</button>
         </a>
-        {{#ifCond session.user_level '==' 2}}
+        <a href="/review/list/{{petfood_id}}">
+          <button type="button" class="btn btn-lg btn-secondary ml-3" style="float:right;">리뷰 목록 &gt;</button>
+        </a>
+        {{#if is_user_admin}}
         <a href="/petfood/delete/{{petfood_id}}">
           <button type="button" class="btn btn-link" style="float:right;">삭제</button>
         </a>
         <a href="/petfood/modify/{{petfood_id}}">
           <button type="button" class="btn btn-info mr-3" style="float:right;">수정</button>
         </a>
-        {{/ifCond}}
+        {{/if}}
       </div>
     </div>
 </div>
@@ -68,71 +69,36 @@
                   <td style="padding:10px;">
                     <div style="display:inline;width:100px;height:100px;margin:10px;">
                         <input data-max="50" type="text" class="knob" value="{{protein}}" data-width="150" data-height="150"
-                        data-fgcolor="{{#ifCond eval_protein '==' 0}}#00a65a{{else}}#f56954{{/ifCond}}" data-readonly="true" readonly="readonly"
+                        data-fgcolor="{{{eval_protein_color}}}" data-readonly="true" readonly="readonly"
                         style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
                     </div>
                   </td>
                   <td style="padding:10px;">
                     <div style="display:inline;width:100px;height:100px;">
                         <input data-max="50" type="text" class="knob" value="{{fat}}" data-width="150" data-height="150"
-                        data-fgcolor="{{#ifCond eval_fat '==' 0}}#00a65a{{else}}#f56954{{/ifCond}}" data-readonly="true" readonly="readonly"
+                        data-fgcolor="{{{eval_fat_color}}}" data-readonly="true" readonly="readonly"
                         style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(245, 105, 84); padding: 0px; -webkit-appearance: none;"/>
                     </div>
                   <td style="padding:10px;">
                     <div style="display:inline;width:100px;height:100px;">
                         <input data-max="2.5" type="text" class="knob" value="{{calcium}}" data-width="150" data-height="150"
-                        data-fgcolor="{{#ifCond eval_calcium '==' 0}}#00a65a{{else}}#f56954{{/ifCond}}" data-readonly="true" readonly="readonly"
+                        data-fgcolor="{{{eval_calcium_color}}}" data-readonly="true" readonly="readonly"
                         style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
                     </div>
                   </td>
                   <td style="padding:10px;">
                     <div style="display:inline;width:100px;height:100px;">
                         <input data-max="1.6" type="text" class="knob" value="{{phosphorus}}" data-width="150" data-height="150"
-                        data-fgcolor="{{#ifCond eval_phosphorus '==' 0}}#00a65a{{else}}#f56954{{/ifCond}}" data-readonly="true" readonly="readonly"
+                        data-fgcolor="{{{eval_phosphorus_color}}}" data-readonly="true" readonly="readonly"
                         style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
                     </div>
                   </td>
                 </tr>
                 <tr>
-                  {{#ifCond eval_protein '==' 0}}
-                    <td style="background-color:rgb(252, 255, 245);color:#2C662D;"><h5><i class="fas fa-check"></i> 적당</h5></td>
-                  {{/ifCond}}
-                  {{#ifCond eval_protein '==' -1}}
-                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 부족</h5></td>
-                  {{/ifCond}}
-                  {{#ifCond eval_protein '==' 1}}
-                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 과다</h5></td>
-                  {{/ifCond}}
-
-                  {{#ifCond eval_fat '==' 0}}
-                    <td style="background-color:rgb(252, 255, 245);color:#2C662D;"><h5><i class="fas fa-check"></i> 적당</h5></td>
-                  {{/ifCond}}
-                  {{#ifCond eval_fat '==' -1}}
-                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 부족</h5></td>
-                  {{/ifCond}}
-                  {{#ifCond eval_fat '==' 1}}
-                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 과다</h5></td>
-                  {{/ifCond}}
-
-                  {{#ifCond eval_calcium '==' 0}}
-                    <td style="background-color:rgb(252, 255, 245);color:#2C662D;"><h5><i class="fas fa-check"></i> 적당</h5></td>
-                  {{/ifCond}}
-                  {{#ifCond eval_calcium '==' -1}}
-                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 부족</h5></td>
-                  {{/ifCond}}
-                  {{#ifCond eval_calcium '==' 1}}
-                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 과다</h5></td>
-                  {{/ifCond}}
-
-                  {{#ifCond eval_phosphorus '==' 0}}
-                    <td style="background-color:rgb(252, 255, 245);color:#2C662D;"><h5><i class="fas fa-check"></i> 적당</h5></td>
-                  {{/ifCond}}
-                  {{#ifCond eval_phosphorus '==' -1}}
-                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 부족</h5></td>
-                  {{/ifCond}}
-                  {{#ifCond eval_phosphorus '==' 1}}
-                    <td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 과다</h5></td>
-                  {{/ifCond}}
+                  {{{eval_protein_html}}}
+                  {{{eval_fat_html}}}
+                  {{{eval_calcium_html}}}
+                  {{{eval_phosphorus_html}}}
                 </tr>
               </tbody>
             </table>

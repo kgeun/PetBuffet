@@ -10,8 +10,9 @@
         </div>
       </div>
 
-      <form id="review_form" method="post" action="/review/write/{{petfood_info.petfood_id}}">
+      <form id="review_form" method="post" {{#if review_item}}action="/review/modify/{{review_item.petfood_review_id}}"{{else}}action="/review/write/{{petfood_info.petfood_id}}"{{/if}}>
         <input type="hidden" name="petfood_id" value="{{petfood_info.petfood_id}}"/>
+        <input type="hidden" name="petfood_review_id" value="{{review_item.petfood_review_id}}"/>
         <div class="card">
           <!--<div class="card-body">
             <h5 style="float:left;margin-bottom:0px;" class="card-title mr-3"><b>제목</b></h5>
@@ -28,11 +29,13 @@
                   <h5 style="margin-top:5px;">제목</h5>
                 </div>
                 <div class="col-9">
-                  <input id="petfood_review_title" class="form-control" name="petfood_review_title" type="text">
+                  <input id="petfood_review_title" class="form-control" name="petfood_review_title" type="text" value="{{review_item.petfood_review_title}}">
                 </div>
                 <div class="col-2">
-                  <select id="petfood_rcmd_value" name="petfood_rcmd_value" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
-                    <option selected>평점주기</option>
+                  <select id="petfood_rcmd_value" name="petfood_rcmd_value" class="custom-select mb-2 mr-sm-2 mb-sm-0"
+                            {{#if already_rcmded}}disabled="true"{{/if}}>
+                    {{#if already_rcmded}}<option value="{{petfood_rcmd_value}}" selected>{{petfood_rcmd_value}}점</option>{{/if}}
+                    <option>평점주기</option>
                     <option value="1">1점</option>
                     <option value="2">2점</option>
                     <option value="3">3점</option>
@@ -43,7 +46,7 @@
               </div>
             </li>
             <li class="list-group-item">
-              <textarea class="form-control" name="petfood_review_content" id="petfood_review_content" rows="15"></textarea>
+              <textarea class="form-control" name="petfood_review_content" id="summernote">{{{review_item.petfood_review_content}}}</textarea>
             </li>
           </ul>
           <div class="card-body">
@@ -55,17 +58,23 @@
     </div>
   </div>
 </div>
+
 <script>
-$("#btn-form-submit").on('click', e => {
-    e.preventDefault();
-    if($("#petfood_rcmd_value option:selected").text() == '평점주기') {
-        alert('평점을 선택하지 않으셨습니다.');
-    } else if ($("#petfood_review_title").val() == '') {
-        alert('제목을 입력하지 않으셨습니다.');
-    } else if ($("#petfood_review_content").val() == '') {
-        alert('내용을 입력하지 않으셨습니다.'); 
-    } else {
-        $("#review_form").submit();
-    }
-})
+$(document).ready(function() {
+    $("#btn-form-submit").on('click', e => {
+        e.preventDefault();
+        if($("#petfood_rcmd_value option:selected").text() == '평점주기') {
+            alert('평점을 선택하지 않으셨습니다.');
+        } else if ($("#petfood_review_title").val() == '') {
+            alert('제목을 입력하지 않으셨습니다.');
+        } else if ($("#petfood_review_content").val() == '') {
+            alert('내용을 입력하지 않으셨습니다.');
+        } else {
+            $("#review_form").submit();
+        }
+    });
+    $('#summernote').summernote({
+        height: 300
+    });
+});
 </script>

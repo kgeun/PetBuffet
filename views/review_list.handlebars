@@ -1,39 +1,70 @@
 <div class="container">
     <div class="row mb-3">
-      <div class="col-12">
-        <a href="/petfood/info/{{petfood_info.petfood_id}}">
+        <div class="col-12">
+            <a href="/petfood/info/{{petfood_info.petfood_id}}">
           <button type="button" class="btn btn-lg btn-secondary">&lt; 사료 정보</button>
         </a>
-      </div>
+        </div>
     </div>
-  <div class="row">
-    <div class="col-12">
-      {{> review_petfood_item }}
-      <table class="table">
-        <thead class="thead-dark text-center">
-          <tr>
-            <th scope="col" style="width:10%">번호</th>
-            <th scope="col" style="width:10%">평점</th>
-            <th scope="col" style="width:50%">제목</th>
-            <th scope="col" style="width:15%">작성자</th>
-            <th scope="col" style="width:15%">날짜</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each review_list}}
-          <tr>
-            <th class="text-center" scope="row">{{petfood_review_id}}</th>
-            <th class="text-center">{{petfood_rcmd_value}}</th>
-            <td><a href="/review/content/{{petfood_review_id}}">{{petfood_review_title}}</a></td>
-            <td class="text-center">{{username}}</td>
-            <td class="text-center">{{creation_datetime}}</td>
-          </tr>
-          {{/each}}
-        </tbody>
-      </table>
-      <a href="/review/write/{{petfood_info.petfood_id}}">
-          <button style="float:right;" type="button" class="btn btn-secondary">새 리뷰 작성</button>
-      </a>
+    <div class="row">
+        <div class="col-12">
+            {{> review_petfood_item }}
+            <table class="table">
+                <thead class="thead-dark text-center">
+                    <tr>
+                        <th scope="col" style="width:10%">번호</th>
+                        <th scope="col" style="width:10%">평점</th>
+                        <th scope="col" style="width:50%">제목</th>
+                        <th scope="col" style="width:15%">작성자</th>
+                        <th scope="col" style="width:15%">날짜</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each review_list}}
+                        <tr>
+                            <th class="text-center" scope="row">{{petfood_review_id}}</th>
+                            <th class="text-center">{{petfood_rcmd_value}}</th>
+                            <td><a href="/review/content/{{petfood_review_id}}?page={{../current_page}}">{{petfood_review_title}}</a></td>
+                            <td class="text-center">{{username}}</td>
+                            <td class="text-center">{{creation_datetime}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
     </div>
-  </div>
-</div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center">
+                <nav style="display: inline-block;">
+                    <ul class="pagination">
+                      <li class="page-item {{#if first_page}} disabled{{/if}}">
+                        <a class="page-link" href="/review/list/{{petfood_info.petfood_id}}?page={{prev_page}}" aria-label="Previous">
+                          <span aria-hidden="true">&laquo;</span>
+                          <span class="sr-only">Previous</span>
+                        </a>
+                      </li>
+                      {{#each paging}}
+                      <li class="page-item {{#if paging_currentpage}} disabled {{/if}}"><a class="page-link" href="/review/list/{{../petfood_info.petfood_id}}?page={{paging_page}}">{{paging_page}}</a></li>
+                      {{/each}}
+                      <li class="page-item {{#if last_page}}disabled{{/if}}">
+                        <a class="page-link" href="/review/list/{{petfood_info.petfood_id}}?page={{next_page}}" aria-label="Next">
+                          <span aria-hidden="true">&raquo;</span>
+                          <span class="sr-only">Next</span>
+                        </a>
+                      </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <a href="/review/write/{{petfood_info.petfood_id}}">
+              <button style="float:right;" type="button" class="btn btn-secondary">새 리뷰 작성</button>
+          </a>
+            </div>
+        </div>
+    </div>

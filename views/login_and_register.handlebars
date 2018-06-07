@@ -1,6 +1,11 @@
 <div class="container" style="margin-top:10%;margin-bottom:10%">
   <div class="row">
 			<div class="col-md-6 offset-md-3">
+                {{#if required}}
+                <div class="jumbotron pt-2 pb-2">
+                    <p><h5>{{login_message}}</h5></p>
+                </div>
+                {{/if}}
 				<div class="card panel-login">
 					<div class="card-header panel-heading">
 						<div class="row text-center">
@@ -17,6 +22,7 @@
 						<div class="row">
 							<div class="col-12">
 								<form id="login-form" action="/user/login" method="post" role="form" style="display: block;">
+                                    <input type="hidden" name="referer" value="{{referer}}"/>
 									<div class="form-group">
 										<input type="text" name="userid" id="login-userid" tabindex="1" class="form-control" placeholder="아이디">
 									</div>
@@ -106,8 +112,12 @@
           data:$('#login-form').serialize(),
           success:function(data){
             alert(data.message);
-            if(data.status == 200){
-              location.href="/";
+            if(data.status == "OK"){
+                if(data.referer.endsWith("/user/login")) {
+                    location.href="/";
+                } else {
+                    location.href=data.referer;
+                }
             }
           }
       });

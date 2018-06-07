@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row mb-3">
       <div class="col-12">
-        <a href="/review/list/{{petfood_info.petfood_id}}">
+        <a href="/review/list/{{petfood_info.petfood_id}}?page={{page}}">
           <button type="button" class="btn btn-lg btn-secondary">&lt; 리뷰 목록</button>
         </a>
       </div>
@@ -10,7 +10,7 @@
     <div class="col-12">
       {{> review_petfood_item }}
 
-      <div class="card">
+      <div class="card mb-3">
         <!--<div class="card-body">
           <h5 style="float:left;margin-bottom:0px;" class="card-title mr-3"><b>제목</b></h5>
           <p class="card-text">{{review_item.petfood_review_title}}</p>
@@ -23,11 +23,27 @@
           <li class="list-group-item pt-3 pm-3">
             <h5>제목 : {{review_item.petfood_review_title}}</h5>
           </li>
+          <li class="list-group-item pt-3 pm-3 text-center">
+            <span>{{review_item.username}}님은 이 사료에 {{review_item.petfood_rcmd_value}}점을 주셨습니다.</span>
+          </li>
         </ul>
         <div class="card-body">
-          {{review_item.petfood_review_content}}
+          {{{review_item.petfood_review_content}}}
         </div>
       </div>
     </div>
+  </div>
+  <div class="row">
+      <div class="col-12">
+          <a href="/review/list/{{petfood_info.petfood_id}}?page={{page}}">
+              <button type="button" class="btn btn-outline-primary">목록</button>
+          </a>
+          <a style="float:right;" href="/review/list/{{petfood_info.petfood_id}}?page={{page}}">
+              <button type="button" class="btn btn-outline-danger">삭제</button>
+          </a>
+          <a class="mr-3" style="float:right;" href="/review/modify/{{review_item.petfood_review_id}}?page={{page}}">
+              <button type="button" class="btn btn-outline-dark">수정</button>
+          </a>
+      </div>
   </div>
 </div>
