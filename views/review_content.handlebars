@@ -18,7 +18,7 @@
         <ul class="list-group list-group-flush">
           <li class="list-group-item" style="background-color:rgb(236,240,245);">
             <span>글쓴이 : {{review_item.username}}</span>
-            <span style="float:right;">{{review_item.creation_date}}</span>
+            <span style="float:right;">{{review_item.creation_datetime}}</span>
           </li>
           <li class="list-group-item pt-3 pm-3">
             <h5>제목 : {{review_item.petfood_review_title}}</h5>
@@ -38,12 +38,33 @@
           <a href="/review/list/{{petfood_info.petfood_id}}?page={{page}}">
               <button type="button" class="btn btn-outline-primary">목록</button>
           </a>
-          <a style="float:right;" href="/review/list/{{petfood_info.petfood_id}}?page={{page}}">
-              <button type="button" class="btn btn-outline-danger">삭제</button>
-          </a>
+          {{#if my_item}}
+          <button style="float:right;" type="button" class="btn btn-outline-danger" id="btn_delete_item">삭제</button>
           <a class="mr-3" style="float:right;" href="/review/modify/{{review_item.petfood_review_id}}?page={{page}}">
               <button type="button" class="btn btn-outline-dark">수정</button>
           </a>
+          {{/if}}
       </div>
   </div>
 </div>
+
+<script>
+$(document).ready(function() {
+    $("#btn_delete_item").on('click',function(){
+        if (confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
+            $.ajax({
+                url: "/review/delete",
+                type: "POST",
+                data: {"petfood_review_id" : {{review_item.petfood_review_id}} },
+                success: function(data) {
+                    alert("삭제가 완료되었습니다.");
+                    location.href="/review/list/{{petfood_info.petfood_id}}?page={{page}}";
+                },
+                error : function(error) {
+                    alert("Error!");
+                }
+            });
+        }
+    })
+});
+</script>

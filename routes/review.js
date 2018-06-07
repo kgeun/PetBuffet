@@ -19,7 +19,8 @@ const {
   INSERT_REVIEW,
   COUNT_AND_SELECT_RCMD,
   COUNT_REVIEW,
-  UPDATE_REVIEW
+  UPDATE_REVIEW,
+  DELETE_REVIEW
 } = require('../queries/review.js')
 
 const REVIEW_ITEMS_PER_PAGE = 10;
@@ -68,6 +69,7 @@ router.get('/list/:petfood_id', auth, function(req, res) {
 router.get('/content/:petfood_review_id', auth, function(req, res) {
     let data = req.data;
     let page;
+    let connection;
     if(!req.query.page){
         data.page = 1;
     } else {
@@ -84,6 +86,12 @@ router.get('/content/:petfood_review_id', auth, function(req, res) {
     })
     .then(result => {
         data.review_item = result[0];
+        if (data.review_item.user_num == req.session.user_num ||
+            req.session.user_level == 2) {
+            data.my_item = true;
+        } else {
+            data.my_item = false;
+        }
         return connection.query(SELECT_CURRENT_PETFOOD,[result[0].petfood_id]);
     })
     .then(result => {
@@ -184,18 +192,15 @@ router.post('/write/:petfood_id', auth, function(req, res) {
 router.get('/modify/:petfood_review_id', auth, function(req, res) {
     let data = req.data;
 
-    if(!req.session.userid){
+    if (!req.session.userid) {
         return res.redirect("/user/login?required=true");
     }
 
-    let page;
-    if(!req.query.page){
+    if (!req.query.page) {
         data.page = 1;
     } else {
         data.page = req.query.page;
     }
-
-    data.modify = true;
 
     pool.getConnection()
     .then(conn => {
@@ -206,9 +211,16 @@ router.get('/modify/:petfood_review_id', auth, function(req, res) {
         return connection.query(SELECT_REVIEW_CONTENT,[req.params.petfood_review_id]);
     })
     .then(result => {
+        if (result[0].user_num != req.session.user_num ||
+            req.session.user_level != 2) {
+            connection.release();
+            return res.redirect("/");
+        }
+
         data.review_item = result[0];
         data.already_rcmded = true;
         data.petfood_rcmd_value = result[0].petfood_rcmd_value;
+
         return connection.query(SELECT_CURRENT_PETFOOD,[result[0].petfood_id]);
     })
     .then(result => {
@@ -224,10 +236,9 @@ router.get('/modify/:petfood_review_id', auth, function(req, res) {
     });
 });
 
-router.post('/modify/:petfood_review_id', auth, function(req, res) {
-    console.log("UPDATE하는 내용 : " + JSON.stringify(req.body));
+router.post('/modify/:petfood_review_id', function(req, res) {
 
-    let data = req.data;
+    let data = {};
 
     pool.getConnection()
     .then(conn => {
@@ -247,7 +258,26 @@ router.post('/modify/:petfood_review_id', auth, function(req, res) {
         console.log(err);
         return;
     });
+});
 
+router.post('/delete', function(req, res) {
+
+    pool.getConnection()
+    .then(conn => {
+        connection = conn;
+        return;
+    })
+    .then(() => {
+        return connection.query(DELETE_REVIEW,[req.body.petfood_review_id]);
+    })
+    .then(result => {
+        connection.release();
+        return res.json({status : "OK"});
+    })
+    .catch(err => {
+        console.log(err);
+        return;
+    });
 });
 
 module.exports = router;

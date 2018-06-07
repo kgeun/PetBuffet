@@ -29,8 +29,8 @@ LIMIT 10 OFFSET ?`
 const SELECT_REVIEW_CONTENT =
 `SELECT
     petfood_review_id, petfood_review_title, petfood_review_content,
-    user_num, petfood_id, userid, username, petfood_rcmd_value
-    , DATE_FORMAT(creation_datetime, '%Y-%m-%d') as creation_date
+    user_num, petfood_id, userid, username, petfood_rcmd_value,
+    DATE_FORMAT(creation_datetime, '%Y-%m-%d %H:%i') as creation_datetime
 FROM
     petfood_review
 NATURAL JOIN
@@ -80,6 +80,12 @@ SET
 WHERE
     petfood_review_id = ?`
 
+const DELETE_REVIEW =
+`DELETE FROM
+    petfood_review
+WHERE
+    petfood_review_id = ?`
+
 module.exports = {
     SELECT_CURRENT_PETFOOD,
     SELECT_REVIEW_TITLE_INFO,
@@ -88,5 +94,6 @@ module.exports = {
     INSERT_REVIEW,
     COUNT_AND_SELECT_RCMD,
     COUNT_REVIEW,
-    UPDATE_REVIEW
+    UPDATE_REVIEW,
+    DELETE_REVIEW
 }

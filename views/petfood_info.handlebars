@@ -8,9 +8,7 @@
           <button type="button" class="btn btn-lg btn-secondary ml-3" style="float:right;">리뷰 목록 &gt;</button>
         </a>
         {{#if is_user_admin}}
-        <a href="/petfood/delete/{{petfood_id}}">
-          <button type="button" class="btn btn-link" style="float:right;">삭제</button>
-        </a>
+        <button id="btn_delete_item" type="button" class="btn btn-link" style="float:right;">삭제</button>
         <a href="/petfood/modify/{{petfood_id}}">
           <button type="button" class="btn btn-info mr-3" style="float:right;">수정</button>
         </a>
@@ -184,5 +182,23 @@
 
 <script src="/js/jquery-knob/js/jquery.knob.js"></script>
 <script>
+$(document).ready(function() {
     $(".knob").knob();
+    $("#btn_delete_item").on('click',function(){
+        if (confirm('정말로 이 사료정보를 삭제하시겠습니까?')) {
+            $.ajax({
+                url: "/petfood/delete",
+                type: "POST",
+                data: {"petfood_id" : {{petfood_id}} },
+                success: function(data) {
+                    alert("삭제가 완료되었습니다.");
+                    location.href="/petfood/list/{{current_page}}";
+                },
+                error : function(error) {
+                    alert("Error!");
+                }
+            });
+        }
+    })
+});
 </script>

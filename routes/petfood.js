@@ -130,10 +130,26 @@ router.get('/modify/:petfood_id', auth, function(req, res) {
         return connection.query(SELECT_PETFOOD_COMPANY);
     })
     .then(result => {
+        // 사료 회사 리스트에서 현재 사료회사가 어떤건지 확인하는 부분
+        for (s of result) {
+          if(data.petfood_data.petfood_company_id == s.petfood_company_id) {
+              s.current_company = true;
+          } else {
+              s.current_company = false;
+          }
+        }
         data.petfood_company = result;
         return connection.query(SELECT_TARGET_AGE);
     })
     .then(result => {
+        // 사료 대상 연령 리스트에서 현재 사료의 대상 연령을 구분하는 부분
+        for (s of result) {
+          if(data.petfood_data.target_age_id == s.target_age_id) {
+              s.current_target_age = true;
+          } else {
+              s.current_target_age = false;
+          }
+        }
         data.petfood_target_age = result;
         return;
     })
@@ -216,7 +232,7 @@ router.post('/modify', function(req, res) {
         return res.redirect("/user/login?required=admin");
     }
 
-    let nutrition_info = utils.calculate_nutrition(req.body);
+    let nutrition_info = nutrition.assess_nutrition(req.body);
     let main_ingredient = req.body.ingredients.split(',')[0];
 
     pool.getConnection()
@@ -249,10 +265,10 @@ router.post('/modify', function(req, res) {
     });
 });
 
-router.get('/delete/:petfood_id', function(req, res) {
+router.post('/delete', function(req, res) {
 
     if(req.session.user_level != ADMIN_LEVEL){
-        return res.redirect("/user/login?required=admin");
+        return res.status(403).json({ status : "ERROR"});
     }
 
     pool.getConnection()
@@ -261,11 +277,11 @@ router.get('/delete/:petfood_id', function(req, res) {
         return;
     })
     .then(() => {
-        return connection.query(DELETE_PETFOOD, [req.params.petfood_id]);
+        return connection.query(DELETE_PETFOOD, req.body.petfood_id);
     })
     .then(result => {
         connection.release();
-        return res.redirect("/");
+        return res.json({status : "OK"});
     })
     .catch(err => {
         console.log(err);

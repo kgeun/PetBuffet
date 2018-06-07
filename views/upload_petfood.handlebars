@@ -41,7 +41,7 @@
             <div class="col-9">
               <select name="petfood_company_id" class="form-control" id="exampleFormControlSelect2">
                 {{#each petfood_company}}
-                <option value="{{petfood_company_id}}" {{#ifCond petfood_company_id '==' ../petfood_data.petfood_company_id}}selected{{/ifCond}}>{{petfood_company_name}}</option>
+                <option value="{{petfood_company_id}}" {{#if current_company}}selected{{/if}}>{{petfood_company_name}}</option>
                 {{/each}}
               </select>
             </div>
@@ -51,7 +51,7 @@
             <div class="col-9">
               <select name="target_age_id" class="form-control" id="exampleFormControlSelect2">
                 {{#each petfood_target_age}}
-                <option value="{{target_age_id}}" {{#ifCond target_age_id '==' ../petfood_data.target_age_id}}selected{{/ifCond}}>{{target_age}}</option>
+                <option value="{{target_age_id}}" {{#if current_target_age}}selected{{/if}}>{{target_age}}</option>
                 {{/each}}
               </select>
             </div>
