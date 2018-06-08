@@ -152,11 +152,13 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-12">
-                    <h5>제목 : 이런 내맘모르고 너무해 너무해</h5>
-                    유어마이 티티 저스트락 티티
-                    <hr>
-                    <h5>제목 : 이런 내맘모르고 너무해 너무해</h5>
-                    유어마이 티티 저스트락 티티
+                    {{#each recent_reviews}}
+                    <a href="/review/content/{{petfood_review_id}}">
+                    <h5>제목 : {{petfood_review_title}}</h5>
+                    {{petfood_review_content}}
+                    </a>
+                    {{#unless @last}}<hr>{{/unless}}
+                    {{/each}}
                     <hr>
                     <div class="text-center pt-2">
                         <h5><span style="font-weight: bold;"><a href="/review/list/{{petfood_id}}">전체 리뷰 목록</a></span></h5>

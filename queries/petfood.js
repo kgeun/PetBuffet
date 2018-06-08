@@ -110,6 +110,17 @@ const DELETE_PETFOOD =
 WHERE
     petfood_id = ?`
 
+const SELECT_REVIEW_RECENT_TWO =
+`SELECT
+    petfood_review_id, petfood_review_title, petfood_review_content
+FROM
+    petfood_review
+WHERE
+    petfood_id = ?
+ORDER BY
+    petfood_review_id DESC
+LIMIT 2 OFFSET 0`
+
 module.exports = {
     SELECT_PETFOOD_TITLE,
     COUNT_PETFOOD,
@@ -120,5 +131,6 @@ module.exports = {
     INSERT_PETFOOD,
     UPDATE_PETFOOD_WITH_PHOTO,
     UPDATE_PETFOOD_WITHOUT_PHOTO,
-    DELETE_PETFOOD
+    DELETE_PETFOOD,
+    SELECT_REVIEW_RECENT_TWO
 }

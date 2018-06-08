@@ -24,7 +24,8 @@ const {
     INSERT_PETFOOD,
     UPDATE_PETFOOD_WITH_PHOTO,
     UPDATE_PETFOOD_WITHOUT_PHOTO,
-    DELETE_PETFOOD
+    DELETE_PETFOOD,
+    SELECT_REVIEW_RECENT_TWO
 } = require('../queries/petfood');
 
 const ADMIN_LEVEL = 2;
@@ -94,10 +95,14 @@ router.get('/info/:petfood_id', auth, function(req, res) {
     .then(result => {
         result[0] = Object.assign(result[0], nutrition.assess_nutrition(result[0]));
         data = Object.assign(data, result[0]);
-        return;
-    })
-    .then(() => {
         utils.give_html_and_color_by_eval_nutrition(data);
+
+        return connection.query(SELECT_REVIEW_RECENT_TWO, [req.params.petfood_id]);
+    })
+    .then(result => {
+        data.recent_reviews = result;
+        // 사료 정보 중 리뷰 미리보기에서 html코드 삭제 및 긴 문자열 생략처리
+        utils.process_recent_review_content(data.recent_reviews);
     })
     .then(() => {
         connection.release();

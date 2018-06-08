@@ -91,3 +91,13 @@ module.exports.give_html_and_color_by_eval_nutrition = data => {
         break;
     }
 }
+
+module.exports.process_recent_review_content = recent_reviews => {
+    for (s of recent_reviews) {
+        s.petfood_review_content = s.petfood_review_content.replace(/<\/?[^>]+(>|$)/g, "");
+        if(s.petfood_review_content.length > 200) {
+            s.petfood_review_content = s.petfood_review_content.substr(0,200);
+            s.petfood_review_content += "...";
+        }
+    }
+}
