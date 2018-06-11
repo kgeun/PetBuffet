@@ -1,10 +1,10 @@
 <!-- Main jumbotron for a primary marketing message or call to action -->
 <div class="jumbotron">
   <div class="container">
-    <form>
+    <form action="/petfood/search/1" method="get">
       <div class="form-row align-items-center mb-4">
         <div class="col-11">
-          <input class="form-control form-control-lg" type="text" placeholder="사료명 입력">
+          <input name="query" class="form-control form-control-lg" type="text" placeholder="사료명 입력">
         </div>
         <div class="col-1">
           <button type="submit" class="btn btn-lg btn-primary">검색</button>
@@ -14,35 +14,36 @@
         <div style="display: inline-block;" class="">
           <div class="form-row align-items-center">
               <div class="col-auto">
-                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
-                  <option selected>브랜드</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
+                <select name="petfood_company_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
+                  <option value="0" selected>브랜드</option>
+                  {{#each petfood_company}}
+                  <option value="{{petfood_company_id}}">{{petfood_company_name}}</option>
+                  {{/each}}
                 </select>
               </div>
               <div class="col-auto">
-                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
-                  <option selected>주원료</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
+                <select name="main_ingredient_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
+                  <option value="0" selected>주원료</option>
+                  {{#each main_ingredient}}
+                  <option value="{{main_ingredient_id}}">{{main_ingredient_name}}</option>
+                  {{/each}}
                 </select>
               </div>
               <div class="col-auto">
-                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
-                  <option selected>연령대</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
+                <select name="target_age_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
+                  <option value="0" selected>연령대</option>
+                  {{#each target_age}}
+                  <option value="{{target_age_id}}">{{target_age}}</option>
+                  {{/each}}
                 </select>
               </div>
               <div class="col-auto">
-                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
-                  <option selected>단백질함량</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
+                <select name="protein_content" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
+                  <option value="0" selected>단백질함량</option>
+                  <option value="1">0 ~ 10 (저단백)</option>
+                  <option value="2">10 ~ 20 (중단백)</option>
+                  <option value="3">20 ~ 30 (고단백)</option>
+                  <option value="4">30 이상 (초고단백)</option>
                 </select>
               </div>
             <div class="col-1">
@@ -106,7 +107,11 @@
               </a>
             </li>
             {{#each paging}}
-            <li class="page-item {{#if paging_currentpage}} disabled {{/if}}"><a class="page-link" href="/petfood/list/{{paging_page}}">{{paging_page}}</a></li>
+            <li class="page-item {{#if paging_currentpage}} disabled {{/if}}">
+                <a class="page-link" href="{{#if ../search}}/petfood/search/{{paging_page}}?{{../query_string}}{{else}}/petfood/list/{{paging_page}}{{/if}}">
+                    {{paging_page}}
+                </a>
+            </li>
             {{/each}}
             <li class="page-item {{#if last_page}}disabled{{/if}}">
               <a class="page-link" href="/petfood/list/{{next_page}}" aria-label="Next">

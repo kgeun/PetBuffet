@@ -130,7 +130,6 @@ router.post('/register', function(req, res) {
         }
     })
     .then(result => {
-        console.log("여기까지 오나 검사");
         connection.release();
         return res.json({
             status : "ERROR",

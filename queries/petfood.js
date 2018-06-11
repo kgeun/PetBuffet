@@ -14,10 +14,7 @@ const COUNT_PETFOOD =
 `SELECT
     COUNT(*) as count
 FROM
-    petfood
-ORDER BY
-    petfood_id
-DESC`;
+    petfood`;
 
 const SELECT_PETFOOD_ALL_INFO =
 `SELECT
@@ -121,6 +118,13 @@ ORDER BY
     petfood_review_id DESC
 LIMIT 2 OFFSET 0`
 
+const SELECT_MAIN_INGREDIENT =
+`SELECT
+    main_ingredient_id, main_ingredient_name
+FROM
+    petfood_main_ingredient`
+
+
 module.exports = {
     SELECT_PETFOOD_TITLE,
     COUNT_PETFOOD,
@@ -132,5 +136,6 @@ module.exports = {
     UPDATE_PETFOOD_WITH_PHOTO,
     UPDATE_PETFOOD_WITHOUT_PHOTO,
     DELETE_PETFOOD,
-    SELECT_REVIEW_RECENT_TWO
+    SELECT_REVIEW_RECENT_TWO,
+    SELECT_MAIN_INGREDIENT
 }
