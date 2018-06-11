@@ -31,7 +31,10 @@ module.exports.give_html_and_color_by_eval_nutrition = data => {
     const good_color = `#00a65a`;
     const lack_or_excess_color = `#f56954`;
 
+    //switch 덩어리쪽에서 함수 하나씩으로 빼기 
     switch(data.eval_protein) {
+        // 주석 달기
+        //
         case nutrition.NUTRITION_GOOD:
             data.eval_protein_html = good_html;
             data.eval_protein_color = good_color;

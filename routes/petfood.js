@@ -93,6 +93,7 @@ router.get('/info/:petfood_id', auth, function(req, res) {
         return connection.query(SELECT_PETFOOD_ALL_INFO, [req.params.petfood_id]);
     })
     .then(result => {
+        //주석 넣기.. 로대시
         result[0] = Object.assign(result[0], nutrition.assess_nutrition(result[0]));
         data = Object.assign(data, result[0]);
         utils.give_html_and_color_by_eval_nutrition(data);
@@ -136,12 +137,10 @@ router.get('/modify/:petfood_id', auth, function(req, res) {
     })
     .then(result => {
         // 사료 회사 리스트에서 현재 사료회사가 어떤건지 확인하는 부분
+
+        ///// map으로 바꾸면 더욱 간결해 질 것
         for (s of result) {
-          if(data.petfood_data.petfood_company_id == s.petfood_company_id) {
-              s.current_company = true;
-          } else {
-              s.current_company = false;
-          }
+          s.current_company = (data.petfood_data.petfood_company_id == s.petfood_company_id);
         }
         data.petfood_company = result;
         return connection.query(SELECT_TARGET_AGE);
@@ -149,11 +148,7 @@ router.get('/modify/:petfood_id', auth, function(req, res) {
     .then(result => {
         // 사료 대상 연령 리스트에서 현재 사료의 대상 연령을 구분하는 부분
         for (s of result) {
-          if(data.petfood_data.target_age_id == s.target_age_id) {
-              s.current_target_age = true;
-          } else {
-              s.current_target_age = false;
-          }
+          s.current_target_age = (data.petfood_data.target_age_id == s.target_age_id);
         }
         data.petfood_target_age = result;
         return;
@@ -215,6 +210,7 @@ router.post('/upload', function(req, res) {
         return;
     })
     .then(() => {
+        // 펼침연산자로 한번에 넣기 *** 종한쓰 HELP NEED
         return connection.query(INSERT_PETFOOD,
             [req.body.petfood_company_id, req.body.petfood_name, req.body.protein,
             req.body.fat, req.body.calcium, req.body.phosphorus, req.body.ingredients,
@@ -246,6 +242,7 @@ router.post('/modify', function(req, res) {
         return;
     })
     .then(() => {
+        // *** 원래 값 줘서 그냥 업로드 시키기. 굳이 나누지 말고
         if(req.body.petfood_photo_addr != ''){
             connection.query(UPDATE_PETFOOD_WITH_PHOTO,
                 [req.body.petfood_company_id, req.body.petfood_name, req.body.protein,
@@ -275,7 +272,9 @@ router.post('/delete', function(req, res) {
     if(req.session.user_level != ADMIN_LEVEL){
         return res.status(403).json({ status : "ERROR"});
     }
-
+    /* 이미 삭제된 것에 대해서 alert을 줄것인가
+    *********** 관리자가 유저의 권한을 설정하는 페이지도 있으면 good
+    */
     pool.getConnection()
     .then(conn => {
         connection = conn;

@@ -9,8 +9,9 @@ const fs = require("fs");
 const redisStore = require("connect-redis")(session);
 //const helper = require('./helper');
 
+
 fs.readFile("./partial/review_petfood_item_partial.handlebars", function (err, data) {
-        if (err) throw err;
+        if (err) throw err; //이부분 괄호 처리
         hbs.registerPartial('review_petfood_item', data.toString())
 });
 
@@ -31,17 +32,19 @@ app.use(session({
     }
 }));
 
+const user = require('./routes/user')
+const petfood = require('./routes/petfood');
+const review = require('./routes/review');
+const comment = require('./routes/comment');
+
+app.use('/user', user);
+app.use('/petfood', petfood);
+app.use('/review', review);
+app.use('/comment', comment);
+
 app.get('/', function(req, res) {
     return res.redirect('/petfood/list/1');
 });
-
-const user = require('./routes/user')
-const petfood = require('./routes/petfood')
-const review = require('./routes/review')
-
-app.use('/user', user)
-app.use('/petfood', petfood)
-app.use('/review', review)
 
 // 404 catch-all handler (middleware)
 app.use(function(req, res, next){

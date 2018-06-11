@@ -33,6 +33,7 @@ router.get('/login', function(req, res) {
     return res.render("login_and_register",data);
 });
 
+//REST API
 router.post('/login', function(req, res) {
 
     const {userid, password} = req.body;
@@ -63,10 +64,10 @@ router.post('/login', function(req, res) {
                 status: "ERROR",
                 message: "존재하지 않는 아이디 입니다."
             });
-      }
-      bcrypt.compare(password, user.password, function(err, r) {
-          connection.release();
-          if(r) {
+        }
+        bcrypt.compare(password, user.password, function(err, hash_result) {
+            connection.release();
+            if(hash_result) {
               req.session.userid = user.userid;
               req.session.user_level = user.user_level;
               req.session.username = user.username;
@@ -84,7 +85,7 @@ router.post('/login', function(req, res) {
               });
           }
           return;
-      });
+        });
     })
     .catch(err => {
         console.log(err);
@@ -92,9 +93,10 @@ router.post('/login', function(req, res) {
     });
 });
 
+//REST API
 router.post('/register', function(req, res) {
-    //const {userid, username, password} = req.body;
-    let {userid, username, password} = req.body;
+
+    const {userid, username, password} = req.body;
     if(!userid || !username || !password) {
         return res.json({
             status : "ERROR",
@@ -123,9 +125,12 @@ router.post('/register', function(req, res) {
                 status : "ERROR",
                 message : 'id가 중복되었습니다.'
             });
+            // 에러처리를 따로 해줘야함
+            // throw new error
         }
     })
     .then(result => {
+        console.log("여기까지 오나 검사");
         connection.release();
         return res.json({
             status : "ERROR",

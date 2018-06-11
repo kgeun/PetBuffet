@@ -23,7 +23,12 @@ const {
   DELETE_REVIEW
 } = require('../queries/review.js')
 
+const {
+  SELECT_COMMENTS_BY_REVIEW_ID
+} = require('../queries/comment.js')
+
 const REVIEW_ITEMS_PER_PAGE = 10;
+const ADMIN_LEVEL = 2;
 
 
 router.get('/list/:petfood_id', auth, function(req, res) {
@@ -70,10 +75,18 @@ router.get('/content/:petfood_review_id', auth, function(req, res) {
     let data = req.data;
     let page;
     let connection;
+    
     if(!req.query.page){
         data.page = 1;
     } else {
         data.page = req.query.page;
+    }
+
+    if(data.session) {
+        data.is_loggedin = true;
+        data.username = data.session.username
+    } else {
+        data.is_loggedin = false;
     }
 
     pool.getConnection()
@@ -86,8 +99,8 @@ router.get('/content/:petfood_review_id', auth, function(req, res) {
     })
     .then(result => {
         data.review_item = result[0];
-        if (data.review_item.user_num == req.session.user_num ||
-            req.session.user_level == 2) {
+        if (data.review_item.user_num == req.session.user_num &&
+            req.session.user_level == ADMIN_LEVEL) {  ///////////**** q바꾸기
             data.my_item = true;
         } else {
             data.my_item = false;
@@ -96,8 +109,20 @@ router.get('/content/:petfood_review_id', auth, function(req, res) {
     })
     .then(result => {
         data.petfood_info = result[0];
+        return connection.query(SELECT_COMMENTS_BY_REVIEW_ID,[req.params.petfood_review_id]);
     })
-    .then(() => {
+    .then(result => {
+        data.comments = result;
+        if(data.session) {
+            for (s of result) {
+                if(data.session.user_level == ADMIN_LEVEL) {
+                    s.my_item = true;
+                } else {
+                    s.my_item = (s.user_num == data.session.user_num);
+                }
+            }
+        }
+
         connection.release();
         return res.render("review_content",data);
     })
@@ -150,6 +175,7 @@ router.post('/write/:petfood_id', auth, function(req, res) {
     let review_item = req.body;
     let current_petfood_rcmd_id = 0;
 
+//////**** 트랜잭션처리
     pool.getConnection()
     .then(conn => {
         connection = conn;
@@ -211,8 +237,8 @@ router.get('/modify/:petfood_review_id', auth, function(req, res) {
         return connection.query(SELECT_REVIEW_CONTENT,[req.params.petfood_review_id]);
     })
     .then(result => {
-        if (result[0].user_num != req.session.user_num ||
-            req.session.user_level != 2) {
+        if (result[0].user_num != req.session.user_num &&
+            req.session.user_level != ADMIN_LEVEL) {
             connection.release();
             return res.redirect("/");
         }
@@ -261,7 +287,7 @@ router.post('/modify/:petfood_review_id', function(req, res) {
 });
 
 router.post('/delete', function(req, res) {
-
+    // 권한검사 넣기
     pool.getConnection()
     .then(conn => {
         connection = conn;

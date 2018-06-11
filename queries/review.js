@@ -13,7 +13,10 @@ WHERE
 const SELECT_REVIEW_TITLE_INFO =
 `SELECT
     petfood_review_id, petfood_review_title, username, petfood_rcmd_value,
-    DATE_FORMAT(creation_datetime, '%Y-%m-%d') as creation_datetime
+    DATE_FORMAT(creation_datetime, '%Y-%m-%d') as creation_datetime,
+    (SELECT COUNT(*) AS number_of_comments FROM review_comment
+    WHERE petfood_review.petfood_review_id = review_comment.petfood_review_id)
+    AS number_of_comments
 FROM
     petfood_review
 NATURAL JOIN

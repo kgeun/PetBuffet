@@ -1,23 +1,19 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-      {{> review_petfood_item }}
-      <div class="row mb-3">
-        <div class="col-12">
-          <a href="/review/list/{{petfood_info.petfood_id}}">
-            <button type="button" class="btn btn-secondary">&lt; 이 사료에 대한 리뷰 목록</button>
-          </a>
+        <div class="row mb-3">
+          <div class="col-12">
+            <a href="/review/list/{{petfood_info.petfood_id}}">
+              <button type="button" class="btn btn-lg btn-secondary">&lt; 리뷰 목록</button>
+            </a>
+          </div>
         </div>
-      </div>
+      {{> review_petfood_item }}
 
       <form id="review_form" method="post" {{#if review_item}}action="/review/modify/{{review_item.petfood_review_id}}"{{else}}action="/review/write/{{petfood_info.petfood_id}}"{{/if}}>
         <input type="hidden" name="petfood_id" value="{{petfood_info.petfood_id}}"/>
         <input type="hidden" name="petfood_review_id" value="{{review_item.petfood_review_id}}"/>
         <div class="card">
-          <!--<div class="card-body">
-            <h5 style="float:left;margin-bottom:0px;" class="card-title mr-3"><b>제목</b></h5>
-            <p class="card-text">{{review_item.petfood_review_title}}</p>
-          </div>-->
           <ul class="list-group list-group-flush">
             <li class="list-group-item" style="background-color:rgb(236,240,245);">
               <span>글쓴이 : {{session.username}}</span>
@@ -51,7 +47,7 @@
           </ul>
           <div class="card-body">
             <input id="btn-form-submit" style="float:right;" type="submit" class="btn btn-primary" value="제출">
-            <button style="float:left;" type="button" class="btn btn-light">취소</button>
+            <a href="/review/list/{{petfood_info.petfood_id}}"><button style="float:left;" type="button" class="btn btn-light">취소</button></a>
           </div>
         </div>
       </form>

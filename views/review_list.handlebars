@@ -9,28 +9,39 @@
     <div class="row">
         <div class="col-12">
             {{> review_petfood_item }}
-            <table class="table">
-                <thead class="thead-dark text-center">
-                    <tr>
-                        <th scope="col" style="width:10%">번호</th>
-                        <th scope="col" style="width:10%">평점</th>
-                        <th scope="col" style="width:50%">제목</th>
-                        <th scope="col" style="width:15%">작성자</th>
-                        <th scope="col" style="width:15%">날짜</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each review_list}}
-                        <tr>
-                            <th class="text-center" scope="row">{{petfood_review_id}}</th>
-                            <th class="text-center">{{petfood_rcmd_value}}</th>
-                            <td><a href="/review/content/{{petfood_review_id}}?page={{../current_page}}">{{petfood_review_title}}</a></td>
-                            <td class="text-center">{{username}}</td>
-                            <td class="text-center">{{creation_datetime}}</td>
-                        </tr>
-                    {{/each}}
-                </tbody>
-            </table>
+            <div class="card mb-3">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item" style="background-color:rgb(236,240,245);">
+                    <div class="row text-center">
+                        <div class="col-1">번호</div>
+                        <div class="col-1">평점</div>
+                        <div class="col-6">제목</div>
+                        <div class="col-2">작성자</div>
+                        <div class="col-2">날짜</div>
+                    </div>
+                </li>
+                {{#each review_list}}
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-1 text-center" scope="row">{{petfood_review_id}}</div>
+                            <div class="col-1 text-center">{{petfood_rcmd_value}}</div>
+                            <div class="col-6"><a href="/review/content/{{petfood_review_id}}?page={{../current_page}}">{{petfood_review_title}}&nbsp;<small>({{number_of_comments}})</small></a></div>
+                            <div class="col-2 text-center">{{username}}</div>
+                            <div class="col-2 text-center">{{creation_datetime}}</div>
+                        </div>
+                    </li>
+                {{/each}}
+            </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <a href="/review/write/{{petfood_info.petfood_id}}">
+              <button style="float:right;" type="button" class="btn btn-lg btn-secondary">새 리뷰 작성</button>
+          </a>
+            </div>
         </div>
     </div>
 
@@ -56,15 +67,6 @@
                       </li>
                     </ul>
                 </nav>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <a href="/review/write/{{petfood_info.petfood_id}}">
-              <button style="float:right;" type="button" class="btn btn-secondary">새 리뷰 작성</button>
-          </a>
             </div>
         </div>
     </div>
