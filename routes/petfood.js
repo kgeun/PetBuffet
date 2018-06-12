@@ -35,6 +35,7 @@ const {
 const ADMIN_LEVEL = 2;
 const PETFOOD_ITEMS_PER_PAGE = 5;
 
+/*
 router.get('/list/:page', auth, function(req, res) {
 
     let connection;
@@ -80,9 +81,9 @@ router.get('/list/:page', auth, function(req, res) {
             return;
         });
 });
+*/
 
-
-router.get('/search/:page', auth, function(req, res) {
+router.get('/list/:page', auth, function(req, res) {
 
     let connection;
     let data = req.data;
@@ -93,13 +94,13 @@ router.get('/search/:page', auth, function(req, res) {
         data.is_user_admin = true;
     }
 
-    data.search = true;
-    data = Object.assign(data, req.query);
-
-    data.query_string =
-    `query=${req.query.query}&petfood_company_id=${req.query.petfood_company_id}
-    &main_ingredient_id=${req.query.main_ingredient_id}
-    &target_age_id=${req.query.target_age_id}&protein_content_id=${req.query.protein_content_id}`;
+    if(req.query.petfood_company_id) {
+        data.search = true;
+        data = Object.assign(data, req.query);
+        data.query_string = utils.serialize_get_parameter(req.query);
+    } else {
+        data.query = '';
+    }
 
     pool.getConnection()
         .then(conn => {
@@ -176,6 +177,10 @@ router.get('/info/:petfood_id', auth, function(req, res) {
 
     if (data.session && data.session.user_level == ADMIN_LEVEL) {
         data.is_user_admin = true;
+    }
+
+    if(req.query.petfood_company_id) {
+        data.query_string = utils.serialize_get_parameter(req.query);
     }
 
     let connection;

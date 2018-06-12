@@ -105,12 +105,8 @@ module.exports.process_recent_review_content = recent_reviews => {
     }
 }
 
-module.exports.inject_protein_content = data => {
-    data.protein_content = [];
-
-    for(let i = 0 ; i < 4 ; i++){
-        var item = {};
-        item.current_protein_content = (data.protein_content_id == i);
-        data.protein_content.push(item);
-    }
+module.exports.serialize_get_parameter = query => {
+    return `query=${query.query}&petfood_company_id=${query.petfood_company_id}
+    &main_ingredient_id=${query.main_ingredient_id}
+    &target_age_id=${query.target_age_id}&protein_content_id=${query.protein_content_id}`;
 }

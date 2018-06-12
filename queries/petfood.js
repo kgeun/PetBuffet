@@ -120,7 +120,7 @@ LIMIT 2 OFFSET 0`;
 
 const SELECT_MAIN_INGREDIENT =
 `SELECT
-    main_ingredient_id, main_ingredient_name
+    main_ingredient_id, main_ingredient
 FROM
     petfood_main_ingredient`;
 
@@ -167,16 +167,16 @@ let get_where_query_in_search = data => {
     `WHERE
         petfood_name LIKE '%${data.query}%' `;
 
-    if(data.petfood_company_id != 0) {
+    if(Number(data.petfood_company_id)) {
         query_where += `AND petfood_company_id = ${data.petfood_company_id} `;
     }
-    if(data.target_age_id != 0) {
+    if(Number(data.target_age_id)) {
         query_where += `AND target_age_id = ${data.target_age_id} `;
     }
-    if(data.main_ingredient_id != 0) {
-        query_where += `AND main_ingredient LIKE '%${data.main_ingredient[data.main_ingredient_id-1].main_ingredient_name}%' `;
+    if(Number(data.main_ingredient_id)) {
+        query_where += `AND main_ingredient LIKE '%${data.main_ingredient[data.main_ingredient_id-1].main_ingredient}%' `;
     }
-    if(data.protein_content_id != 0) {
+    if(Number(data.protein_content_id)) {
         if(data.protein_content_id == 1) {
             query_where += `AND protein BETWEEN 0 AND 9.9 `;
         } else if(data.protein_content_id == 2) {
