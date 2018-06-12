@@ -26,7 +26,10 @@ const {
     UPDATE_PETFOOD_WITHOUT_PHOTO,
     DELETE_PETFOOD,
     SELECT_REVIEW_RECENT_TWO,
-    SELECT_MAIN_INGREDIENT
+    SELECT_MAIN_INGREDIENT,
+    SELECT_PROTEIN_CONTENT,
+    search_petfood_query,
+    count_search_petfood_query
 } = require('../queries/petfood');
 
 const ADMIN_LEVEL = 2;
@@ -83,6 +86,7 @@ router.get('/search/:page', auth, function(req, res) {
 
     let connection;
     let data = req.data;
+    let query_where;
     data.current_page = req.params.page;
 
     if (data.session && data.session.user_level == ADMIN_LEVEL) {
@@ -90,16 +94,12 @@ router.get('/search/:page', auth, function(req, res) {
     }
 
     data.search = true;
-    data.query = req.query.query;
-    data.petfood_company_id = req.query.petfood_company_id;
-    data.main_ingredient_id = req.query.main_ingredient_id;
-    data.target_age_id = req.query.target_age_id;
-    data.protein_content = req.query.protein_content;
+    data = Object.assign(data, req.query);
 
     data.query_string =
-    `query=${data.query}&petfood_company_id=${data.petfood_company_id}
-    &main_ingredient_id=${data.main_ingredient_id}
-    &target_age_id=${data.target_age_id}&protein_content=${data.protein_content}`;
+    `query=${req.query.query}&petfood_company_id=${req.query.petfood_company_id}
+    &main_ingredient_id=${req.query.main_ingredient_id}
+    &target_age_id=${req.query.target_age_id}&protein_content_id=${req.query.protein_content_id}`;
 
     pool.getConnection()
         .then(conn => {
@@ -111,64 +111,44 @@ router.get('/search/:page', auth, function(req, res) {
         })
         .then(result => {
             data.main_ingredient = result;
+
+            for(s of data.main_ingredient) {
+                s.current_main_ingredient = (s.main_ingredient_id == data.main_ingredient_id);
+            }
+
             return connection.query(SELECT_TARGET_AGE);
         })
         .then(result => {
             data.target_age = result;
+
+            for(s of data.target_age) {
+                s.current_target_age = (s.target_age_id == data.target_age_id);
+            }
+
             return connection.query(SELECT_PETFOOD_COMPANY);
         })
         .then(result => {
             data.petfood_company = result;
-            let query =
-            `SELECT
-                petfood_photo_addr, petfood_id, petfood_name,
-                nutrition_score, customer_score, main_ingredient, target_age
-            FROM
-                petfood
-            NATURAL JOIN
-                petfood_target_age
-            WHERE
-                petfood_name LIKE '%${req.query.query}%'`;
 
-            if(data.petfood_company_id != 0) {
-                query += `AND petfood_company_id = ${data.petfood_company_id} `;
+            for(s of data.petfood_company) {
+                s.current_petfood_company = (s.petfood_company_id == data.petfood_company_id);
             }
-            if(data.target_age_id != 0) {
-                query += `AND target_age_id = ${data.target_age_id} `;
-            }
-            if(data.main_ingredient_id != 0) {
-                query += `AND main_ingredient LIKE '%${data.main_ingredient[data.main_ingredient_id-1].main_ingredient_name}%' `;
-            }
-            query += `ORDER BY
-                petfood_id DESC
-            LIMIT 5 OFFSET ${(req.params.page - 1) * PETFOOD_ITEMS_PER_PAGE}`;
 
-            console.log("QUERY : " + query);
+            return connection.query(SELECT_PROTEIN_CONTENT);
+        })
+        .then(result => {
+            data.protein_content = result;
 
-            //return connection.query(query, ['%' + req.query.query + '%', (req.params.page - 1) * PETFOOD_ITEMS_PER_PAGE]);
-            return connection.query(query);
+            for(s of data.protein_content) {
+                s.current_protein_content = (s.protein_content_id == data.protein_content_id);
+            }
+
+            return connection.query(search_petfood_query(data,PETFOOD_ITEMS_PER_PAGE));
         })
         .then(result => {
             data.result = result;
-                let query = `SELECT
-                COUNT(*) as count
-            FROM
-                petfood
-            WHERE
-                petfood_name LIKE '%${req.query.query}%'`;
 
-                if(data.petfood_company_id != 0) {
-                    query += `AND petfood_company_id = ${data.petfood_company_id} `;
-                }
-                if(data.target_age_id != 0) {
-                    query += `AND target_age_id = ${data.target_age_id} `;
-                }
-                if(data.main_ingredient_id != 0) {
-                    query += `AND main_ingredient LIKE '%${data.main_ingredient[data.main_ingredient_id-1].main_ingredient_name}%' `;
-                }
-
-                return connection.query(query);
-
+            return connection.query(count_search_petfood_query(data));
         })
         .then(result => {
             // 페이징 작업

@@ -4,7 +4,7 @@
     <form action="/petfood/search/1" method="get">
       <div class="form-row align-items-center mb-4">
         <div class="col-11">
-          <input name="query" class="form-control form-control-lg" type="text" placeholder="사료명 입력">
+          <input name="query" class="form-control form-control-lg" type="text" placeholder="사료명 입력" value="{{query}}">
         </div>
         <div class="col-1">
           <button type="submit" class="btn btn-lg btn-primary">검색</button>
@@ -14,40 +14,39 @@
         <div style="display: inline-block;" class="">
           <div class="form-row align-items-center">
               <div class="col-auto">
-                <select name="petfood_company_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
-                  <option value="0" selected>브랜드</option>
+                <select name="petfood_company_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="petfood_company_id">
+                  <option value="0">브랜드</option>
                   {{#each petfood_company}}
-                  <option value="{{petfood_company_id}}">{{petfood_company_name}}</option>
+                  <option value="{{petfood_company_id}}" {{#if current_petfood_company}}selected{{/if}}>{{petfood_company_name}}</option>
                   {{/each}}
                 </select>
               </div>
               <div class="col-auto">
-                <select name="main_ingredient_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
-                  <option value="0" selected>주원료</option>
+                <select name="main_ingredient_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="main_ingredient_id">
+                  <option value="0">주원료</option>
                   {{#each main_ingredient}}
-                  <option value="{{main_ingredient_id}}">{{main_ingredient_name}}</option>
+                  <option value="{{main_ingredient_id}}" {{#if current_main_ingredient}}selected{{/if}}>{{main_ingredient_name}}</option>
                   {{/each}}
                 </select>
               </div>
               <div class="col-auto">
-                <select name="target_age_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
-                  <option value="0" selected>연령대</option>
+                <select name="target_age_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="target_age_id">
+                  <option value="0">연령대</option>
                   {{#each target_age}}
-                  <option value="{{target_age_id}}">{{target_age}}</option>
+                  <option value="{{target_age_id}}" {{#if current_target_age}}selected{{/if}}>{{target_age}}</option>
                   {{/each}}
                 </select>
               </div>
               <div class="col-auto">
-                <select name="protein_content" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
-                  <option value="0" selected>단백질함량</option>
-                  <option value="1">0 ~ 10 (저단백)</option>
-                  <option value="2">10 ~ 20 (중단백)</option>
-                  <option value="3">20 ~ 30 (고단백)</option>
-                  <option value="4">30 이상 (초고단백)</option>
+                <select name="protein_content_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="protein_content_id">
+                  <option value="0">단백질함량</option>
+                  {{#each protein_content}}
+                  <option value="{{protein_content_id}}" {{#if current_protein_content}}selected{{/if}}>{{protein_content_name}}</option>
+                  {{/each}}
                 </select>
               </div>
             <div class="col-1">
-              <button type="submit" class="btn btn-secondary">초기화</button>
+              <div id="btn_initialize" class="btn btn-secondary">초기화</div>
             </div>
           </div>
         </div>
@@ -81,7 +80,7 @@
 
       <div class="card-body">
         {{#each result}}
-        <a href="/petfood/info/{{petfood_id}}?current_page={{../current_page}}" class="black-color-link">
+        <a href="/petfood/info/{{petfood_id}}?current_page={{../current_page}}&{{../query_string}}" class="black-color-link">
         <div class="row">
           <div class="col-md-2 col-sm-12"><img style="width:70px;" src="/petfood_images/{{petfood_photo_addr}}"/></div>
           <div class="col-md-6 col-sm-12"><div class="petfood-main-list-content"><h5 class="my-0 font-weight-normal">{{petfood_name}}</h5><small><i class="fas fa-check-circle"></i>&nbsp;주원료 : {{main_ingredient}} &nbsp;&nbsp; <i class="fas fa-utensils"></i>&nbsp;대상 연령 : {{target_age}}</small></div></div>
@@ -126,4 +125,10 @@
   </div>
 </div>
 <script>
+$("#btn_initialize").on('click', function() {
+    $("#petfood_company_id").val("0").prop("selected", true);
+    $("#main_ingredient_id").val("0").prop("selected", true);
+    $("#target_age_id").val("0").prop("selected", true);
+    $("#protein_content_id").val("0").prop("selected", true);
+});
 </script>

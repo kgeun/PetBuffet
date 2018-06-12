@@ -31,7 +31,7 @@ module.exports.give_html_and_color_by_eval_nutrition = data => {
     const good_color = `#00a65a`;
     const lack_or_excess_color = `#f56954`;
 
-    //switch 덩어리쪽에서 함수 하나씩으로 빼기 
+    //switch 덩어리쪽에서 함수 하나씩으로 빼기
     switch(data.eval_protein) {
         // 주석 달기
         //
@@ -102,5 +102,15 @@ module.exports.process_recent_review_content = recent_reviews => {
             s.petfood_review_content = s.petfood_review_content.substr(0,200);
             s.petfood_review_content += "...";
         }
+    }
+}
+
+module.exports.inject_protein_content = data => {
+    data.protein_content = [];
+
+    for(let i = 0 ; i < 4 ; i++){
+        var item = {};
+        item.current_protein_content = (data.protein_content_id == i);
+        data.protein_content.push(item);
     }
 }

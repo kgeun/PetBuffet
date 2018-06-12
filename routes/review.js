@@ -75,7 +75,7 @@ router.get('/content/:petfood_review_id', auth, function(req, res) {
     let data = req.data;
     let page;
     let connection;
-    
+
     if(!req.query.page){
         data.page = 1;
     } else {
@@ -99,8 +99,8 @@ router.get('/content/:petfood_review_id', auth, function(req, res) {
     })
     .then(result => {
         data.review_item = result[0];
-        if (data.review_item.user_num == req.session.user_num &&
-            req.session.user_level == ADMIN_LEVEL) {  ///////////**** q바꾸기
+        if (data.review_item.user_num == req.session.user_num ||
+            req.session.user_level == ADMIN_LEVEL) { 
             data.my_item = true;
         } else {
             data.my_item = false;
