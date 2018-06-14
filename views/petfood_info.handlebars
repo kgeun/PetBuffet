@@ -4,12 +4,12 @@
         <a href="/petfood/list/{{current_page}}?{{query_string}}">
           <button type="button" class="btn btn-lg btn-secondary" style="float:left;">&lt; 사료 목록</button>
         </a>
-        <a href="/review/list/{{petfood_id}}">
+        <a href="/review/list/{{petfood_item.petfood_id}}">
           <button type="button" class="btn btn-lg btn-secondary ml-3" style="float:right;">리뷰 목록 &gt;</button>
         </a>
         {{#if is_user_admin}}
         <button id="btn_delete_item" type="button" class="btn btn-link" style="float:right;">삭제</button>
-        <a href="/petfood/modify/{{petfood_id}}">
+        <a href="/petfood/modify/{{petfood_item.petfood_id}}">
           <button type="button" class="btn btn-info mr-3" style="float:right;">수정</button>
         </a>
         {{/if}}
@@ -20,13 +20,13 @@
   <div class="jumbotron">
     <div class="row">
       <div class="col-4">
-        <img style="width:80%;" src="/petfood_images/{{petfood_photo_addr}}">
+        <img style="width:80%;" src="/petfood_images/{{petfood_item.petfood_photo_addr}}">
       </div>
       <div class="col-8 mt-4 text-center">
-        <h3 class="mb-3">{{petfood_name}}</h3>
-        <h5 class="mb-3">영양 점수 : {{nutrition_score}} / 소비자평점 : {{customer_score}}</h5>
-        <h5 class="mb-3">제조사 : {{petfood_company_name}}</h5>
-        <h5 class="mb-3">대상연령 : {{target_age}}</h5>
+        <h3 class="mb-3">{{petfood_item.petfood_name}}</h3>
+        <h5 class="mb-3">영양 점수 : {{petfood_item.nutrition_score}} / 소비자평점 : {{petfood_item.customer_score}}</h5>
+        <h5 class="mb-3">제조사 : {{petfood_item.petfood_company_name}}</h5>
+        <h5 class="mb-3">대상연령 : {{petfood_item.target_age}}</h5>
         </div>
     </div>
   </div>
@@ -37,7 +37,7 @@
             <button type="button" style ="width:100%;" class="btn btn-lg btn-dark">이 사료에 대한 별점 주기</button>
         </div>
         <div class="col-6">
-            <a href="/review/write/{{petfood_id}}">
+            <a href="/review/write/{{petfood_item.petfood_id}}">
                 <button type="button" style ="width:100%;" class="btn btn-lg btn-dark">이 사료에 대한 리뷰 쓰기</button>
             </a>
         </div>
@@ -72,37 +72,37 @@
                 <tr>
                   <td style="padding:10px;">
                     <div style="display:inline;width:100px;height:100px;margin:10px;">
-                        <input data-max="{{nutrition_standard.protein_max}}" type="text" class="knob" value="{{protein}}" data-width="150" data-height="150"
-                        data-fgcolor="{{{eval_protein_color}}}" data-readonly="true" readonly="readonly"
+                        <input data-max="{{nutrition_standard.protein_max}}" type="text" class="knob" value="{{petfood_item.protein}}" data-width="150" data-height="150"
+                        data-fgcolor="{{{protein.eval_protein_color}}}" data-readonly="true" readonly="readonly"
                         style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
                     </div>
                   </td>
                   <td style="padding:10px;">
                     <div style="display:inline;width:100px;height:100px;">
-                        <input data-max="{{nutrition_standard.fat_max}}" type="text" class="knob" value="{{fat}}" data-width="150" data-height="150"
-                        data-fgcolor="{{{eval_fat_color}}}" data-readonly="true" readonly="readonly"
+                        <input data-max="{{nutrition_standard.fat_max}}" type="text" class="knob" value="{{petfood_item.fat}}" data-width="150" data-height="150"
+                        data-fgcolor="{{{fat.eval_fat_color}}}" data-readonly="true" readonly="readonly"
                         style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(245, 105, 84); padding: 0px; -webkit-appearance: none;"/>
                     </div>
                   <td style="padding:10px;">
                     <div style="display:inline;width:100px;height:100px;">
-                        <input data-max="{{nutrition_standard.calcium_max}}" type="text" class="knob" value="{{calcium}}" data-width="150" data-height="150"
-                        data-fgcolor="{{{eval_calcium_color}}}" data-readonly="true" readonly="readonly"
+                        <input data-max="{{nutrition_standard.calcium_max}}" type="text" class="knob" value="{{petfood_item.calcium}}" data-width="150" data-height="150"
+                        data-fgcolor="{{{calcium.eval_calcium_color}}}" data-readonly="true" readonly="readonly"
                         style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
                     </div>
                   </td>
                   <td style="padding:10px;">
                     <div style="display:inline;width:100px;height:100px;">
-                        <input data-max="{{nutrition_standard.phosphorus_max}}" type="text" class="knob" value="{{phosphorus}}" data-width="150" data-height="150"
-                        data-fgcolor="{{{eval_phosphorus_color}}}" data-readonly="true" readonly="readonly"
+                        <input data-max="{{nutrition_standard.phosphorus_max}}" type="text" class="knob" value="{{petfood_item.phosphorus}}" data-width="150" data-height="150"
+                        data-fgcolor="{{{phosphorus.eval_phosphorus_color}}}" data-readonly="true" readonly="readonly"
                         style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
                     </div>
                   </td>
                 </tr>
                 <tr>
-                  {{{eval_protein_html}}}
-                  {{{eval_fat_html}}}
-                  {{{eval_calcium_html}}}
-                  {{{eval_phosphorus_html}}}
+                  {{{protein.eval_protein_html}}}
+                  {{{fat.eval_fat_html}}}
+                  {{{calcium.eval_calcium_html}}}
+                  {{{phosphorus.eval_phosphorus_html}}}
                 </tr>
               </tbody>
             </table>
@@ -142,7 +142,7 @@
       <div class="card-body" style="padding:50px;">
         <div class="row">
           <div class="col-12">
-            {{ingredients}}
+            {{petfood_item.ingredients}}
           </div>
         </div>
       </div>
@@ -167,7 +167,7 @@
                     {{/each}}
                     <hr>
                     <div class="text-center pt-2">
-                        <h5><span style="font-weight: bold;"><a href="/review/list/{{petfood_id}}">전체 리뷰 목록</a></span></h5>
+                        <h5><span style="font-weight: bold;"><a href="/review/list/{{petfood_item.petfood_id}}">전체 리뷰 목록</a></span></h5>
                     </div>
                 </div>
             </div>
@@ -181,7 +181,7 @@
             <button type="button" style ="width:100%;" class="btn btn-lg btn-dark">이 사료에 대한 별점 주기</button>
         </div>
         <div class="col-6">
-            <a href="/review/write/{{petfood_id}}">
+            <a href="/review/write/{{petfood_item.petfood_id}}">
                 <button type="button" style ="width:100%;" class="btn btn-lg btn-dark">이 사료에 대한 리뷰 쓰기</button>
             </a>
         </div>
@@ -197,7 +197,7 @@ $(document).ready(function() {
             $.ajax({
                 url: "/petfood/delete",
                 type: "POST",
-                data: {"petfood_id" : {{petfood_id}} },
+                data: {"petfood_id" : {{petfood_item.petfood_id}} },
                 success: function(data) {
                     alert("삭제가 완료되었습니다.");
                     location.href="/petfood/list/{{current_page}}";

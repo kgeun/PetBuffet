@@ -20,7 +20,8 @@ const SELECT_PETFOOD_ALL_INFO =
 `SELECT
     petfood_id, petfood_company_id, petfood_name,
     protein, fat, calcium, phosphorus, ingredients,
-    target_age_id, nutrition_score, customer_score,
+    target_age_id, nutrition_score,
+    (SELECT AVG(petfood_rcmd_value) FROM petfood_rcmd WHERE petfood_id = petfood.petfood_id) AS customer_score,
     petfood_photo_addr, main_ingredient, petfood_company_name, target_age
 FROM
     petfood

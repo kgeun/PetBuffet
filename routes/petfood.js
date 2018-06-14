@@ -137,12 +137,17 @@ router.get('/info/:petfood_id', auth, (req, res, next) => {
             return connection.query(SELECT_PETFOOD_ALL_INFO, [req.params.petfood_id]);
         })
         .then(result => {
-            //주석 넣기.. 로대시
+            // 각 사료 성분을 평가함
             result[0] = Object.assign(result[0], nutrition.assess_nutrition(result[0]));
-            data = Object.assign(data, result[0]);
+            //사료정보 + 평가정보를 petfood_item object에 저장함
+            data.petfood_item = result[0];
             //사료의 각 성분 별 적정량 받아오기
-            data.nutrition_standard = nutrition.nutrition_standard(result[0].target_age_id);
-            utils.give_html_and_color_by_eval_nutrition(data);
+            data.nutrition_standard = nutrition.nutrition_standard(data.petfood_item.target_age_id);
+            //utils.give_html_and_color_by_eval_nutrition(data.petfood_item);
+            data.protein = utils.give_html_and_color_by_eval_protein(data.petfood_item.eval_protein);
+            data.fat = utils.give_html_and_color_by_eval_fat(data.petfood_item.eval_fat);
+            data.calcium = utils.give_html_and_color_by_eval_calcium(data.petfood_item.eval_calcium);
+            data.phosphorus = utils.give_html_and_color_by_eval_phosphorus(data.petfood_item.eval_phosphorus);
 
             return connection.query(SELECT_REVIEW_RECENT_TWO, [req.params.petfood_id]);
         })
@@ -260,8 +265,7 @@ router.post('/upload', (req, res, next) => {
             return connection.query(INSERT_PETFOOD, [req.body.petfood_company_id, req.body.petfood_name, req.body.protein,
                 req.body.fat, req.body.calcium, req.body.phosphorus, req.body.ingredients,
                 req.body.target_age_id, nutrition_info.nutrition_score, req.body.petfood_photo_addr,
-                main_ingredient
-            ]);
+                main_ingredient]);
         })
         .then(result => {
             connection.release();
@@ -286,8 +290,7 @@ router.post('/modify', (req, res, next) => {
             return connection.query(UPDATE_PETFOOD, [req.body.petfood_company_id, req.body.petfood_name, req.body.protein,
                 req.body.fat, req.body.calcium, req.body.phosphorus, req.body.ingredients,
                 req.body.target_age_id, nutrition_info.nutrition_score, main_ingredient,
-                req.body.petfood_photo_addr, req.body.petfood_id
-            ]);
+                req.body.petfood_photo_addr, req.body.petfood_id]);
         })
         .then(result => {
             connection.release();
@@ -311,7 +314,7 @@ router.post('/delete', (req, res, next) => {
     pool.getConnection()
         .then(conn => {
             connection = conn;
-            return connection.query(DELETE_PETFOOD, req.body.petfood_id);
+            return connection.query(DELETE_PETFOOD, [req.body.petfood_id]);
         })
         .then(result => {
             connection.release();
