@@ -18,7 +18,7 @@
           </div>
         </div>
         <form {{#if petfood_data}}action="/petfood/modify"{{else}}action="/petfood/upload"{{/if}} method="post">
-          <input id="petfood_photo_addr" type="hidden" name="petfood_photo_addr" />
+          <input id="petfood_photo_addr" type="hidden" name="petfood_photo_addr" value="{{petfood_data.petfood_photo_addr}}" />
           {{#if petfood_data}}<input id="petfood_id" type="hidden" name="petfood_id" value="{{petfood_data.petfood_id}}" />{{/if}}
           <div class="row mb-4">
             <div class="col-3">업로드된 이미지</div>
@@ -113,7 +113,6 @@
                 img.css("width","100px");
                 $("#petfood_photo_addr").attr("value",r.filename);
                 $("#uploaded_petfood_image").html(img);
-                $("#submit_petfood_image").hide();
                 $("#submit_petfood").show();
               }
           },
@@ -122,19 +121,6 @@
           }
         });
       });
-
-      $("#submit_petfood").on('click',function(){
-
-      });
   }); // pre-submit callback
 
-  function showRequest(formData, jqForm, options)
-  {
-    alert('Uploading is starting.');
-    return true;
-  }   // post-submit callback
-  function showResponse(responseText, statusText, xhr, $form)
-  {
-    alert('status: ' + statusText + '\n\nresponseText: \n' + responseText );
-  }
   </script>

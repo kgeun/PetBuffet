@@ -167,9 +167,50 @@ const assess_nutrition = body => {
     return nutrition_info;
 };
 
+const nutrition_standard = target_age_id => {
+
+    let nutrition_standard = {};
+
+    switch(target_age_id) {
+        case TARGET_AGE_PUPPY:
+            nutrition_standard.protein_max = PUPPY_PROTEIN_MAX;
+            nutrition_standard.protein_min = PUPPY_PROTEIN_MIN;
+            nutrition_standard.fat_max = PUPPY_FAT_MAX;
+            nutrition_standard.fat_min = PUPPY_FAT_MIN;
+            nutrition_standard.calcium_max = PUPPY_CALCIUM_MAX;
+            nutrition_standard.calcium_min = PUPPY_CALCIUM_MIN;
+            nutrition_standard.phosphorus_max = PUPPY_PHOSPHORUS_MAX;
+            nutrition_standard.phosphorus_min = PUPPY_PHOSPHORUS_MIN;
+        break;
+        case TARGET_AGE_ADULT:
+            nutrition_standard.protein_max = ADULT_PROTEIN_MAX;
+            nutrition_standard.protein_min = ADULT_PROTEIN_MIN;
+            nutrition_standard.fat_max = ADULT_FAT_MAX;
+            nutrition_standard.fat_min = ADULT_FAT_MIN;
+            nutrition_standard.calcium_max = ADULT_CALCIUM_MAX;
+            nutrition_standard.calcium_min = ADULT_CALCIUM_MIN;
+            nutrition_standard.phosphorus_max = ADULT_PHOSPHORUS_MAX;
+            nutrition_standard.phosphorus_min = ADULT_PHOSPHORUS_MIN;
+        break;
+        case TARGET_AGE_OLD:
+            nutrition_standard.protein_max = OLD_PROTEIN_MAX;
+            nutrition_standard.protein_min = OLD_PROTEIN_MIN;
+            nutrition_standard.fat_max = OLD_FAT_MAX;
+            nutrition_standard.fat_min = OLD_FAT_MIN;
+            nutrition_standard.calcium_max = OLD_CALCIUM_MAX;
+            nutrition_standard.calcium_min = OLD_CALCIUM_MIN;
+            nutrition_standard.phosphorus_max = OLD_PHOSPHORUS_MAX;
+            nutrition_standard.phosphorus_min = OLD_PHOSPHORUS_MIN;
+        break;
+    }
+
+    return nutrition_standard;
+}
+
 module.exports = {
     assess_nutrition,
+    nutrition_standard,
     NUTRITION_GOOD,
     NUTRITION_LACK,
-    NUTRITION_EXCESS
+    NUTRITION_EXCESS,
 }

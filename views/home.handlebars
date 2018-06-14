@@ -25,7 +25,7 @@
                 <select name="main_ingredient_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="main_ingredient_id">
                   <option value="0">주원료</option>
                   {{#each main_ingredient}}
-                  <option value="{{main_ingredient_id}}" {{#if current_main_ingredient}}selected{{/if}}>{{main_ingredient}}</option>
+                  <option value="{{main_ingredient_id}}" {{#if current_main_ingredient}}selected{{/if}}>{{main_ingredient_name}}</option>
                   {{/each}}
                 </select>
               </div>

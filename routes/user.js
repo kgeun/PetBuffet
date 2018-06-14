@@ -12,16 +12,26 @@ const {
     INSERT_USER
 } = require('../queries/user');
 
+const {
+    NoIdOrPasswordError,
+    UserNotFoundError,
+    WrongPasswordError,
+    FormNotFilledError,
+    IdDuplicateError
+} = require('../configs/errors')
+
 /** UTILS */
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 
-router.get('/login', function(req, res) {
+router.get('/login', (req, res) => {
+
+    var data = {};
+
     if(req.session.userid) {
         return res.redirect("/");
     }
-
-    var data = {};
+    
     if(req.query.required == 'true') {
         data.required = true;
         data.login_message = "로그인이 필요한 기능입니다.";
@@ -30,40 +40,31 @@ router.get('/login', function(req, res) {
         data.login_message = "관리자 권한이 필요한 기능입니다.";
     }
     data.referer = req.headers.referer;
+
     return res.render("login_and_register",data);
 });
 
 //REST API
-router.post('/login', function(req, res) {
+router.post('/login', (req, res, next) => {
 
     const {userid, password} = req.body;
-
-    if (!userid || !password) {
-        return res.json({
-            status: "ERROR",
-            message: "아이디나 패스워드를 입력하지 않았습니다."
-        });
-    }
-
     let connection;
     let login_success = false;
+
+    if (!userid || !password) {
+        return next(new NoIdOrPasswordError());
+    }
 
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return;
-    })
-    .then(() => {
-      return connection.query(FIND_USER_BY_ID,[userid]);
+        return connection.query(FIND_USER_BY_ID,[userid]);
     })
     .then(result => {
         let user = result[0];
         if(!user || !user.hasOwnProperty('password')) {
             connection.release();
-            return res.json({
-                status: "ERROR",
-                message: "존재하지 않는 아이디 입니다."
-            });
+            return next(new UserNotFoundError());
         }
         bcrypt.compare(password, user.password, function(err, hash_result) {
             connection.release();
@@ -79,39 +80,29 @@ router.post('/login', function(req, res) {
                   referer : req.body.referer
               });
           } else {
-              return res.json({
-                  status : "ERROR",
-                  message : '비밀번호가 틀렸습니다.'
-              });
+              return next(new WrongPasswordError());
           }
           return;
         });
     })
     .catch(err => {
-        console.log(err);
-        return;
+        return next(err);
     });
 });
 
 //REST API
-router.post('/register', function(req, res) {
+router.post('/register', (req, res, next) => {
 
     const {userid, username, password} = req.body;
-    if(!userid || !username || !password) {
-        return res.json({
-            status : "ERROR",
-            message : '모든 항목이 입력되지 않았습니다.'
-        });
-    }
-
     let connection;
+
+    if(!userid || !username || !password) {
+        return next(new FormNotFilledError());
+    }
 
     pool.getConnection()
     .then(conn => {
       connection = conn;
-      return;
-    })
-    .then(() => {
       return connection.query(COUNT_USER,[userid]);
     })
     .then(result => {
@@ -121,24 +112,18 @@ router.post('/register', function(req, res) {
             });
         } else {
             connection.release();
-            return res.json({
-                status : "ERROR",
-                message : 'id가 중복되었습니다.'
-            });
-            // 에러처리를 따로 해줘야함
-            // throw new error
+            return next(new IdDuplicateError());
         }
     })
     .then(result => {
         connection.release();
         return res.json({
-            status : "ERROR",
+            status : "OK",
             message : '가입에 성공했습니다.'
         });
     })
     .catch(err => {
-        console.log(err);
-        return;
+        return next(err);
     });
 });
 

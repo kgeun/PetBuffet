@@ -53,7 +53,6 @@
       <div class="card-body" style="padding:50px;">
         <div class="row text-center mb-4">
           <div class="col-12">
-            각 성분별 적정량이 얼만지 표시하기
             <table class="table">
               <thead>
                 <tr>
@@ -64,30 +63,36 @@
                 </tr>
               </thead>
               <tbody>
+                  <tr>
+                    <td>적정량 {{nutrition_standard.protein_min}}g ~ {{nutrition_standard.protein_max}}g</td>
+                    <td>적정량 {{nutrition_standard.fat_min}}g ~ {{nutrition_standard.fat_max}}g</td>
+                    <td>적정량 {{nutrition_standard.calcium_min}}g ~ {{nutrition_standard.calcium_max}}g</td>
+                    <td>적정량 {{nutrition_standard.phosphorus_min}}g ~ {{nutrition_standard.phosphorus_max}}g</td>
+                  </tr>
                 <tr>
                   <td style="padding:10px;">
                     <div style="display:inline;width:100px;height:100px;margin:10px;">
-                        <input data-max="50" type="text" class="knob" value="{{protein}}" data-width="150" data-height="150"
+                        <input data-max="{{nutrition_standard.protein_max}}" type="text" class="knob" value="{{protein}}" data-width="150" data-height="150"
                         data-fgcolor="{{{eval_protein_color}}}" data-readonly="true" readonly="readonly"
                         style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
                     </div>
                   </td>
                   <td style="padding:10px;">
                     <div style="display:inline;width:100px;height:100px;">
-                        <input data-max="50" type="text" class="knob" value="{{fat}}" data-width="150" data-height="150"
+                        <input data-max="{{nutrition_standard.fat_max}}" type="text" class="knob" value="{{fat}}" data-width="150" data-height="150"
                         data-fgcolor="{{{eval_fat_color}}}" data-readonly="true" readonly="readonly"
                         style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(245, 105, 84); padding: 0px; -webkit-appearance: none;"/>
                     </div>
                   <td style="padding:10px;">
                     <div style="display:inline;width:100px;height:100px;">
-                        <input data-max="2.5" type="text" class="knob" value="{{calcium}}" data-width="150" data-height="150"
+                        <input data-max="{{nutrition_standard.calcium_max}}" type="text" class="knob" value="{{calcium}}" data-width="150" data-height="150"
                         data-fgcolor="{{{eval_calcium_color}}}" data-readonly="true" readonly="readonly"
                         style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
                     </div>
                   </td>
                   <td style="padding:10px;">
                     <div style="display:inline;width:100px;height:100px;">
-                        <input data-max="1.6" type="text" class="knob" value="{{phosphorus}}" data-width="150" data-height="150"
+                        <input data-max="{{nutrition_standard.phosphorus_max}}" type="text" class="knob" value="{{phosphorus}}" data-width="150" data-height="150"
                         data-fgcolor="{{{eval_phosphorus_color}}}" data-readonly="true" readonly="readonly"
                         style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
                     </div>

@@ -31,7 +31,7 @@ const REVIEW_ITEMS_PER_PAGE = 10;
 const ADMIN_LEVEL = 2;
 
 
-router.get('/list/:petfood_id', auth, function(req, res) {
+router.get('/list/:petfood_id', auth, (req, res, next) => {
     let data = req.data;
     let connection;
 
@@ -45,9 +45,6 @@ router.get('/list/:petfood_id', auth, function(req, res) {
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return;
-    })
-    .then(() => {
         return connection.query(COUNT_REVIEW,[req.params.petfood_id]);
     })
     .then(result => {
@@ -66,12 +63,11 @@ router.get('/list/:petfood_id', auth, function(req, res) {
         return res.render("review_list",data);
     })
     .catch(err => {
-        console.log(err);
-        return;
+        return next(err);
     });
 });
 
-router.get('/content/:petfood_review_id', auth, function(req, res) {
+router.get('/content/:petfood_review_id', auth, (req, res, next) => {
     let data = req.data;
     let page;
     let connection;
@@ -92,9 +88,6 @@ router.get('/content/:petfood_review_id', auth, function(req, res) {
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return;
-    })
-    .then(() => {
         return connection.query(SELECT_REVIEW_CONTENT,[req.params.petfood_review_id]);
     })
     .then(result => {
@@ -129,13 +122,13 @@ router.get('/content/:petfood_review_id', auth, function(req, res) {
         return res.render("review_content",data);
     })
     .catch(err => {
-        console.log(err);
-        return;
+        return next(err);
     });
 });
 
-router.get('/write/:petfood_id',	auth, function(req, res) {
+router.get('/write/:petfood_id', auth, function(req, res) {
     let data = req.data;
+    let connection;
 
     if(!req.session.userid){
         return res.redirect("/user/login?required=true");
@@ -144,9 +137,6 @@ router.get('/write/:petfood_id',	auth, function(req, res) {
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return;
-    })
-    .then(() => {
         return connection.query(COUNT_AND_SELECT_RCMD, [req.params.petfood_id, data.session.user_num]);
     })
     .then(result => {
@@ -172,52 +162,60 @@ router.get('/write/:petfood_id',	auth, function(req, res) {
     });
 });
 
-router.post('/write/:petfood_id', auth, function(req, res) {
+router.post('/write/:petfood_id', auth, (req, res, next) => {
     let data = req.data;
     let review_item = req.body;
     let current_petfood_rcmd_id = 0;
+    let petfood_review_id;
+    let connection;
 
-//////**** 트랜잭션처리
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return;
+        return connection.query("START TRANSACTION");
     })
     .then(() => {
+        // 평점 테이블에서 이 유저가 이 사료에 대해 평가한 평점 row가 있나 검색
         return connection.query(COUNT_AND_SELECT_RCMD, [req.params.petfood_id, data.session.user_num]);
     })
     .then(result => {
         if(result[0].count) {
+            // 이미 평점이 있는 경우 그 pk를 가져옴
             current_petfood_rcmd_id = result[0].petfood_rcmd_id;
             return;
         } else {
+            // 이미 평가된 평점이 없는 경우 평점 table에 insert
             return connection.query(INSERT_RCMD,
                 [req.session.user_num, review_item.petfood_id, review_item.petfood_rcmd_value]);
         }
     })
     .then(result => {
-        let petfood_rcmd_id;
-
-        if(current_petfood_rcmd_id != 0) {
-            petfood_rcmd_id = current_petfood_rcmd_id;
-        } else {
-            petfood_rcmd_id = result.insertId;
+        // insert된 평점의 pk를 가져옴
+        if(!current_petfood_rcmd_id) {
+            current_petfood_rcmd_id = result.insertId;
         }
+        // 검색되거나 추가된 평점 테이블 row의 pk를 새로운 리뷰 row에 insert함
         return connection.query(INSERT_REVIEW,
             [review_item.petfood_review_title, review_item.petfood_review_content,
-                req.session.user_num, review_item.petfood_id, petfood_rcmd_id]);
+                req.session.user_num, review_item.petfood_id, current_petfood_rcmd_id]);
+    })
+    .then(result => {
+        //추가된 글로 redirect 시키기 위해 추가된 row의 pk를 받음
+        petfood_review_id = result.insertId;
+        return connection.query("COMMIT");
     })
     .then(result => {
         connection.release();
-        return res.redirect(`/review/content/${result.insertId}`);
+        return res.redirect(`/review/content/${petfood_review_id}`);
     })
     .catch(err => {
-        console.log(err);
-        return;
+        return next(err);
     });
 });
 
-router.get('/modify/:petfood_review_id', auth, function(req, res) {
+router.get('/modify/:petfood_review_id', auth, (req, res, next) => {
+
+    let connection;
     let data = req.data;
 
     if (!req.session.userid) {
@@ -233,9 +231,6 @@ router.get('/modify/:petfood_review_id', auth, function(req, res) {
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return;
-    })
-    .then(() => {
         return connection.query(SELECT_REVIEW_CONTENT,[req.params.petfood_review_id]);
     })
     .then(result => {
@@ -259,21 +254,18 @@ router.get('/modify/:petfood_review_id', auth, function(req, res) {
         return res.render("review_write",data);
     })
     .catch(err => {
-        console.log(err);
-        return;
+        return next(err);
     });
 });
 
-router.post('/modify/:petfood_review_id', function(req, res) {
+router.post('/modify/:petfood_review_id', (req, res, next) => {
 
+    let connection;
     let data = {};
 
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return;
-    })
-    .then(() => {
         return connection.query(UPDATE_REVIEW,
             [req.body.petfood_review_title,req.body.petfood_review_content,
             req.params.petfood_review_id]);
@@ -283,19 +275,17 @@ router.post('/modify/:petfood_review_id', function(req, res) {
         return res.redirect(`/review/content/${req.params.petfood_review_id}`);
     })
     .catch(err => {
-        console.log(err);
-        return;
+        return next(err);
     });
 });
 
-router.post('/delete', function(req, res) {
+router.post('/delete', (req, res, next) => {
+
+    let connection;
     // 권한검사 넣기
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return;
-    })
-    .then(() => {
         return connection.query(DELETE_REVIEW,[req.body.petfood_review_id]);
     })
     .then(result => {
@@ -303,8 +293,7 @@ router.post('/delete', function(req, res) {
         return res.json({status : "OK"});
     })
     .catch(err => {
-        console.log(err);
-        return;
+        return next(err);
     });
 });
 

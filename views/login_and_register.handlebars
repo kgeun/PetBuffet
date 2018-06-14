@@ -96,7 +96,7 @@
             data:$('#register-form').serialize(),
             success:function(data){
               alert(data.message);
-              if(data.status == 200){
+              if(data.status == "OK"){
                 location.href="/user/login";
               }
             }

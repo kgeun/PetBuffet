@@ -22,8 +22,7 @@ const {
     SELECT_PETFOOD_COMPANY,
     SELECT_TARGET_AGE,
     INSERT_PETFOOD,
-    UPDATE_PETFOOD_WITH_PHOTO,
-    UPDATE_PETFOOD_WITHOUT_PHOTO,
+    UPDATE_PETFOOD,
     DELETE_PETFOOD,
     SELECT_REVIEW_RECENT_TWO,
     SELECT_MAIN_INGREDIENT,
@@ -35,55 +34,7 @@ const {
 const ADMIN_LEVEL = 2;
 const PETFOOD_ITEMS_PER_PAGE = 5;
 
-/*
-router.get('/list/:page', auth, function(req, res) {
-
-    let connection;
-    let data = req.data;
-    data.current_page = req.params.page;
-
-    if (data.session && data.session.user_level == ADMIN_LEVEL) {
-        data.is_user_admin = true;
-    }
-
-    pool.getConnection()
-        .then(conn => {
-            connection = conn;
-            return;
-        })
-        .then(() => {
-            return connection.query(SELECT_PETFOOD_TITLE, [(req.params.page - 1) * PETFOOD_ITEMS_PER_PAGE]);
-        })
-        .then(result => {
-            data.result = result;
-            return connection.query(COUNT_PETFOOD);
-        })
-        .then(result => {
-            // 페이징 작업
-            utils.inject_paging_information_data(data, result[0].count, PETFOOD_ITEMS_PER_PAGE);
-            return connection.query(SELECT_MAIN_INGREDIENT);
-        })
-        .then(result => {
-            data.main_ingredient = result;
-            return connection.query(SELECT_TARGET_AGE);
-        })
-        .then(result => {
-            data.target_age = result;
-            return connection.query(SELECT_PETFOOD_COMPANY);
-        })
-        .then(result => {
-            data.petfood_company = result;
-            connection.release();
-            return res.render('home', data);
-        })
-        .catch(err => {
-            console.log(err);
-            return;
-        });
-});
-*/
-
-router.get('/list/:page', auth, function(req, res) {
+router.get('/list/:page', auth, (req, res, next) => {
 
     let connection;
     let data = req.data;
@@ -105,9 +56,6 @@ router.get('/list/:page', auth, function(req, res) {
     pool.getConnection()
         .then(conn => {
             connection = conn;
-            return;
-        })
-        .then(() => {
             return connection.query(SELECT_MAIN_INGREDIENT);
         })
         .then(result => {
@@ -159,13 +107,12 @@ router.get('/list/:page', auth, function(req, res) {
             return res.render('home', data);
         })
         .catch(err => {
-            console.log(err);
-            return;
+            return next(err);
         });
 });
 
 
-router.get('/info/:petfood_id', auth, function(req, res) {
+router.get('/info/:petfood_id', auth, (req, res, next) => {
     let data = req.data;
 
     //목록을 누르면 돌아갈 페이지를 설정. get parameter인 current_page에 저장되어있음
@@ -187,15 +134,14 @@ router.get('/info/:petfood_id', auth, function(req, res) {
     pool.getConnection()
         .then(conn => {
             connection = conn;
-            return;
-        })
-        .then(() => {
             return connection.query(SELECT_PETFOOD_ALL_INFO, [req.params.petfood_id]);
         })
         .then(result => {
             //주석 넣기.. 로대시
             result[0] = Object.assign(result[0], nutrition.assess_nutrition(result[0]));
             data = Object.assign(data, result[0]);
+            //사료의 각 성분 별 적정량 받아오기
+            data.nutrition_standard = nutrition.nutrition_standard(result[0].target_age_id);
             utils.give_html_and_color_by_eval_nutrition(data);
 
             return connection.query(SELECT_REVIEW_RECENT_TWO, [req.params.petfood_id]);
@@ -210,12 +156,11 @@ router.get('/info/:petfood_id', auth, function(req, res) {
             return res.render('petfood_info', data);
         })
         .catch(err => {
-            console.log(err);
-            return;
+            return next(err);
         });
 });
 
-router.get('/modify/:petfood_id', auth, function(req, res) {
+router.get('/modify/:petfood_id', auth, (req, res, next) => {
     if (req.session.user_level != ADMIN_LEVEL) {
         return res.redirect("/user/login?required=admin");
     }
@@ -223,12 +168,11 @@ router.get('/modify/:petfood_id', auth, function(req, res) {
     let data = req.data;
     let connection;
 
+    data = Object.assign(data, )
+
     pool.getConnection()
         .then(conn => {
             connection = conn;
-            return;
-        })
-        .then(() => {
             return connection.query(SELECT_PETFOOD_SOME_INFO, [req.params.petfood_id]);
         })
         .then(result => {
@@ -239,9 +183,19 @@ router.get('/modify/:petfood_id', auth, function(req, res) {
             // 사료 회사 리스트에서 현재 사료회사가 어떤건지 확인하는 부분
 
             ///// map으로 바꾸면 더욱 간결해 질 것
+
             for (s of result) {
                 s.current_company = (data.petfood_data.petfood_company_id == s.petfood_company_id);
             }
+
+            /*
+            result = result.map(item => {
+                item.current_company = (data.petfood_data.petfood_company_id == item.petfood_company_id);
+            })
+            */
+            //result = result.map(item.current_company => (data.petfood_data.petfood_company_id == item.petfood_company_id));
+
+
             data.petfood_company = result;
             return connection.query(SELECT_TARGET_AGE);
         })
@@ -258,12 +212,11 @@ router.get('/modify/:petfood_id', auth, function(req, res) {
             return res.render('upload_petfood', data);
         })
         .catch(err => {
-            console.log(err);
-            return;
+            return next(err);
         });
 });
 
-router.get('/upload', auth, function(req, res) {
+router.get('/upload', auth, (req, res, next) => {
     if (req.session.user_level != ADMIN_LEVEL) {
         return res.redirect("/user/login?required=admin");
     }
@@ -274,9 +227,6 @@ router.get('/upload', auth, function(req, res) {
     pool.getConnection()
         .then(conn => {
             connection = conn;
-            return;
-        })
-        .then(() => {
             return connection.query(SELECT_PETFOOD_COMPANY);
         })
         .then(result => {
@@ -292,12 +242,11 @@ router.get('/upload', auth, function(req, res) {
             return res.render('upload_petfood', data);
         })
         .catch(err => {
-            console.log(err);
-            return;
+            return next(err);
         });
 });
 
-router.post('/upload', function(req, res) {
+router.post('/upload', (req, res, next) => {
 
     let nutrition_info = nutrition.assess_nutrition(req.body);
     let main_ingredient = req.body.ingredients.split(',')[0];
@@ -306,11 +255,8 @@ router.post('/upload', function(req, res) {
 
     pool.getConnection()
         .then(conn => {
-            connection = conn;
-            return;
-        })
-        .then(() => {
             // 펼침연산자로 한번에 넣기 *** 종한쓰 HELP NEED
+            connection = conn;
             return connection.query(INSERT_PETFOOD, [req.body.petfood_company_id, req.body.petfood_name, req.body.protein,
                 req.body.fat, req.body.calcium, req.body.phosphorus, req.body.ingredients,
                 req.body.target_age_id, nutrition_info.nutrition_score, req.body.petfood_photo_addr,
@@ -322,13 +268,11 @@ router.post('/upload', function(req, res) {
             return res.redirect("/");
         })
         .catch(err => {
-            console.log(err);
-            return;
+            return next(err);
         });
-
 });
 
-router.post('/modify', function(req, res) {
+router.post('/modify', (req, res, next) => {
     if (req.session.user_level != ADMIN_LEVEL) {
         return res.redirect("/user/login?required=admin");
     }
@@ -339,35 +283,22 @@ router.post('/modify', function(req, res) {
     pool.getConnection()
         .then(conn => {
             connection = conn;
-            return;
-        })
-        .then(() => {
-            // *** 원래 값 줘서 그냥 업로드 시키기. 굳이 나누지 말고
-            if (req.body.petfood_photo_addr != '') {
-                connection.query(UPDATE_PETFOOD_WITH_PHOTO, [req.body.petfood_company_id, req.body.petfood_name, req.body.protein,
-                    req.body.fat, req.body.calcium, req.body.phosphorus, req.body.ingredients,
-                    req.body.target_age_id, nutrition_info.nutrition_score, main_ingredient,
-                    req.body.petfood_photo_addr, req.body.petfood_id
-                ]);
-            } else {
-                connection.query(UPDATE_PETFOOD_WITHOUT_PHOTO, [req.body.petfood_company_id, req.body.petfood_name, req.body.protein,
-                    req.body.fat, req.body.calcium, req.body.phosphorus, req.body.ingredients,
-                    req.body.target_age_id, nutrition_info.nutrition_score, main_ingredient,
-                    req.body.petfood_id
-                ]);
-            }
+            return connection.query(UPDATE_PETFOOD, [req.body.petfood_company_id, req.body.petfood_name, req.body.protein,
+                req.body.fat, req.body.calcium, req.body.phosphorus, req.body.ingredients,
+                req.body.target_age_id, nutrition_info.nutrition_score, main_ingredient,
+                req.body.petfood_photo_addr, req.body.petfood_id
+            ]);
         })
         .then(result => {
             connection.release();
             return res.redirect("/petfood/info/" + req.body.petfood_id);
         })
         .catch(err => {
-            console.log(err);
-            return;
+            return next(err);
         });
 });
 
-router.post('/delete', function(req, res) {
+router.post('/delete', (req, res, next) => {
 
     if (req.session.user_level != ADMIN_LEVEL) {
         return res.status(403).json({
@@ -380,9 +311,6 @@ router.post('/delete', function(req, res) {
     pool.getConnection()
         .then(conn => {
             connection = conn;
-            return;
-        })
-        .then(() => {
             return connection.query(DELETE_PETFOOD, req.body.petfood_id);
         })
         .then(result => {
@@ -392,12 +320,11 @@ router.post('/delete', function(req, res) {
             });
         })
         .catch(err => {
-            console.log(err);
-            return;
+            return next(err);
         });
 });
 
-router.post('/upload_image', file_upload.middle_upload, function(req, res) {
+router.post('/upload_image', file_upload.middle_upload, (req, res) => {
     let data = {};
     data.filename = req.file.filename;
     data.status = "OK";

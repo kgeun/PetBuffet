@@ -64,7 +64,7 @@ VALUES
     ? , ? , ? , ? , 0 ,
     ?, ? )`;
 
-const UPDATE_PETFOOD_WITH_PHOTO =
+const UPDATE_PETFOOD =
 `UPDATE
     petfood
 SET
@@ -80,24 +80,6 @@ SET
     customer_score = 0,
     main_ingredient = ?,
     petfood_photo_addr = ?
-WHERE
-    petfood_id = ?`;
-
-const UPDATE_PETFOOD_WITHOUT_PHOTO =
-`UPDATE
-    petfood
-SET
-    petfood_company_id = ?,
-    petfood_name = ?,
-    protein = ?,
-    fat = ?,
-    calcium = ?,
-    phosphorus = ?,
-    ingredients = ?,
-    target_age_id = ?,
-    nutrition_score = ?,
-    customer_score = 0,
-    main_ingredient = ?
 WHERE
     petfood_id = ?`;
 
@@ -120,7 +102,7 @@ LIMIT 2 OFFSET 0`;
 
 const SELECT_MAIN_INGREDIENT =
 `SELECT
-    main_ingredient_id, main_ingredient
+    main_ingredient_id, main_ingredient_name
 FROM
     petfood_main_ingredient`;
 
@@ -199,8 +181,7 @@ module.exports = {
     SELECT_PETFOOD_COMPANY,
     SELECT_TARGET_AGE,
     INSERT_PETFOOD,
-    UPDATE_PETFOOD_WITH_PHOTO,
-    UPDATE_PETFOOD_WITHOUT_PHOTO,
+    UPDATE_PETFOOD,
     DELETE_PETFOOD,
     SELECT_REVIEW_RECENT_TWO,
     SELECT_MAIN_INGREDIENT,
