@@ -85,7 +85,7 @@
           <div class="col-md-2 col-sm-12"><img style="width:70px;" src="/petfood_images/{{petfood_photo_addr}}"/></div>
           <div class="col-md-6 col-sm-12"><div class="petfood-main-list-content"><h5 class="my-0 font-weight-normal">{{petfood_name}}</h5><small><i class="fas fa-check-circle"></i>&nbsp;주원료 : {{main_ingredient}} &nbsp;&nbsp; <i class="fas fa-utensils"></i>&nbsp;대상 연령 : {{target_age}}</small></div></div>
           <div class="col-md-2 col-sm-12"><div class="petfood-main-list-content"><h4 class="my-0 font-weight-normal">{{nutrition_score}}</h4></div></div>
-          <div class="col-md-2 col-sm-12"><div class="petfood-main-list-content"><h4 class="my-0 font-weight-normal">{{customer_score}}</h4></div></div>
+          <div class="col-md-2 col-sm-12"><div class="petfood-main-list-content"><h4 class="my-0 font-weight-normal">{{#if customer_score}}{{customer_score}}{{else}}<small>평가 없음</small>{{/if}}</h4></div></div>
         </div>
         </a>
          {{#unless @last}}<hr>{{/unless}}

@@ -58,11 +58,22 @@ class NoPermissionError extends Error {
     }
 }
 
+class RcmdAlreadyExistError extends Error {
+    constructor() {
+        super();
+        this.error_object = {
+            status : "ERROR",
+            message : "이미 이 사료에 대해서 추천을 했습니다."
+        };
+    }
+}
+
 module.exports = {
     NoIdOrPasswordError,
     UserNotFoundError,
     WrongPasswordError,
     FormNotFilledError,
     IdDuplicateError,
-    NoPermissionError
+    NoPermissionError,
+    RcmdAlreadyExistError
 }

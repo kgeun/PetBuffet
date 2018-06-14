@@ -34,7 +34,7 @@
 <div class="container mb-5">
     <div class="row">
         <div class="col-6">
-            <button type="button" style ="width:100%;" class="btn btn-lg btn-dark">이 사료에 대한 별점 주기</button>
+            <button type="button" style ="width:100%;" class="btn btn-lg btn-dark add_rcmd" data-toggle="modal" data-target="#rcmd_modal">이 사료에 대한 별점 주기</button>
         </div>
         <div class="col-6">
             <a href="/review/write/{{petfood_item.petfood_id}}">
@@ -178,7 +178,7 @@
 <div class="container mb-5 mt-5">
     <div class="row">
         <div class="col-6">
-            <button type="button" style ="width:100%;" class="btn btn-lg btn-dark">이 사료에 대한 별점 주기</button>
+            <button type="button" style ="width:100%;" class="btn btn-lg btn-dark add_rcmd" data-toggle="modal" data-target="#rcmd_modal">이 사료에 대한 별점 주기</button>
         </div>
         <div class="col-6">
             <a href="/review/write/{{petfood_item.petfood_id}}">
@@ -186,6 +186,45 @@
             </a>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="rcmd_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">이 사료에 대한 별점 주기</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="post" action="/petfood/rcmd" id="form_rcmd">
+      <input type="hidden" name="petfood_id" value="{{petfood_item.petfood_id}}"/>
+      <div class="modal-body text-center">
+          <div class="btn-group btn-group-toggle" data-toggle="buttons" style="display:inline-block;">
+            <label class="btn btn-light active">
+              <input type="radio" name="petfood_rcmd_value" id="rcmd_value1" value="1" autocomplete="off" checked> 1점
+            </label>
+            <label class="btn btn-light">
+              <input type="radio" name="petfood_rcmd_value" id="rcmd_value2" value="2" autocomplete="off"> 2점
+            </label>
+            <label class="btn btn-light">
+              <input type="radio" name="petfood_rcmd_value" id="rcmd_value3" value="3" autocomplete="off"> 3점
+            </label>
+            <label class="btn btn-light">
+              <input type="radio" name="petfood_rcmd_value" id="rcmd_value4" value="4" autocomplete="off"> 4점
+            </label>
+            <label class="btn btn-light">
+              <input type="radio" name="petfood_rcmd_value" id="rcmd_value5" value="5" autocomplete="off"> 5점
+            </label>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+        <button id="submit_rcmd" type="button" class="btn btn-primary">제출</button>
+      </div>
+    </form>
+    </div>
+  </div>
 </div>
 
 <script src="/js/jquery-knob/js/jquery.knob.js"></script>
@@ -207,6 +246,26 @@ $(document).ready(function() {
                 }
             });
         }
+    });
+    $(".add_rcmd").on('click',function(){
+        {{#unless session}}
+        location.href="/user/login?required=true";
+        {{/unless}}
+    });
+    $("#submit_rcmd").on('click', function(e){
+        e.preventDefault();
+        $.ajax({
+            url: "/petfood/rcmd",
+            type: "POST",
+            data: $("#form_rcmd").serialize(),
+            success: function(data) {
+                alert(data.message);
+                location.reload();
+            },
+            error : function(error) {
+                alert("Error!");
+            }
+        });
     })
 });
 </script>

@@ -172,9 +172,6 @@ router.post('/write/:petfood_id', auth, (req, res, next) => {
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return connection.query("START TRANSACTION");
-    })
-    .then(() => {
         // 평점 테이블에서 이 유저가 이 사료에 대해 평가한 평점 row가 있나 검색
         return connection.query(COUNT_AND_SELECT_RCMD, [req.params.petfood_id, data.session.user_num]);
     })
@@ -201,12 +198,8 @@ router.post('/write/:petfood_id', auth, (req, res, next) => {
     })
     .then(result => {
         //추가된 글로 redirect 시키기 위해 추가된 row의 pk를 받음
-        petfood_review_id = result.insertId;
-        return connection.query("COMMIT");
-    })
-    .then(result => {
         connection.release();
-        return res.redirect(`/review/content/${petfood_review_id}`);
+        return res.redirect(`/review/content/${result.insertId}`);
     })
     .catch(err => {
         return next(err);

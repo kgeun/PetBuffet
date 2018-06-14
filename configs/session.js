@@ -1,5 +1,4 @@
 const session = require('express-session');
-const redisStore = require("connect-redis")(session);
 
 const session_info = session({
     key: 'sid', // 세션키

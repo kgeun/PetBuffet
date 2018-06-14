@@ -1,7 +1,8 @@
 const SELECT_PETFOOD_TITLE =
 `SELECT
-    petfood_photo_addr, petfood_id, petfood_name,
-    nutrition_score, customer_score, main_ingredient, target_age
+    petfood_photo_addr, petfood_id, petfood_name, nutrition_score,
+    ROUND((SELECT AVG(petfood_rcmd_value) FROM petfood_rcmd WHERE petfood_id = petfood.petfood_id),1) AS customer_score,
+    main_ingredient, target_age
 FROM
     petfood
 NATURAL JOIN
@@ -9,6 +10,7 @@ NATURAL JOIN
 ORDER BY
     petfood_id DESC
 LIMIT 5 OFFSET ?`;
+/////사용되지 않음
 
 const COUNT_PETFOOD =
 `SELECT
@@ -21,7 +23,7 @@ const SELECT_PETFOOD_ALL_INFO =
     petfood_id, petfood_company_id, petfood_name,
     protein, fat, calcium, phosphorus, ingredients,
     target_age_id, nutrition_score,
-    (SELECT AVG(petfood_rcmd_value) FROM petfood_rcmd WHERE petfood_id = petfood.petfood_id) AS customer_score,
+    ROUND((SELECT AVG(petfood_rcmd_value) FROM petfood_rcmd WHERE petfood_id = petfood.petfood_id),1) AS customer_score,
     petfood_photo_addr, main_ingredient, petfood_company_name, target_age
 FROM
     petfood
@@ -32,7 +34,7 @@ NATURAL JOIN
 WHERE
     petfood_id = ?`;
 
-const SELECT_PETFOOD_SOME_INFO =
+const SELECT_PETFOOD_MODIFY_INFO =
 `SELECT
     petfood_id, petfood_company_id, petfood_name,
     protein, fat, calcium, phosphorus, ingredients,
@@ -116,8 +118,9 @@ FROM
 let search_petfood_query = (data,petfood_items_per_page) => {
     let query =
     `SELECT
-        petfood_photo_addr, petfood_id, petfood_name,
-        nutrition_score, customer_score, main_ingredient, target_age
+        petfood_photo_addr, petfood_id, petfood_name, nutrition_score,
+        ROUND((SELECT AVG(petfood_rcmd_value) FROM petfood_rcmd WHERE petfood_id = petfood.petfood_id),1) AS customer_score,
+        main_ingredient, target_age
     FROM
         petfood
     NATURAL JOIN
@@ -178,7 +181,7 @@ module.exports = {
     SELECT_PETFOOD_TITLE,
     COUNT_PETFOOD,
     SELECT_PETFOOD_ALL_INFO,
-    SELECT_PETFOOD_SOME_INFO,
+    SELECT_PETFOOD_MODIFY_INFO,
     SELECT_PETFOOD_COMPANY,
     SELECT_TARGET_AGE,
     INSERT_PETFOOD,

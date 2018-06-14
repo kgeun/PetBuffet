@@ -1,7 +1,8 @@
 const SELECT_CURRENT_PETFOOD =
 `SELECT
     petfood_id, petfood_company_id, petfood_company_name,
-    petfood_name, target_age_id, nutrition_score, customer_score,
+    petfood_name, target_age_id, nutrition_score,
+    ROUND((SELECT AVG(petfood_rcmd_value) FROM petfood_rcmd WHERE petfood_id = petfood.petfood_id),1) AS customer_score,
     petfood_photo_addr, main_ingredient
 FROM
     petfood

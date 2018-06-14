@@ -18,7 +18,7 @@ const {
     SELECT_PETFOOD_TITLE,
     COUNT_PETFOOD,
     SELECT_PETFOOD_ALL_INFO,
-    SELECT_PETFOOD_SOME_INFO,
+    SELECT_PETFOOD_MODIFY_INFO,
     SELECT_PETFOOD_COMPANY,
     SELECT_TARGET_AGE,
     INSERT_PETFOOD,
@@ -30,6 +30,15 @@ const {
     search_petfood_query,
     count_search_petfood_query
 } = require('../queries/petfood');
+
+const {
+    COUNT_AND_SELECT_RCMD,
+    INSERT_RCMD
+} = require('../queries/review');
+
+const {
+    RcmdAlreadyExistError
+} = require('../configs/errors');
 
 const ADMIN_LEVEL = 2;
 const PETFOOD_ITEMS_PER_PAGE = 5;
@@ -62,7 +71,7 @@ router.get('/list/:page', auth, (req, res, next) => {
             data.main_ingredient = result;
 
             for(s of data.main_ingredient) {
-                s.current_main_ingredient = (s.main_ingredient_id == data.main_ingredient_id);
+                s.current_main_ingredient = (s.main_ingredient_id == data.main_ingredient_id)? true : false;
             }
 
             return connection.query(SELECT_TARGET_AGE);
@@ -71,7 +80,7 @@ router.get('/list/:page', auth, (req, res, next) => {
             data.target_age = result;
 
             for(s of data.target_age) {
-                s.current_target_age = (s.target_age_id == data.target_age_id);
+                s.current_target_age = (s.target_age_id == data.target_age_id)? true : false;
             }
 
             return connection.query(SELECT_PETFOOD_COMPANY);
@@ -80,7 +89,7 @@ router.get('/list/:page', auth, (req, res, next) => {
             data.petfood_company = result;
 
             for(s of data.petfood_company) {
-                s.current_petfood_company = (s.petfood_company_id == data.petfood_company_id);
+                s.current_petfood_company = (s.petfood_company_id == data.petfood_company_id)? true : false;
             }
 
             return connection.query(SELECT_PROTEIN_CONTENT);
@@ -89,7 +98,7 @@ router.get('/list/:page', auth, (req, res, next) => {
             data.protein_content = result;
 
             for(s of data.protein_content) {
-                s.current_protein_content = (s.protein_content_id == data.protein_content_id);
+                s.current_protein_content = (s.protein_content_id == data.protein_content_id)? true : false;
             }
 
             return connection.query(search_petfood_query(data,PETFOOD_ITEMS_PER_PAGE));
@@ -178,7 +187,7 @@ router.get('/modify/:petfood_id', auth, (req, res, next) => {
     pool.getConnection()
         .then(conn => {
             connection = conn;
-            return connection.query(SELECT_PETFOOD_SOME_INFO, [req.params.petfood_id]);
+            return connection.query(SELECT_PETFOOD_MODIFY_INFO, [req.params.petfood_id]);
         })
         .then(result => {
             data.petfood_data = result[0];
@@ -319,6 +328,43 @@ router.post('/upload_image', file_upload.middle_upload, (req, res) => {
     data.filename = req.file.filename;
     data.status = "OK";
     return res.json(data);
+});
+
+router.post('/rcmd', auth, (req, res, next) => {
+
+    console.log("req body : " + JSON.stringify(req.body));
+    const { petfood_rcmd_value, petfood_id } = req.body;
+
+    let data = req.data;
+
+    pool.getConnection()
+    .then(conn => {
+        connection = conn;
+        // 평점 테이블에서 이 유저가 이 사료에 대해 평가한 평점 row가 있나 검색
+        return connection.query(COUNT_AND_SELECT_RCMD, [petfood_id, data.session.user_num]);
+    })
+    .then(result => {
+        if(result[0].count) {
+            // 이미 평점이 있는 경우 그 pk를 가져옴
+            console.log("들어옴");
+            current_petfood_rcmd_id = result[0].petfood_rcmd_id;
+            return next(new RcmdAlreadyExistError());
+        } else {
+            // 이미 평가된 평점이 없는 경우 평점 table에 insert
+            return connection.query(INSERT_RCMD,
+                [data.session.user_num, petfood_id, petfood_rcmd_value]);
+        }
+    })
+    .then(result => {
+        return res.json({
+            status : "OK",
+            message : "별점 주기에 성공했습니다."
+        });
+    })
+    .catch(err => {
+        return next(err);
+    });
+
 });
 
 module.exports = router;

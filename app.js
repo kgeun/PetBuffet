@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const handlebars = require('express-handlebars').create({ defaultLayout:'main' });
-const redis = require("redis");
 const fs = require("fs");
 const utils = require("./util/util");
 
