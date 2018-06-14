@@ -185,29 +185,16 @@ router.get('/modify/:petfood_id', auth, (req, res, next) => {
             return connection.query(SELECT_PETFOOD_COMPANY);
         })
         .then(result => {
-            // 사료 회사 리스트에서 현재 사료회사가 어떤건지 확인하는 부분
-
-            ///// map으로 바꾸면 더욱 간결해 질 것
-
             for (s of result) {
-                s.current_company = (data.petfood_data.petfood_company_id == s.petfood_company_id);
+                s.current_company = (data.petfood_data.petfood_company_id == s.petfood_company_id)? true : false;
             }
-
-            /*
-            result = result.map(item => {
-                item.current_company = (data.petfood_data.petfood_company_id == item.petfood_company_id);
-            })
-            */
-            //result = result.map(item.current_company => (data.petfood_data.petfood_company_id == item.petfood_company_id));
-
-
             data.petfood_company = result;
             return connection.query(SELECT_TARGET_AGE);
         })
         .then(result => {
             // 사료 대상 연령 리스트에서 현재 사료의 대상 연령을 구분하는 부분
             for (s of result) {
-                s.current_target_age = (data.petfood_data.target_age_id == s.target_age_id);
+                s.current_target_age = (data.petfood_data.target_age_id == s.target_age_id)? true : false;
             }
             data.petfood_target_age = result;
             return;
