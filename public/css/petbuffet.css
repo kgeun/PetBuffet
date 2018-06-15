@@ -51,6 +51,26 @@ html {
   margin:auto;
 }
 
+.petfood-info-thumbnail {
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
+  height:70%;
+  margin:auto;
+}
+
+.petfood-info-small-thumbnail {
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
+  height:90%;
+  margin:auto;
+}
+
 .black-color-link{
   color:black;
 }

@@ -27,40 +27,40 @@
                 </div>
                 <ul class="list-group list-group-flush">
                     {{#each comments}}
-                    <li class="list-group-item">
-                        <div class="row">
-                            <div class="col-2 text-center">
-                                {{username}}
-                            </div>
-                            <div id="comment_{{review_comment_id}}" class="col-8">{{review_comment_content}}</div>
-                            <div class="col-2 text-center">
-                                <small>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-2 text-center">
+                                    {{username}}
+                                </div>
+                                <div id="comment_{{review_comment_id}}" class="col-8">{{review_comment_content}}</div>
+                                <div class="col-2 text-center">
+                                    <small>
                                     {{creation_datetime}}
                                     {{#if my_item}}
                                     &nbsp;<a href="#"><i user_num="{{user_num}}" review_comment_id="{{review_comment_id}}" class="fas fa-pencil-alt modify_comment"></i></a>&nbsp;&nbsp;<a href="#"><i user_num="{{user_num}}" review_comment_id="{{review_comment_id}}" class="fas fa-times remove_comment"></i></a>
                                     {{/if}}
                                 </small>
+                                </div>
                             </div>
-                        </div>
-                    </li>
+                        </li>
                     {{/each}}
                     {{#if is_loggedin}}
-                    <li class="list-group-item">
-                        <form action="/comment/write" method="post">
-                            <input type="hidden" name="petfood_review_id" value="{{review_item.petfood_review_id}}"/>
-                            <div class="row">
-                                <div class="col-2 text-center">
-                                    {{username}}
+                        <li class="list-group-item">
+                            <form action="/comment/write" method="post">
+                                <input type="hidden" name="petfood_review_id" value="{{review_item.petfood_review_id}}" />
+                                <div class="row">
+                                    <div class="col-2 text-center">
+                                        {{username}}
+                                    </div>
+                                    <div class="col-8">
+                                        <textarea name="review_comment_content" style="width:100%;" rows="5"></textarea>
+                                    </div>
+                                    <div class="col-2 text-center">
+                                        <input type="submit" class="btn btn-lg btn-primary" value="작성" />
+                                    </div>
                                 </div>
-                                <div class="col-8">
-                                    <textarea name="review_comment_content" style="width:100%;" rows="5"></textarea>
-                                </div>
-                                <div class="col-2 text-center">
-                                    <input type="submit" class="btn btn-lg btn-primary" value="작성"/>
-                                </div>
-                            </div>
-                        </form>
-                    </li>
+                            </form>
+                        </li>
                     {{/if}}
                 </ul>
             </div>
@@ -74,43 +74,81 @@
             {{#if my_item}}
                 <button style="float:right;" type="button" class="btn btn-outline-danger" id="btn_delete_item">삭제</button>
                 <a class="mr-3" style="float:right;" href="/review/modify/{{review_item.petfood_review_id}}?page={{page}}">
-              <button type="button" class="btn btn-outline-dark">수정</button>
-          </a>
+                    <button type="button" class="btn btn-outline-dark">수정</button>
+                </a>
             {{/if}}
         </div>
     </div>
 </div>
 
 <script>
-$(document).ready(function() {
-    $("#btn_delete_item").on('click', function() {
-        if (confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
-            $.ajax({
-                url: "/review/delete",
-                type: "POST",
-                data: {
-                    "petfood_review_id": {{review_item.petfood_review_id}}
-                },
-                success: function(data) {
-                    alert("삭제가 완료되었습니다.");
-                    location.href = "/review/list/{{petfood_info.petfood_id}}?page={{page}}";
-                },
-                error: function(error) {
-                    alert("Error!");
-                }
-            });
-        }
-    });
+    $(document).ready(function() {
+        $("#btn_delete_item").on('click', function() {
+            if (confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
+                $.ajax({
+                    url: "/review/delete",
+                    type: "POST",
+                    data: {
+                        "petfood_review_id": {
+                            {
+                                review_item.petfood_review_id
+                            }
+                        }
+                    },
+                    success: function(data) {
+                        alert("삭제가 완료되었습니다.");
+                        location.href = "/review/list/{{petfood_info.petfood_id}}?page={{page}}";
+                    },
+                    error: function(error) {
+                        alert("Error!");
+                    }
+                });
+            }
+        });
 
-    $(".remove_comment").on('click', function() {
-        if(confirm("이 댓글을 정말 삭제하시겠습니까?")) {
+        $(".remove_comment").on('click', function() {
+            if (confirm("이 댓글을 정말 삭제하시겠습니까?")) {
+                $.ajax({
+                    url: "/comment/delete",
+                    type: "POST",
+                    data: {
+                        "review_comment_id": $(this).attr('review_comment_id'),
+                        "user_num": $(this).attr('user_num'),
+                        "petfood_review_id": {
+                            {
+                                review_item.petfood_review_id
+                            }
+                        }
+                    },
+                    success: function(data) {
+                        alert(data.message);
+                        location.href = "/review/content/{{review_item.petfood_review_id}}";
+                    },
+                    error: function(error) {
+                        alert("Error!");
+                    }
+                });
+            }
+        });
+
+        $(".modify_comment").on('click', function() {
+            var review_comment_content = prompt("수정할 댓글 내용", $("#comment_" + $(this).attr('review_comment_id')).html());
+            if (review_comment_content === null) {
+                return;
+            }
+
             $.ajax({
-                url: "/comment/delete",
+                url: "/comment/update",
                 type: "POST",
                 data: {
                     "review_comment_id": $(this).attr('review_comment_id'),
                     "user_num": $(this).attr('user_num'),
-                    "petfood_review_id": {{review_item.petfood_review_id}}
+                    "petfood_review_id": {
+                        {
+                            review_item.petfood_review_id
+                        }
+                    },
+                    "review_comment_content": review_comment_content
                 },
                 success: function(data) {
                     alert(data.message);
@@ -120,33 +158,6 @@ $(document).ready(function() {
                     alert("Error!");
                 }
             });
-        }
-    });
-
-    $(".modify_comment").on('click', function() {
-        var review_comment_content = prompt("수정할 댓글 내용", $("#comment_" + $(this).attr('review_comment_id')).html());
-        if (review_comment_content === null) {
-            return;
-        }
-
-        $.ajax({
-            url: "/comment/update",
-            type: "POST",
-            data: {
-                "review_comment_id": $(this).attr('review_comment_id'),
-                "user_num": $(this).attr('user_num'),
-                "petfood_review_id": {{review_item.petfood_review_id}},
-                "review_comment_content" : review_comment_content
-            },
-            success: function(data) {
-                alert(data.message);
-                location.href = "/review/content/{{review_item.petfood_review_id}}";
-            },
-            error: function(error) {
-                alert("Error!");
-            }
         });
     });
-});
-
 </script>

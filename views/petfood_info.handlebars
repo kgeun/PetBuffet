@@ -20,14 +20,39 @@
   <div class="jumbotron">
     <div class="row">
       <div class="col-4">
-        <img style="width:80%;" src="/petfood_images/{{petfood_item.petfood_photo_addr}}">
+         <div class="petfood-info-thumbnail text-center pr-2">
+        <img style="width:70%;display:inline-block;" src="/petfood_images/{{petfood_item.petfood_photo_addr}}">
+        </div>
       </div>
-      <div class="col-8 mt-4 text-center">
-        <h3 class="mb-3">{{petfood_item.petfood_name}}</h3>
-        <h5 class="mb-3">영양 점수 : {{petfood_item.nutrition_score}} / 소비자평점 : {{#if petfood_item.customer_score}}{{petfood_item.customer_score}}{{else}}평가 없음{{/if}}</h5>
-        <h5 class="mb-3">제조사 : {{petfood_item.petfood_company_name}}</h5>
-        <h5 class="mb-3">대상연령 : {{petfood_item.target_age}}</h5>
-        <h5 class="mb-3">주원료 : {{petfood_item.main_ingredient}}</h5>
+      <div class="col-8 mt-4">
+          <div class="text-center mb-4">
+              <h3>{{petfood_item.petfood_name}}</h3>
+          </div>
+
+          <table class="table table-striped text-center">
+            <tbody>
+            <tr>
+                <th style="width:35%;" scope="row">영양 점수</th>
+                <td style="width:65%;">{{petfood_item.nutrition_score}}</td>
+            </tr>
+            <tr>
+                <th scope="row">소비자 평점</th>
+                <td>{{#if petfood_item.customer_score}}{{petfood_item.customer_score}}{{else}}평가 없음{{/if}}</td>
+            </tr>
+            <tr>
+                <th scope="row">제조사</th>
+                <td>{{petfood_item.petfood_company_name}}</td>
+            </tr>
+            <tr>
+                <th scope="row">대상 연령</th>
+                <td>{{petfood_item.target_age}}</td>
+            </tr>
+            <tr>
+                <th scope="row">주원료</th>
+                <td>{{petfood_item.main_ingredient}}</td>
+            </tr>
+            </tbody>
+        </table>
         </div>
     </div>
   </div>
@@ -144,6 +169,36 @@
         <div class="row">
           <div class="col-12">
             {{petfood_item.ingredients}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="card-deck mb-3">
+    <div class="card mb-4 box-shadow">
+      <div class="card-header text-center">
+        <h5>최저가 정보 (네이버 쇼핑)</h5>
+      </div>
+      <div class="card-body" style="padding:50px;">
+        <div class="row">
+          <div class="col-12">
+              {{#each shopping_info}}
+              <div class="row">
+                <div class="col-11">
+                      <h5>
+                          <a href="{{link}}" target="_blank">{{{title}}}</a><br>
+                          <small>최저가 : {{lprice}} / 쇼핑몰 : {{mallName}}</small>
+                      </h5>
+                  </div>
+                  <div class="col-1">
+                      <img style="width:100%;" src="{{image}}"/>
+                  </div>
+              </div>
+              {{#unless @last}}<hr>{{/unless}}
+              {{/each}}
           </div>
         </div>
       </div>

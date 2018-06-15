@@ -15,7 +15,7 @@ const utils = require('../util/util');
 const nutrition = require('../util/nutrition');
 
 /** API KEY **/
-//const naver_api_key = require('../config/naver_api_key');
+const naver_api_key = require('../configs/naver_api_key');
 
 // Quries
 const {
@@ -170,10 +170,9 @@ router.get('/info/:petfood_id', auth, (req, res, next) => {
             utils.process_recent_review_content(data.recent_reviews);
         })
         .then(() => {
-            /*
-            var api_url = 'https://openapi.naver.com/v1/search/shop.json?query=' + encodeURI(data.petfood_item.petfood_name); // json 결과
+            let api_url = 'https://openapi.naver.com/v1/search/shop.json?display=5&query=' + encodeURI(data.petfood_item.petfood_name);
 
-            var options = {
+            let options = {
                 uri: api_url,
                 headers: {
                     'X-Naver-Client-Id': naver_api_key.CLIENT_ID,
@@ -183,32 +182,17 @@ router.get('/info/:petfood_id', auth, (req, res, next) => {
              };
 
              rp(options)
-                .then(function (repos) {
-                    console.log(`${repos.items[0].title} / ${repos.items[0].lprice}`);
-                    connection.release();
-                    return res.render('petfood_info', data);
+                .then( api_result => {
+                    if(api_result.items) {
+                        data.shopping_info = api_result.items;
+                        connection.release();
+                        return res.render('petfood_info', data);
+                    }
                 })
-                .catch(function (err) {
+                .catch( err => {
                     return next(err);
                 });
-                */
-/*
-            request.get(options, function (error, response, body) {
-              if (!error && response.statusCode == 200) {
-                res.writeHead(200, {'Content-Type': 'text/json;charset=utf-8'});
-                res.end(body);
-              } else {
-                res.status(response.statusCode).end();
-                console.log('error = ' + response.statusCode);
-              }
-            });
-            */
         })
-        .then(() => {
-            connection.release();
-            return res.render('petfood_info', data);
-        })
-
         .catch(err => {
             return next(err);
         });

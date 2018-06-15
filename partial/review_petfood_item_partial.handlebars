@@ -1,20 +1,44 @@
 <div class="row">
   <div class="col-md-8 offset-md-2">
-    <div class="jumbotron">
+    <div class="jumbotron pb-5 pt-5">
       <div class="row">
         <div class="col-md-4">
-          <img src="/petfood_images/{{petfood_info.petfood_photo_addr}}" style="width:100%"/>
+          <img class="petfood-info-small-thumbnail" src="/petfood_images/{{petfood_info.petfood_photo_addr}}" style="width:100%"/>
         </div>
         <div class="col-md-8 text-center">
+            <!--
           <h4 class="mb-4">{{petfood_info.petfood_name}}</h4>
           <h6>영양점수 : {{petfood_info.nutrition_score}} / 소비자 평점 : {{#if petfood_info.customer_score}}{{petfood_info.customer_score}}{{else}}평가 없음{{/if}}</h6>
           <h6>제조사 : {{petfood_info.petfood_company_name}}</h6>
           <h6>대상 연령 : {{petfood_info.target_age}}</h6>
           <h6 class="mb-3">주원료 : {{petfood_info.main_ingredient}}</h6>
+-->
+<h4 class="mb-4">{{petfood_info.petfood_name}}</h4>
+<table class="table table-sm table-striped text-center">
+  <tbody>
+  <tr>
+      <th style="width:35%;" scope="row">영양 점수</th>
+      <td style="width:65%;">{{petfood_info.nutrition_score}}</td>
+  </tr>
+  <tr>
+      <th scope="row">소비자 평점</th>
+      <td>{{#if petfood_info.customer_score}}{{petfood_info.customer_score}}{{else}}평가 없음{{/if}}</td>
+  </tr>
+  <tr>
+      <th scope="row">제조사</th>
+      <td>{{petfood_info.petfood_company_name}}</td>
+  </tr>
+  <tr>
+      <th scope="row">대상 연령</th>
+      <td>{{petfood_info.target_age}}</td>
+  </tr>
+  <tr>
+      <th scope="row">주원료</th>
+      <td>{{petfood_info.main_ingredient}}</td>
+  </tr>
+  </tbody>
+</table>
 
-          <a href="/petfood/info/{{petfood_info.petfood_id}}">
-            <button type="button" class="btn btn-dark">정보 보러가기</button>
-          </a>
         </div>
       </div>
     </div>
