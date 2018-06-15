@@ -63,7 +63,7 @@ class RcmdAlreadyExistError extends Error {
         super();
         this.error_object = {
             status : "ERROR",
-            message : "이미 이 사료에 대해서 추천을 했습니다."
+            message : "이미 이 사료에 대해서 평점을 주셨습니다."
         };
     }
 }

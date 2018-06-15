@@ -1,6 +1,7 @@
 /** INITIALIZE */
 const express = require('express');
 const router = express.Router();
+const rp = require('request-promise');
 
 /** DATABASE */
 const pool = require('../configs/mysql');
@@ -12,6 +13,9 @@ const auth = require('../middleware/auth');
 /** UTILITY */
 const utils = require('../util/util');
 const nutrition = require('../util/nutrition');
+
+/** API KEY **/
+//const naver_api_key = require('../config/naver_api_key');
 
 // Quries
 const {
@@ -166,9 +170,45 @@ router.get('/info/:petfood_id', auth, (req, res, next) => {
             utils.process_recent_review_content(data.recent_reviews);
         })
         .then(() => {
+            /*
+            var api_url = 'https://openapi.naver.com/v1/search/shop.json?query=' + encodeURI(data.petfood_item.petfood_name); // json 결과
+
+            var options = {
+                uri: api_url,
+                headers: {
+                    'X-Naver-Client-Id': naver_api_key.CLIENT_ID,
+                    'X-Naver-Client-Secret': naver_api_key.CLIENT_SECRET
+                },
+                json: true
+             };
+
+             rp(options)
+                .then(function (repos) {
+                    console.log(`${repos.items[0].title} / ${repos.items[0].lprice}`);
+                    connection.release();
+                    return res.render('petfood_info', data);
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+                */
+/*
+            request.get(options, function (error, response, body) {
+              if (!error && response.statusCode == 200) {
+                res.writeHead(200, {'Content-Type': 'text/json;charset=utf-8'});
+                res.end(body);
+              } else {
+                res.status(response.statusCode).end();
+                console.log('error = ' + response.statusCode);
+              }
+            });
+            */
+        })
+        .then(() => {
             connection.release();
             return res.render('petfood_info', data);
         })
+
         .catch(err => {
             return next(err);
         });
@@ -346,7 +386,6 @@ router.post('/rcmd', auth, (req, res, next) => {
     .then(result => {
         if(result[0].count) {
             // 이미 평점이 있는 경우 그 pk를 가져옴
-            console.log("들어옴");
             current_petfood_rcmd_id = result[0].petfood_rcmd_id;
             throw new RcmdAlreadyExistError();
         } else {

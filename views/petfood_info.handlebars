@@ -24,9 +24,10 @@
       </div>
       <div class="col-8 mt-4 text-center">
         <h3 class="mb-3">{{petfood_item.petfood_name}}</h3>
-        <h5 class="mb-3">영양 점수 : {{petfood_item.nutrition_score}} / 소비자평점 : {{petfood_item.customer_score}}</h5>
+        <h5 class="mb-3">영양 점수 : {{petfood_item.nutrition_score}} / 소비자평점 : {{#if petfood_item.customer_score}}{{petfood_item.customer_score}}{{else}}평가 없음{{/if}}</h5>
         <h5 class="mb-3">제조사 : {{petfood_item.petfood_company_name}}</h5>
         <h5 class="mb-3">대상연령 : {{petfood_item.target_age}}</h5>
+        <h5 class="mb-3">주원료 : {{petfood_item.main_ingredient}}</h5>
         </div>
     </div>
   </div>
@@ -34,7 +35,7 @@
 <div class="container mb-5">
     <div class="row">
         <div class="col-6">
-            <button type="button" style ="width:100%;" class="btn btn-lg btn-dark add_rcmd" data-toggle="modal" data-target="#rcmd_modal">이 사료에 대한 별점 주기</button>
+            <button type="button" style ="width:100%;" class="btn btn-lg btn-dark add_rcmd" data-toggle="modal" data-target="#rcmd_modal">이 사료에 대한 평점 주기</button>
         </div>
         <div class="col-6">
             <a href="/review/write/{{petfood_item.petfood_id}}">
@@ -178,7 +179,7 @@
 <div class="container mb-5 mt-5">
     <div class="row">
         <div class="col-6">
-            <button type="button" style ="width:100%;" class="btn btn-lg btn-dark add_rcmd" data-toggle="modal" data-target="#rcmd_modal">이 사료에 대한 별점 주기</button>
+            <button type="button" style ="width:100%;" class="btn btn-lg btn-dark add_rcmd" data-toggle="modal" data-target="#rcmd_modal">이 사료에 대한 평점 주기</button>
         </div>
         <div class="col-6">
             <a href="/review/write/{{petfood_item.petfood_id}}">
@@ -192,7 +193,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">이 사료에 대한 별점 주기</h5>
+        <h5 class="modal-title" id="exampleModalLabel">이 사료에 대한 평점 주기</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

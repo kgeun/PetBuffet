@@ -1,13 +1,15 @@
 const SELECT_CURRENT_PETFOOD =
 `SELECT
     petfood_id, petfood_company_id, petfood_company_name,
-    petfood_name, target_age_id, nutrition_score,
+    petfood_name, target_age_id, target_age, nutrition_score,
     ROUND((SELECT AVG(petfood_rcmd_value) FROM petfood_rcmd WHERE petfood_id = petfood.petfood_id),1) AS customer_score,
     petfood_photo_addr, main_ingredient
 FROM
     petfood
 NATURAL JOIN
     petfood_company
+NATURAL JOIN
+    petfood_target_age
 WHERE
     petfood_id = ?`;
 

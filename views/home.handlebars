@@ -15,7 +15,7 @@
           <div class="form-row align-items-center">
               <div class="col-auto">
                 <select name="petfood_company_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="petfood_company_id">
-                  <option value="0">브랜드</option>
+                  <option value="0">제조사</option>
                   {{#each petfood_company}}
                   <option value="{{petfood_company_id}}" {{#if current_petfood_company}}selected{{/if}}>{{petfood_company_name}}</option>
                   {{/each}}

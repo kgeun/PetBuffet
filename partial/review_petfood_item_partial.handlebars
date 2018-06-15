@@ -7,8 +7,9 @@
         </div>
         <div class="col-md-8 text-center">
           <h4 class="mb-4">{{petfood_info.petfood_name}}</h4>
-          <h6>브랜드 : {{petfood_info.petfood_company_name}}</h6>
-          <h6>소비자 평점 : {{petfood_info.customer_score}} / 영양점수 : {{petfood_info.nutrition_score}} </h6>
+          <h6>영양점수 : {{petfood_info.nutrition_score}} / 소비자 평점 : {{#if petfood_info.customer_score}}{{petfood_info.customer_score}}{{else}}평가 없음{{/if}}</h6>
+          <h6>제조사 : {{petfood_info.petfood_company_name}}</h6>
+          <h6>대상 연령 : {{petfood_info.target_age}}</h6>
           <h6 class="mb-3">주원료 : {{petfood_info.main_ingredient}}</h6>
 
           <a href="/petfood/info/{{petfood_info.petfood_id}}">
