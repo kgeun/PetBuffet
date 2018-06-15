@@ -137,7 +137,7 @@ router.get('/write/:petfood_id', auth, function(req, res) {
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return connection.query(COUNT_AND_SELECT_RCMD, [req.params.petfood_id, data.session.user_num]);
+        return connection.query(COUNT_AND_SELECT_RCMD, [req.params.petfood_id, data.session.user_num])
     })
     .then(result => {
         if(result[0].count) {
@@ -183,7 +183,12 @@ router.post('/write/:petfood_id', auth, (req, res, next) => {
         } else {
             // 이미 평가된 평점이 없는 경우 평점 table에 insert
             return connection.query(INSERT_RCMD,
-                [req.session.user_num, review_item.petfood_id, review_item.petfood_rcmd_value]);
+                [req.session.user_num, review_item.petfood_id, review_item.petfood_rcmd_value])
+                    .catch(queryError => {
+                            connection.rollback()
+                            connection.release()
+                            throw new Error()
+                        });
         }
     })
     .then(result => {
@@ -194,7 +199,12 @@ router.post('/write/:petfood_id', auth, (req, res, next) => {
         // 검색되거나 추가된 평점 테이블 row의 pk를 새로운 리뷰 row에 insert함
         return connection.query(INSERT_REVIEW,
             [review_item.petfood_review_title, review_item.petfood_review_content,
-                req.session.user_num, review_item.petfood_id, current_petfood_rcmd_id]);
+                req.session.user_num, review_item.petfood_id, current_petfood_rcmd_id])
+                .catch(queryError => {
+                        connection.rollback()
+                        connection.release()
+                        throw new Error()
+                    });
     })
     .then(result => {
         //추가된 글로 redirect 시키기 위해 추가된 row의 pk를 받음

@@ -4,7 +4,7 @@ const middleAuth = (req, res, next) => {
         data.session = req.session;
     }
     req.data = data;
-    next();
+    return next();
 }
 
 module.exports = middleAuth;

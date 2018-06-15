@@ -60,12 +60,11 @@ const INSERT_PETFOOD =
 `INSERT INTO petfood
     ( petfood_company_id, petfood_name,
     protein, fat, calcium, phosphorus, ingredients,
-    target_age_id, nutrition_score, customer_score,
+    target_age_id, nutrition_score,
     petfood_photo_addr, main_ingredient )
 VALUES
     ( ? , ? , ? , ? , ? ,
-    ? , ? , ? , ? , 0 ,
-    ?, ? )`;
+    ? , ? , ? , ? , ?, ? )`;
 
 const UPDATE_PETFOOD =
 `UPDATE
@@ -80,7 +79,6 @@ SET
     ingredients = ?,
     target_age_id = ?,
     nutrition_score = ?,
-    customer_score = 0,
     main_ingredient = ?,
     petfood_photo_addr = ?
 WHERE

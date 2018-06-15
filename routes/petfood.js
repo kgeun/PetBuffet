@@ -301,7 +301,8 @@ router.post('/delete', (req, res, next) => {
 
     if (req.session.user_level != ADMIN_LEVEL) {
         return res.status(403).json({
-            status: "ERROR"
+            status: "ERROR",
+            message : "권한이 없습니다."
         });
     }
     /* 이미 삭제된 것에 대해서 alert을 줄것인가
@@ -332,7 +333,6 @@ router.post('/upload_image', file_upload.middle_upload, (req, res) => {
 
 router.post('/rcmd', auth, (req, res, next) => {
 
-    console.log("req body : " + JSON.stringify(req.body));
     const { petfood_rcmd_value, petfood_id } = req.body;
 
     let data = req.data;
@@ -348,7 +348,7 @@ router.post('/rcmd', auth, (req, res, next) => {
             // 이미 평점이 있는 경우 그 pk를 가져옴
             console.log("들어옴");
             current_petfood_rcmd_id = result[0].petfood_rcmd_id;
-            return next(new RcmdAlreadyExistError());
+            throw new RcmdAlreadyExistError();
         } else {
             // 이미 평가된 평점이 없는 경우 평점 table에 insert
             return connection.query(INSERT_RCMD,

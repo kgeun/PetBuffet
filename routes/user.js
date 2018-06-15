@@ -31,7 +31,7 @@ router.get('/login', (req, res) => {
     if(req.session.userid) {
         return res.redirect("/");
     }
-    
+
     if(req.query.required == 'true') {
         data.required = true;
         data.login_message = "로그인이 필요한 기능입니다.";
@@ -64,7 +64,7 @@ router.post('/login', (req, res, next) => {
         let user = result[0];
         if(!user || !user.hasOwnProperty('password')) {
             connection.release();
-            return next(new UserNotFoundError());
+            throw new UserNotFoundError();
         }
         bcrypt.compare(password, user.password, function(err, hash_result) {
             connection.release();
@@ -80,7 +80,7 @@ router.post('/login', (req, res, next) => {
                   referer : req.body.referer
               });
           } else {
-              return next(new WrongPasswordError());
+              throw new WrongPasswordError();
           }
           return;
         });
@@ -112,7 +112,7 @@ router.post('/register', (req, res, next) => {
             });
         } else {
             connection.release();
-            return next(new IdDuplicateError());
+            throw new IdDuplicateError();
         }
     })
     .then(result => {
