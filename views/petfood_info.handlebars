@@ -176,6 +176,49 @@
   </div>
 </div>
 
+{{#if low_cost_info}}
+<div class="container">
+  <div class="card-deck mb-3">
+    <div class="card mb-4 box-shadow">
+      <div class="card-header text-center">
+        <h5>최저가 정보</h5>
+      </div>
+      <div class="card-body" style="padding:50px;">
+        <a href="{{low_cost_info.link}}" target="_blank" style="color:inherit; text-decoration:inherit;">
+            <div class="row">
+              <div class="col-4">
+                  <img style="display:block-inline;width:75%;margin-left:auto;margin-right:auto;" src="{{low_cost_info.image}}">
+              </div>
+              <div class="col-8">
+                      <div class="row">
+                          <table class="table table-bordered text-center">
+                            <tbody>
+                                <tr>
+                                    <th scope="row"><span style="font-size:1.2rem;font-weight: bold;">최저가</span></th>
+                                    <td><h3>{{low_cost_info.lprice}}원</h3></td>
+                                </tr>
+                                <tr>
+                                    <th style="width:35%;" scope="row"><span style="font-size:1.2rem;font-weight: bold;">제품명</span></th>
+                                    <td style="width:65%;">{{{low_cost_info.title}}}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><span style="font-size:1.2rem;font-weight: bold;">쇼핑몰</span></th>
+                                    <td>{{low_cost_info.mallName}}</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+              </div>
+            </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{{/if}}
+
+{{#if shopping_info}}
 <div class="container">
   <div class="card-deck mb-3">
     <div class="card mb-4 box-shadow">
@@ -207,6 +250,7 @@
     </div>
   </div>
 </div>
+{{/if}}
 
 <div class="container">
     <div class="card mb-4 box-shadow">

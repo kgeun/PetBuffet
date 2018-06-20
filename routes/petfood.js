@@ -31,6 +31,7 @@ const {
     SELECT_REVIEW_RECENT_TWO,
     SELECT_MAIN_INGREDIENT,
     SELECT_PROTEIN_CONTENT,
+    SELECT_PETFOOD_NAME,
     search_petfood_query,
     count_search_petfood_query
 } = require('../queries/petfood');
@@ -140,7 +141,7 @@ router.get('/info/:petfood_id', auth, (req, res, next) => {
     }
 
     if(req.query.petfood_company_id) {
-        data.query_string = utils.serialize_get_parameter(req.query);
+        data.query_string = utils.serialize_get_parameter_petfood(req.query);
     }
 
     let connection;
@@ -170,10 +171,10 @@ router.get('/info/:petfood_id', auth, (req, res, next) => {
             utils.process_recent_review_content(data.recent_reviews);
         })
         .then(() => {
-            let api_url = 'https://openapi.naver.com/v1/search/shop.json?display=5&query=' + encodeURI(data.petfood_item.petfood_name);
+            let shopping_info_api_url = 'https://openapi.naver.com/v1/search/shop.json?display=5&query=' + encodeURI(data.petfood_item.petfood_name);
 
-            let options = {
-                uri: api_url,
+            let shopping_info_options = {
+                uri: shopping_info_api_url,
                 headers: {
                     'X-Naver-Client-Id': naver_api_key.CLIENT_ID,
                     'X-Naver-Client-Secret': naver_api_key.CLIENT_SECRET
@@ -181,10 +182,39 @@ router.get('/info/:petfood_id', auth, (req, res, next) => {
                 json: true
              };
 
-             rp(options)
-                .then( api_result => {
-                    if(api_result.items) {
-                        data.shopping_info = api_result.items;
+             rp(shopping_info_options)
+                .then( shopping_info => {
+                    if(shopping_info.items.length > 0) {
+                        data.shopping_info = shopping_info.items;
+                        for(s of data.shopping_info) {
+                            s.title = s.title.replace(/<\/?[^>]+(>|$)/g, "");
+                        }
+                        let lowest_cost_api_url = 'https://openapi.naver.com/v1/search/shop.json?display=1&sort=asc&query=' + encodeURI(data.shopping_info[0].title);
+
+                        let lowest_cost_options = {
+                            uri: lowest_cost_api_url,
+                            headers: {
+                                'X-Naver-Client-Id': naver_api_key.CLIENT_ID,
+                                'X-Naver-Client-Secret': naver_api_key.CLIENT_SECRET
+                            },
+                            json: true
+                         };
+
+                        rp(lowest_cost_options)
+                           .then( low_cost_info => {
+                               if(low_cost_info.items) {
+                                   data.low_cost_info = low_cost_info.items[0];
+                                   data.low_cost_info.title = data.low_cost_info.title.replace(/<\/?[^>]+(>|$)/g, "");
+                                   connection.release();
+                                   return res.render('petfood_info', data);
+                               }
+                           })
+                           .catch( err => {
+                               return next(err);
+                           });
+
+                    }
+                    else {
                         connection.release();
                         return res.render('petfood_info', data);
                     }
@@ -388,6 +418,23 @@ router.post('/rcmd', auth, (req, res, next) => {
         return next(err);
     });
 
+});
+
+router.get('/petfood_name_list', (req, res, next) => {
+    pool.getConnection()
+    .then(conn => {
+        connection = conn;
+        // 평점 테이블에서 이 유저가 이 사료에 대해 평가한 평점 row가 있나 검색
+        return connection.query(SELECT_PETFOOD_NAME);
+    })
+    .then(result =>{
+        connection.release();
+        result = result.map(obj => obj.petfood_name);
+        res.json(result);
+    })
+    .catch(err => {
+        return next(err);
+    });
 });
 
 module.exports = router;

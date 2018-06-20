@@ -28,9 +28,29 @@ NATURAL JOIN
     petfood_rcmd
 WHERE
     petfood_id = ?
+AND
+(
+        petfood_review_title LIKE ?
+    OR
+        petfood_review_content LIKE ?
+)
 ORDER BY
     petfood_review_id DESC
-LIMIT 10 OFFSET ?`
+LIMIT ? OFFSET ?`
+
+const COUNT_REVIEW =
+`SELECT
+    COUNT(*) AS count
+FROM
+    petfood_review
+WHERE
+    petfood_id = ?
+AND
+(
+        petfood_review_title LIKE ?
+    OR
+        petfood_review_content LIKE ?
+)`
 
 const SELECT_REVIEW_CONTENT =
 `SELECT
@@ -44,7 +64,8 @@ NATURAL JOIN
 NATURAL JOIN
     petfood_rcmd
 WHERE
-    petfood_review_id = ?`
+    petfood_review_id = ?
+`
 
 const INSERT_RCMD =
 `INSERT INTO
@@ -68,14 +89,6 @@ WHERE
     petfood_id = ?
 AND
     user_num = ?`
-
-const COUNT_REVIEW =
-`SELECT
-    COUNT(*) AS count
-FROM
-    petfood_review
-WHERE
-    petfood_id = ?`
 
 const UPDATE_REVIEW =
 `UPDATE
@@ -103,6 +116,10 @@ NATURAL JOIN
     user_info
 NATURAL JOIN
     petfood
+WHERE
+    petfood_review_title LIKE ?
+OR
+    petfood_review_content LIKE ?
 ORDER BY
     petfood_review_id DESC
 LIMIT ? OFFSET ?`;
@@ -111,52 +128,11 @@ const COUNT_SELECT_ALL_REVIEW =
 `SELECT
     COUNT(*) as count
 FROM
-    petfood_review`;
-
-let search_all_review_query = (data,petfood_items_per_page) => {
-    let query =
-    `SELECT
-        petfood_review_id, petfood_review_title, petfood_review_content,
-        user_num, username, petfood_id, petfood_name, petfood_photo_addr,
-        DATE_FORMAT(creation_datetime, '%Y-%m-%d') as creation_datetime
-    FROM
-        petfood_review
-    NATURAL JOIN
-        user_info
-    NATURAL JOIN
-        petfood `;
-
-    query += get_where_query_in_search(data);
-
-    query +=
-    `ORDER BY
-        petfood_review_id DESC
-    LIMIT 5 OFFSET ${(data.current_page - 1) * petfood_items_per_page}`;
-
-    return query;
-};
-
-let count_search_all_review_query = data => {
-    let query =
-    `SELECT
-        COUNT(*) as count
-    FROM
-        petfood_review `;
-
-    query += get_where_query_in_search(data);
-
-    return query;
-};
-
-let get_where_query_in_search = data => {
-    let query_where =
-    `WHERE
-        petfood_review_title LIKE '%${data.query}%'
-    OR
-        petfood_review_content LIKE '%${data.query}%' `;
-
-    return query_where;
-};
+    petfood_review
+WHERE
+    petfood_review_title LIKE ?
+OR
+    petfood_review_content LIKE ?`;
 
 module.exports = {
     SELECT_CURRENT_PETFOOD,
@@ -169,7 +145,5 @@ module.exports = {
     UPDATE_REVIEW,
     DELETE_REVIEW,
     SELECT_ALL_REVIEW,
-    COUNT_SELECT_ALL_REVIEW,
-    search_all_review_query,
-    count_search_all_review_query
+    COUNT_SELECT_ALL_REVIEW
 }

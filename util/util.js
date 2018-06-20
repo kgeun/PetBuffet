@@ -9,12 +9,21 @@ const GOOD_COLOR = `#00a65a`;
 const LACK_OR_EXCESS_COLOR = `#f56954`;
 
 module.exports.registerPartial = (err, data) => {
-        if (err) throw err; //이부분 괄호 처리
+        if (err) {
+            throw err;
+        }
         hbs.registerPartial('review_petfood_item', data.toString());
 }
 
 module.exports.inject_paging_information_data = (data, posts_amount, num_of_posts_per_one_page) => {
-    data.number_of_page = parseInt((posts_amount/num_of_posts_per_one_page)+1);
+    if (posts_amount % num_of_posts_per_one_page == 0) {
+        data.number_of_page = (posts_amount/num_of_posts_per_one_page);
+    } else {
+        data.number_of_page = parseInt((posts_amount/num_of_posts_per_one_page)+1);
+    }
+    if(!posts_amount) {
+        data.number_of_page = 1;
+    }
     data.first_page = (data.current_page == 1);
     data.last_page = (data.current_page == data.number_of_page);
     data.prev_page = parseInt(data.current_page) - 1;

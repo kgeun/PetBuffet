@@ -21,7 +21,6 @@
 					<div class="card-body">
 						<div class="row">
 							<div class="col-12">
-                                <a id="gnbLogin" href="https://nid.naver.com/oauth2.0/authorize?response_type=token&amp;client_id=jyvqXeaVOVmV&amp;state=62d44264-662a-48e5-a270-4c1ab73edda8&amp;redirect_uri=http%3A%2F%2Fstatic.nid.naver.com%2Foauth%2Fsample%2Fcallback.html&amp;version=js-2.0.0&amp;svctype=1">Login</a>
 								<form id="login-form" action="/user/login" method="post" role="form" style="display: block;">
                                     <input type="hidden" name="referer" value="{{referer}}"/>
 									<div class="form-group">
@@ -34,7 +33,6 @@
 										<div class="row">
 											<div class="col-md-6 offset-md-3">
 												<input type="submit" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="로그인">
-                                                <div id="naverIdLogin"><a id="naverIdLogin_loginButton" href="https://static.nid.naver.com/oauth/sample/javascript_sample.html#"><img src="/images/big_g.PNG" height="60"></a>
 											</div>
 										</div>
 									</div>
@@ -113,7 +111,6 @@
           type:'post',
           data:$('#login-form').serialize(),
           success:function(data){
-            alert(data.message);
             if(data.status == "OK"){
                 if(data.referer.endsWith("/user/login")) {
                     location.href="/";
@@ -126,48 +123,4 @@
     });
   });
 
-</script>
-<!-- (2) LoginWithNaverId Javscript SDK -->
-<script src="/js/naveridlogin_js_sdk_2.0.0.js"></script>
-
-<!-- (3) LoginWithNaverId Javscript 설정 정보 및 초기화 -->
-<script>
-
-    var naverLogin = new naver.LoginWithNaverId(
-        {
-            clientId: "5zrkCm7BhUSMoIoBcZzv",
-            callbackUrl: "http://localhost/",
-            isPopup: false,
-            loginButton: {color: "green", type: 3, height: 60}
-        }
-    );
-    /* (4) 네아로 로그인 정보를 초기화하기 위하여 init을 호출 */
-    naverLogin.init();
-
-    /* (4-1) 임의의 링크를 설정해줄 필요가 있는 경우 */
-    $("#gnbLogin").attr("href", naverLogin.generateAuthorizeUrl());
-
-    /* (5) 현재 로그인 상태를 확인 */
-    window.addEventListener('load', function () {
-        naverLogin.getLoginStatus(function (status) {
-            if (status) {
-                /* (6) 로그인 상태가 "true" 인 경우 로그인 버튼을 없애고 사용자 정보를 출력합니다. */
-                setLoginStatus();
-            }
-        });
-    });
-
-    /* (6) 로그인 상태가 "true" 인 경우 로그인 버튼을 없애고 사용자 정보를 출력합니다. */
-    function setLoginStatus() {
-        var profileImage = naverLogin.user.getProfileImage();
-        var nickName = naverLogin.user.getNickName();
-        $("#naverIdLogin_loginButton").html('<br><br><img src="' + profileImage + '" height=50 /> <p>' + nickName + '님 반갑습니다.</p>');
-        $("#gnbLogin").html("Logout");
-        $("#gnbLogin").attr("href", "#");
-        /* (7) 로그아웃 버튼을 설정하고 동작을 정의합니다. */
-        $("#gnbLogin").click(function () {
-            naverLogin.logout();
-            location.reload();
-        });
-    }
 </script>

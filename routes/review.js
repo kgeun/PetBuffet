@@ -22,9 +22,7 @@ const {
   UPDATE_REVIEW,
   DELETE_REVIEW,
   SELECT_ALL_REVIEW,
-  COUNT_SELECT_ALL_REVIEW,
-  search_all_review_query,
-  count_search_all_review_query
+  COUNT_SELECT_ALL_REVIEW
 } = require('../queries/review.js')
 
 const {
@@ -47,14 +45,24 @@ router.get('/list/:petfood_id', auth, (req, res, next) => {
         data.current_page = req.query.page;
     }
 
+    if(req.query.query) {
+        data.query = req.query.query;
+        data.query_string = utils.serialize_get_parameter_review(req.query);
+    }
+
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return connection.query(COUNT_REVIEW,[req.params.petfood_id]);
+        if (!data.query) {
+            data.query = '';
+        }
+        return connection.query(COUNT_REVIEW,[req.params.petfood_id, '%' + data.query + '%', '%' + data.query + '%']);
     })
     .then(result => {
         utils.inject_paging_information_data(data,result[0].count,REVIEW_ITEMS_PER_PAGE);
-        return connection.query(SELECT_REVIEW_TITLE_INFO, [req.params.petfood_id, (data.current_page-1)*REVIEW_ITEMS_PER_PAGE]);
+        return connection.query(SELECT_REVIEW_TITLE_INFO,
+            [req.params.petfood_id, '%' + data.query + '%', '%' + data.query + '%',
+            REVIEW_ITEMS_PER_PAGE, (data.current_page-1)*REVIEW_ITEMS_PER_PAGE,]);
     })
     .then(result => {
         data.review_list = result;
@@ -190,9 +198,9 @@ router.post('/write/:petfood_id', auth, (req, res, next) => {
             return connection.query(INSERT_RCMD,
                 [req.session.user_num, review_item.petfood_id, review_item.petfood_rcmd_value])
                     .catch(queryError => {
-                            connection.rollback()
-                            connection.release()
-                            throw new Error()
+                            connection.rollback();
+                            connection.release();
+                            throw new Error();
                         });
         }
     })
@@ -206,9 +214,9 @@ router.post('/write/:petfood_id', auth, (req, res, next) => {
             [review_item.petfood_review_title, review_item.petfood_review_content,
                 req.session.user_num, review_item.petfood_id, current_petfood_rcmd_id])
                 .catch(queryError => {
-                        connection.rollback()
-                        connection.release()
-                        throw new Error()
+                        connection.rollback();
+                        connection.release();
+                        throw new Error();
                     });
     })
     .then(result => {
@@ -316,7 +324,7 @@ router.get('/all_list', auth, (req, res, next) => {
     }
 
     if (req.query.query) {
-        data.search = true;
+        //data.search = true;
         data = Object.assign(data, req.query);
         data.query_string = utils.serialize_get_parameter_review(req.query);
     }
@@ -326,20 +334,18 @@ router.get('/all_list', auth, (req, res, next) => {
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        if(data.search){
-            return connection.query(search_all_review_query(data,ALL_REVIEW_ITEMS_PER_PAGE));
-        } else {
-            return connection.query(SELECT_ALL_REVIEW,[ALL_REVIEW_ITEMS_PER_PAGE, (data.current_page - 1) * ALL_REVIEW_ITEMS_PER_PAGE]);
+        if(!data.query) {
+            data.query = '';
         }
+        return connection.query(SELECT_ALL_REVIEW,
+            ['%' + data.query + '%', '%' + data.query + '%',
+            ALL_REVIEW_ITEMS_PER_PAGE, (data.current_page - 1) * ALL_REVIEW_ITEMS_PER_PAGE]);
     })
     .then(result => {
         data.all_review_item = result;
         utils.process_recent_review_content(data.all_review_item);
-        if(data.search) {
-            return connection.query(count_search_all_review_query(data));
-        } else {
-            return connection.query(COUNT_SELECT_ALL_REVIEW);
-        }
+        return connection.query(COUNT_SELECT_ALL_REVIEW,['%' + data.query + '%', '%' + data.query + '%']);
+
     })
     .then(result => {
         utils.inject_paging_information_data(data, result[0].count, ALL_REVIEW_ITEMS_PER_PAGE);

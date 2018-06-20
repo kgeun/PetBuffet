@@ -4,7 +4,7 @@
     <form action="/petfood/list/1" method="get">
       <div class="form-row align-items-center mb-4">
         <div class="col-11">
-          <input name="query" class="form-control form-control-lg" type="text" placeholder="사료명 입력" value="{{query}}">
+          <input autocomplete="off" id="petfood_name_search" name="query" class="form-control form-control-lg" type="text" placeholder="사료명 입력" value="{{query}}">
         </div>
         <div class="col-1">
           <button type="submit" class="btn btn-lg btn-primary">검색</button>
@@ -124,11 +124,21 @@
     </div>
   </div>
 </div>
+
 <script>
-$("#btn_initialize").on('click', function() {
-    $("#petfood_company_id").val("0").prop("selected", true);
-    $("#main_ingredient_id").val("0").prop("selected", true);
-    $("#target_age_id").val("0").prop("selected", true);
-    $("#protein_content_id").val("0").prop("selected", true);
+
+$( document ).ready(function() {
+    $("#btn_initialize").on('click', function() {
+        $("#petfood_company_id").val("0").prop("selected", true);
+        $("#main_ingredient_id").val("0").prop("selected", true);
+        $("#target_age_id").val("0").prop("selected", true);
+        $("#protein_content_id").val("0").prop("selected", true);
+    });
+
+    $.get("/petfood/petfood_name_list", function(data){
+        $("#petfood_name_search").autocomplete({
+          source: data
+        });
+    });
 });
 </script>

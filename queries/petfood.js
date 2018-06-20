@@ -113,6 +113,12 @@ const SELECT_PROTEIN_CONTENT =
 FROM
     petfood_protein_content`;
 
+const SELECT_PETFOOD_NAME =
+`SELECT
+    petfood_name
+FROM
+    petfood`;
+
 let search_petfood_query = (data,petfood_items_per_page) => {
     let query =
     `SELECT
@@ -189,6 +195,7 @@ module.exports = {
     SELECT_REVIEW_RECENT_TWO,
     SELECT_MAIN_INGREDIENT,
     SELECT_PROTEIN_CONTENT,
+    SELECT_PETFOOD_NAME,
     search_petfood_query,
     count_search_petfood_query
 }

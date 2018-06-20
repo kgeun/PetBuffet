@@ -41,7 +41,6 @@
             <a href="/review/write/{{petfood_info.petfood_id}}">
               <button style="float:right;" type="button" class="btn btn-lg btn-secondary">새 리뷰 작성</button>
           </a>
-            </div>
         </div>
     </div>
 
@@ -70,3 +69,16 @@
             </div>
         </div>
     </div>
+
+    <div class="row mt-5">
+        <div class="col-md-6 offset-md-3">
+            <div class="text-center">
+                <form method="get" action="/review/list/{{petfood_info.petfood_id}}" class="form-inline">
+                    <input type="text" value="{{query}}" name="query" id="login-submit" style="width:80%" class="form-control" placeholder="제목 또는 내용">
+                    <input type="submit" class="ml-2 btn btn-primary" id="login-submit" value="검색">
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
