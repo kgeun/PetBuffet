@@ -33,11 +33,25 @@
             <tbody>
             <tr>
                 <th style="width:35%;" scope="row">영양 점수</th>
-                <td style="width:65%;">{{petfood_item.nutrition_score}}</td>
+                <td style="width:65%;">
+                    <div style="display:inline-block;">
+                        <div style="display:inline-block;" id="nutrition_score"></div>
+                        <span style="font-size:1.4em">({{petfood_item.nutrition_score}})</span>
+                    </div>
+                </td>
             </tr>
             <tr>
                 <th scope="row">소비자 평점</th>
-                <td>{{#if petfood_item.customer_score}}{{petfood_item.customer_score}}{{else}}평가 없음{{/if}}</td>
+                <td>
+                    {{#if petfood_item.customer_score}}
+                    <div style="display:inline-block;">
+                        <div style="display:inline-block;" id="customer_score"></div>
+                        <span style="font-size:1.4em">({{petfood_item.customer_score}})</span>
+                    </div>
+                    {{else}}
+                    평가 없음
+                    {{/if}}
+                </td>
             </tr>
             <tr>
                 <th scope="row">제조사</th>
@@ -368,6 +382,22 @@ $(document).ready(function() {
                 alert("Error!");
             }
         });
-    })
+    });
+
+
+    $("#nutrition_score").rateYo({
+        rating: {{petfood_item.nutrition_score}},
+        readOnly: true,
+        starWidth: "25px"
+    });
+
+    {{#if petfood_item.customer_score}}
+    $("#customer_score").rateYo({
+        rating: {{petfood_item.customer_score}},
+        readOnly: true,
+        starWidth: "25px"
+    });
+    {{/if}}
+
 });
 </script>
