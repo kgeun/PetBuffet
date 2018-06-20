@@ -126,7 +126,8 @@ let search_petfood_query = (data,petfood_items_per_page) => {
 
     query += get_where_query_in_search(data);
 
-    query += `ORDER BY
+    query +=
+    `ORDER BY
         petfood_id DESC
     LIMIT 5 OFFSET ${(data.current_page - 1) * petfood_items_per_page}`;
 

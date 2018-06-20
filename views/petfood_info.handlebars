@@ -180,23 +180,25 @@
   <div class="card-deck mb-3">
     <div class="card mb-4 box-shadow">
       <div class="card-header text-center">
-        <h5>최저가 정보 (네이버 쇼핑)</h5>
+        <h5>쇼핑 정보 (네이버 쇼핑)</h5>
       </div>
       <div class="card-body" style="padding:50px;">
         <div class="row">
           <div class="col-12">
               {{#each shopping_info}}
+              <a href="{{link}}" target="_blank" style="color:inherit; text-decoration:inherit;">
               <div class="row">
                 <div class="col-11">
                       <h5>
-                          <a href="{{link}}" target="_blank">{{{title}}}</a><br>
-                          <small>최저가 : {{lprice}} / 쇼핑몰 : {{mallName}}</small>
+                          {{{title}}}<br>
+                          <small>가격 : {{lprice}}원 / 쇼핑몰 : {{mallName}}</small>
                       </h5>
                   </div>
                   <div class="col-1">
                       <img style="width:100%;" src="{{image}}"/>
                   </div>
               </div>
+              </a>
               {{#unless @last}}<hr>{{/unless}}
               {{/each}}
           </div>
@@ -211,13 +213,13 @@
         <div class="card-header text-center">
             <h5>최신 리뷰</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body" style="padding:50px;">
             <div class="row">
                 <div class="col-12">
                     {{#each recent_reviews}}
-                    <a href="/review/content/{{petfood_review_id}}">
+                    <a href="/review/content/{{petfood_review_id}}" style="color:inherit; text-decoration:inherit;">
                     <h5>제목 : {{petfood_review_title}}</h5>
-                    {{petfood_review_content}}
+                    <h5><small>{{petfood_review_content}}</small></h5>
                     </a>
                     {{#unless @last}}<hr>{{/unless}}
                     {{/each}}

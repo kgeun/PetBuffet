@@ -89,11 +89,7 @@
                     url: "/review/delete",
                     type: "POST",
                     data: {
-                        "petfood_review_id": {
-                            {
-                                review_item.petfood_review_id
-                            }
-                        }
+                        "petfood_review_id": {{review_item.petfood_review_id}}
                     },
                     success: function(data) {
                         alert("삭제가 완료되었습니다.");
@@ -114,11 +110,7 @@
                     data: {
                         "review_comment_id": $(this).attr('review_comment_id'),
                         "user_num": $(this).attr('user_num'),
-                        "petfood_review_id": {
-                            {
-                                review_item.petfood_review_id
-                            }
-                        }
+                        "petfood_review_id": {{review_item.petfood_review_id}}
                     },
                     success: function(data) {
                         alert(data.message);
@@ -143,11 +135,7 @@
                 data: {
                     "review_comment_id": $(this).attr('review_comment_id'),
                     "user_num": $(this).attr('user_num'),
-                    "petfood_review_id": {
-                        {
-                            review_item.petfood_review_id
-                        }
-                    },
+                    "petfood_review_id": {{review_item.petfood_review_id}},
                     "review_comment_content": review_comment_content
                 },
                 success: function(data) {

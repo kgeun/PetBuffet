@@ -61,7 +61,7 @@ router.get('/list/:page', auth, (req, res, next) => {
     if(req.query.petfood_company_id) {
         data.search = true;
         data = Object.assign(data, req.query);
-        data.query_string = utils.serialize_get_parameter(req.query);
+        data.query_string = utils.serialize_get_parameter_petfood(req.query);
     } else {
         data.query = '';
     }
@@ -206,7 +206,7 @@ router.get('/modify/:petfood_id', auth, (req, res, next) => {
     let data = req.data;
     let connection;
 
-    data = Object.assign(data, )
+    //data = Object.assign(data, )
 
     pool.getConnection()
         .then(conn => {

@@ -189,9 +189,6 @@ module.exports.give_html_and_color_by_eval_phosphorus = eval_phosphorus => {
 }
 
 
-
-
-
 module.exports.process_recent_review_content = recent_reviews => {
     for (s of recent_reviews) {
         s.petfood_review_content = s.petfood_review_content.replace(/<\/?[^>]+(>|$)/g, "");
@@ -202,8 +199,12 @@ module.exports.process_recent_review_content = recent_reviews => {
     }
 }
 
-module.exports.serialize_get_parameter = query => {
+module.exports.serialize_get_parameter_petfood = query => {
     return `query=${query.query}&petfood_company_id=${query.petfood_company_id}
     &main_ingredient_id=${query.main_ingredient_id}
     &target_age_id=${query.target_age_id}&protein_content_id=${query.protein_content_id}`;
+}
+
+module.exports.serialize_get_parameter_review = query => {
+    return `query=${query.query}`;
 }

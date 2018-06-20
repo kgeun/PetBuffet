@@ -20,7 +20,11 @@ const {
   COUNT_AND_SELECT_RCMD,
   COUNT_REVIEW,
   UPDATE_REVIEW,
-  DELETE_REVIEW
+  DELETE_REVIEW,
+  SELECT_ALL_REVIEW,
+  COUNT_SELECT_ALL_REVIEW,
+  search_all_review_query,
+  count_search_all_review_query
 } = require('../queries/review.js')
 
 const {
@@ -28,6 +32,7 @@ const {
 } = require('../queries/comment.js')
 
 const REVIEW_ITEMS_PER_PAGE = 10;
+const ALL_REVIEW_ITEMS_PER_PAGE = 5;
 const ADMIN_LEVEL = 2;
 
 
@@ -298,6 +303,53 @@ router.post('/delete', (req, res, next) => {
     .catch(err => {
         return next(err);
     });
+});
+
+router.get('/all_list', auth, (req, res, next) => {
+
+    let data = req.data;
+
+    if (!req.query.page) {
+        data.current_page = 1;
+    } else {
+        data.current_page = req.query.page;
+    }
+
+    if (req.query.query) {
+        data.search = true;
+        data = Object.assign(data, req.query);
+        data.query_string = utils.serialize_get_parameter_review(req.query);
+    }
+
+    let connection;
+    // 권한검사 넣기
+    pool.getConnection()
+    .then(conn => {
+        connection = conn;
+        if(data.search){
+            return connection.query(search_all_review_query(data,ALL_REVIEW_ITEMS_PER_PAGE));
+        } else {
+            return connection.query(SELECT_ALL_REVIEW,[ALL_REVIEW_ITEMS_PER_PAGE, (data.current_page - 1) * ALL_REVIEW_ITEMS_PER_PAGE]);
+        }
+    })
+    .then(result => {
+        data.all_review_item = result;
+        utils.process_recent_review_content(data.all_review_item);
+        if(data.search) {
+            return connection.query(count_search_all_review_query(data));
+        } else {
+            return connection.query(COUNT_SELECT_ALL_REVIEW);
+        }
+    })
+    .then(result => {
+        utils.inject_paging_information_data(data, result[0].count, ALL_REVIEW_ITEMS_PER_PAGE);
+        connection.release();
+        return res.render("all_review_list",data);
+    })
+    .catch(err => {
+        return next(err);
+    });
+
 });
 
 module.exports = router;
