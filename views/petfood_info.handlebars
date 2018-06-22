@@ -316,23 +316,20 @@
       <form method="post" action="/petfood/rcmd" id="form_rcmd">
       <input type="hidden" name="petfood_id" value="{{petfood_item.petfood_id}}"/>
       <div class="modal-body text-center">
-          <div class="btn-group btn-group-toggle" data-toggle="buttons" style="display:inline-block;">
-            <label class="btn btn-light active">
-              <input type="radio" name="petfood_rcmd_value" id="rcmd_value1" value="1" autocomplete="off" checked> 1점
-            </label>
-            <label class="btn btn-light">
-              <input type="radio" name="petfood_rcmd_value" id="rcmd_value2" value="2" autocomplete="off"> 2점
-            </label>
-            <label class="btn btn-light">
-              <input type="radio" name="petfood_rcmd_value" id="rcmd_value3" value="3" autocomplete="off"> 3점
-            </label>
-            <label class="btn btn-light">
-              <input type="radio" name="petfood_rcmd_value" id="rcmd_value4" value="4" autocomplete="off"> 4점
-            </label>
-            <label class="btn btn-light">
-              <input type="radio" name="petfood_rcmd_value" id="rcmd_value5" value="5" autocomplete="off"> 5점
-            </label>
-          </div>
+          <div class="cont">
+            <div class="stars">
+                <input class="star star-5" id="rcmd_value5" type="radio" name="petfood_rcmd_value" value="5"/>
+                <label class="star star-5" for="rcmd_value5"></label>
+                <input class="star star-4" id="rcmd_value4" type="radio" name="petfood_rcmd_value" value="4"//>
+                <label class="star star-4" for="rcmd_value4"></label>
+                <input class="star star-3" id="rcmd_value3" type="radio" name="petfood_rcmd_value" value="3" checked//>
+                <label class="star star-3" for="rcmd_value3"></label>
+                <input class="star star-2" id="rcmd_value2" type="radio" name="petfood_rcmd_value" value="2"//>
+                <label class="star star-2" for="rcmd_value2"></label>
+                <input class="star star-1" id="rcmd_value1" type="radio" name="petfood_rcmd_value" value="1"//>
+                <label class="star star-1" for="rcmd_value1"></label>
+            </span>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
@@ -386,9 +383,10 @@ $(document).ready(function() {
 
 
     $("#nutrition_score").rateYo({
-        rating: {{petfood_item.nutrition_score}},
+        rating: {{petfood_item.nutrition_score}}/4*5,
         readOnly: true,
-        starWidth: "25px"
+        starWidth: "25px",
+        numStars: 4
     });
 
     {{#if petfood_item.customer_score}}

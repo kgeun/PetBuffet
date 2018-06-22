@@ -26,7 +26,7 @@ app.use('/review', review);
 app.use('/comment', comment);
 
 app.get('/', function(req, res) {
-    return res.redirect('/petfood/list/1');
+    return res.redirect('/petfood/list/1?order_method=1');
 });
 
 app.use(error_handler);

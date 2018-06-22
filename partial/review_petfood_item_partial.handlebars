@@ -61,9 +61,10 @@
 <script>
 $( document ).ready(function() {
     $("#nutrition_score").rateYo({
-        rating: {{petfood_info.nutrition_score}},
+        rating: {{petfood_info.nutrition_score}}/4*5,
         readOnly: true,
-        starWidth: "20px"
+        starWidth: "20px",
+        numStars: 4
     });
 
     {{#if petfood_info.customer_score}}
