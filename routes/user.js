@@ -17,7 +17,8 @@ const {
     UserNotFoundError,
     WrongPasswordError,
     FormNotFilledError,
-    IdDuplicateError
+    IdDuplicateError,
+    NonCharsInIdError
 } = require('../configs/errors')
 
 /** UTILS */
@@ -38,6 +39,9 @@ router.get('/login', (req, res) => {
     } else if (req.query.required == 'admin') {
         data.required = true;
         data.login_message = "관리자 권한이 필요한 기능입니다.";
+    } else if (req.query.required == 'register') {
+        data.required = true;
+        data.login_message = "회원 가입이 완료되었습니다. <br>로그인해주세요.";
     }
     data.referer = req.headers.referer;
 
@@ -47,9 +51,10 @@ router.get('/login', (req, res) => {
 //REST API
 router.post('/login', (req, res, next) => {
 
-    const {userid, password} = req.body;
+    const {userid, password, hashed_password} = req.body;
     let connection;
     let login_success = false;
+
 
     if (!userid || !password) {
         return next(new NoIdOrPasswordError());
@@ -66,22 +71,22 @@ router.post('/login', (req, res, next) => {
             connection.release();
             throw new UserNotFoundError();
         }
-        bcrypt.compare(password, user.password, function(err, hash_result) {
+        bcrypt.compare(hashed_password, user.password, function(err, hash_result) {
             connection.release();
             if(hash_result) {
-              req.session.userid = user.userid;
-              req.session.user_level = user.user_level;
-              req.session.username = user.username;
-              req.session.user_num = user.user_num;
+                req.session.userid = user.userid;
+                req.session.user_level = user.user_level;
+                req.session.username = user.username;
+                req.session.user_num = user.user_num;
 
-              return res.json({
+                return res.json({
                   status : "OK",
                   message : '로그인에 성공했습니다.',
                   referer : req.body.referer
-              });
-          } else {
-              throw new WrongPasswordError();
-          }
+                });
+            } else {
+              next(new WrongPasswordError());
+            }
           return;
         });
     })
@@ -93,11 +98,15 @@ router.post('/login', (req, res, next) => {
 //REST API
 router.post('/register', (req, res, next) => {
 
-    const {userid, username, password} = req.body;
+    const {userid, username, password, hashed_password} = req.body;
     let connection;
 
     if(!userid || !username || !password) {
         return next(new FormNotFilledError());
+    }
+
+    if (userid.search(/[^a-zA-Z0-9_.-]+/) != -1) {
+        return next(new NonCharsInIdError());
     }
 
     pool.getConnection()
@@ -107,7 +116,7 @@ router.post('/register', (req, res, next) => {
     })
     .then(result => {
         if(!result[0].count) {
-            bcrypt.hash(password, saltRounds, function(err, hash) {
+            bcrypt.hash(hashed_password, saltRounds, function(err, hash) {
                 return connection.query(INSERT_USER,[userid, hash, username, 1]);
             });
         } else {

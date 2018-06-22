@@ -1,21 +1,21 @@
 /** INITIALIZE */
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const rp = require('request-promise');
+const rp = require("request-promise");
 
 /** DATABASE */
-const pool = require('../configs/mysql');
-const file_upload = require('../configs/file_upload');
+const pool = require("../configs/mysql");
+const file_upload = require("../configs/file_upload");
 
 /** MIDDLEWARE */
-const auth = require('../middleware/auth');
+const auth = require("../middleware/auth");
 
 /** UTILITY */
-const utils = require('../util/util');
-const nutrition = require('../util/nutrition');
+const utils = require("../util/util");
+const nutrition = require("../util/nutrition");
 
 /** API KEY **/
-const naver_api_key = require('../configs/naver_api_key');
+const naver_api_key = require("../configs/naver_api_key");
 
 // Quries
 const {
@@ -34,37 +34,48 @@ const {
     SELECT_PETFOOD_NAME,
     search_petfood_query,
     count_search_petfood_query
-} = require('../queries/petfood');
+} = require("../queries/petfood");
 
 const {
     COUNT_AND_SELECT_RCMD,
     INSERT_RCMD
-} = require('../queries/review');
+} = require("../queries/review");
 
 const {
     RcmdAlreadyExistError
-} = require('../configs/errors');
+} = require("../configs/errors");
 
 const ADMIN_LEVEL = 2;
 const PETFOOD_ITEMS_PER_PAGE = 5;
 
-router.get('/list/:page', auth, (req, res, next) => {
+// 사료 리스트 페이지
+router.get("/list/:page", auth, (req, res, next) => {
 
     let connection;
     let data = req.data;
     let query_where;
     data.current_page = req.params.page;
 
+    if(!req.query.order_method) {
+        data.order_method = 1;
+    } else{
+        data.order_method = req.query.order_method;
+    }
+
     if (data.session && data.session.user_level == ADMIN_LEVEL) {
         data.is_user_admin = true;
     }
 
+    //쿼리 파라미터들이 있을때 검색모드 on
     if(req.query.petfood_company_id) {
         data.search = true;
         data = Object.assign(data, req.query);
+        //현재 get 파라미터(검색어, 검색 조건, 정렬 방법)를 저장하기
         data.query_string = utils.serialize_get_parameter_petfood(req.query);
     } else {
-        data.query = '';
+        data.query = "";
+        // 정렬 방법만 저장
+        data.query_string = "order_method=" + data.order_method;
     }
 
     pool.getConnection()
@@ -106,7 +117,7 @@ router.get('/list/:page', auth, (req, res, next) => {
                 s.current_protein_content = (s.protein_content_id == data.protein_content_id)? true : false;
             }
 
-            return connection.query(search_petfood_query(data,PETFOOD_ITEMS_PER_PAGE));
+            return connection.query(search_petfood_query(data,PETFOOD_ITEMS_PER_PAGE,data.order_method));
         })
         .then(result => {
             data.result = result;
@@ -118,15 +129,15 @@ router.get('/list/:page', auth, (req, res, next) => {
             utils.inject_paging_information_data(data, result[0].count, PETFOOD_ITEMS_PER_PAGE);
 
             connection.release();
-            return res.render('home', data);
+            return res.render("home", data);
         })
         .catch(err => {
             return next(err);
         });
 });
 
-
-router.get('/info/:petfood_id', auth, (req, res, next) => {
+// 사료 정보 페이지
+router.get("/info/:petfood_id", auth, (req, res, next) => {
     let data = req.data;
 
     //목록을 누르면 돌아갈 페이지를 설정. get parameter인 current_page에 저장되어있음
@@ -145,6 +156,7 @@ router.get('/info/:petfood_id', auth, (req, res, next) => {
     }
 
     let connection;
+
     pool.getConnection()
         .then(conn => {
             connection = conn;
@@ -157,7 +169,7 @@ router.get('/info/:petfood_id', auth, (req, res, next) => {
             data.petfood_item = result[0];
             //사료의 각 성분 별 적정량 받아오기
             data.nutrition_standard = nutrition.nutrition_standard(data.petfood_item.target_age_id);
-            //utils.give_html_and_color_by_eval_nutrition(data.petfood_item);
+            //사료 각 성분의 적정, 과다, 부족을 표시할 html 가져오기
             data.protein = utils.give_html_and_color_by_eval_protein(data.petfood_item.eval_protein);
             data.fat = utils.give_html_and_color_by_eval_fat(data.petfood_item.eval_fat);
             data.calcium = utils.give_html_and_color_by_eval_calcium(data.petfood_item.eval_calcium);
@@ -171,17 +183,18 @@ router.get('/info/:petfood_id', auth, (req, res, next) => {
             utils.process_recent_review_content(data.recent_reviews);
         })
         .then(() => {
-            let shopping_info_api_url = 'https://openapi.naver.com/v1/search/shop.json?display=5&query=' + encodeURI(data.petfood_item.petfood_name);
+            let shopping_info_api_url = "https://openapi.naver.com/v1/search/shop.json?display=5&query=" + encodeURI(data.petfood_item.petfood_name);
 
             let shopping_info_options = {
                 uri: shopping_info_api_url,
                 headers: {
-                    'X-Naver-Client-Id': naver_api_key.CLIENT_ID,
-                    'X-Naver-Client-Secret': naver_api_key.CLIENT_SECRET
+                    "X-Naver-Client-Id": naver_api_key.CLIENT_ID,
+                    "X-Naver-Client-Secret": naver_api_key.CLIENT_SECRET
                 },
                 json: true
              };
 
+             //네이버 쇼핑 api로 관련도 순으로 5개 가져오기
              rp(shopping_info_options)
                 .then( shopping_info => {
                     if(shopping_info.items.length > 0) {
@@ -189,24 +202,25 @@ router.get('/info/:petfood_id', auth, (req, res, next) => {
                         for(s of data.shopping_info) {
                             s.title = s.title.replace(/<\/?[^>]+(>|$)/g, "");
                         }
-                        let lowest_cost_api_url = 'https://openapi.naver.com/v1/search/shop.json?display=1&sort=asc&query=' + encodeURI(data.shopping_info[0].title);
+                        let lowest_cost_api_url = "https://openapi.naver.com/v1/search/shop.json?display=1&sort=asc&query=" + encodeURI(data.shopping_info[0].title);
 
                         let lowest_cost_options = {
                             uri: lowest_cost_api_url,
                             headers: {
-                                'X-Naver-Client-Id': naver_api_key.CLIENT_ID,
-                                'X-Naver-Client-Secret': naver_api_key.CLIENT_SECRET
+                                "X-Naver-Client-Id": naver_api_key.CLIENT_ID,
+                                "X-Naver-Client-Secret": naver_api_key.CLIENT_SECRET
                             },
                             json: true
                          };
 
+                         //가장 관련도가 높은 이름으로 최저가 검색해서 가져오기
                         rp(lowest_cost_options)
                            .then( low_cost_info => {
                                if(low_cost_info.items) {
                                    data.low_cost_info = low_cost_info.items[0];
                                    data.low_cost_info.title = data.low_cost_info.title.replace(/<\/?[^>]+(>|$)/g, "");
                                    connection.release();
-                                   return res.render('petfood_info', data);
+                                   return res.render("petfood_info", data);
                                }
                            })
                            .catch( err => {
@@ -216,7 +230,7 @@ router.get('/info/:petfood_id', auth, (req, res, next) => {
                     }
                     else {
                         connection.release();
-                        return res.render('petfood_info', data);
+                        return res.render("petfood_info", data);
                     }
                 })
                 .catch( err => {
@@ -228,7 +242,8 @@ router.get('/info/:petfood_id', auth, (req, res, next) => {
         });
 });
 
-router.get('/modify/:petfood_id', auth, (req, res, next) => {
+//사료 정보 수정
+router.get("/modify/:petfood_id", auth, (req, res, next) => {
     if (req.session.user_level != ADMIN_LEVEL) {
         return res.redirect("/user/login?required=admin");
     }
@@ -264,14 +279,14 @@ router.get('/modify/:petfood_id', auth, (req, res, next) => {
         })
         .then(() => {
             connection.release();
-            return res.render('upload_petfood', data);
+            return res.render("upload_petfood", data);
         })
         .catch(err => {
             return next(err);
         });
 });
 
-router.get('/upload', auth, (req, res, next) => {
+router.get("/upload", auth, (req, res, next) => {
     if (req.session.user_level != ADMIN_LEVEL) {
         return res.redirect("/user/login?required=admin");
     }
@@ -294,17 +309,17 @@ router.get('/upload', auth, (req, res, next) => {
         })
         .then(() => {
             connection.release();
-            return res.render('upload_petfood', data);
+            return res.render("upload_petfood", data);
         })
         .catch(err => {
             return next(err);
         });
 });
 
-router.post('/upload', (req, res, next) => {
+router.post("/upload", (req, res, next) => {
 
     let nutrition_info = nutrition.assess_nutrition(req.body);
-    let main_ingredient = req.body.ingredients.split(',')[0];
+    let main_ingredient = req.body.ingredients.split(",")[0];
 
     let connection;
 
@@ -326,13 +341,13 @@ router.post('/upload', (req, res, next) => {
         });
 });
 
-router.post('/modify', (req, res, next) => {
+router.post("/modify", (req, res, next) => {
     if (req.session.user_level != ADMIN_LEVEL) {
         return res.redirect("/user/login?required=admin");
     }
 
     let nutrition_info = nutrition.assess_nutrition(req.body);
-    let main_ingredient = req.body.ingredients.split(',')[0];
+    let main_ingredient = req.body.ingredients.split(",")[0];
 
     pool.getConnection()
         .then(conn => {
@@ -351,7 +366,7 @@ router.post('/modify', (req, res, next) => {
         });
 });
 
-router.post('/delete', (req, res, next) => {
+router.post("/delete", (req, res, next) => {
 
     if (req.session.user_level != ADMIN_LEVEL) {
         return res.status(403).json({
@@ -378,14 +393,20 @@ router.post('/delete', (req, res, next) => {
         });
 });
 
-router.post('/upload_image', file_upload.middle_upload, (req, res) => {
+router.post("/upload_image", file_upload.middle_upload, (req, res) => {
     let data = {};
-    data.filename = req.file.filename;
-    data.status = "OK";
+    if (req.file.filename.endsWith(".jpg")
+        || req.file.filename.endsWith(".png")
+        || req.file.filename.endsWith(".gif")) {
+            data.status = "ERROR";
+    } else {
+        data.filename = req.file.filename;
+        data.status = "OK";
+    }
     return res.json(data);
 });
 
-router.post('/rcmd', auth, (req, res, next) => {
+router.post("/rcmd", auth, (req, res, next) => {
 
     const { petfood_rcmd_value, petfood_id } = req.body;
 
@@ -420,7 +441,7 @@ router.post('/rcmd', auth, (req, res, next) => {
 
 });
 
-router.get('/petfood_name_list', (req, res, next) => {
+router.get("/petfood_name_list", (req, res, next) => {
     pool.getConnection()
     .then(conn => {
         connection = conn;

@@ -46,17 +46,17 @@
                     {{/each}}
                     {{#if is_loggedin}}
                         <li class="list-group-item">
-                            <form action="/comment/write" method="post">
+                            <form id="form_comment" action="/comment/write" method="post">
                                 <input type="hidden" name="petfood_review_id" value="{{review_item.petfood_review_id}}" />
                                 <div class="row">
                                     <div class="col-2 text-center">
                                         {{username}}
                                     </div>
                                     <div class="col-8">
-                                        <textarea name="review_comment_content" style="width:100%;" rows="5"></textarea>
+                                        <textarea id="review_comment_content" name="review_comment_content" style="width:100%;" rows="5"></textarea>
                                     </div>
                                     <div class="col-2 text-center">
-                                        <input type="submit" class="btn btn-lg btn-primary" value="작성" />
+                                        <input id="submit_comment" type="submit" class="btn btn-lg btn-primary" value="작성" />
                                     </div>
                                 </div>
                             </form>
@@ -83,6 +83,15 @@
 
 <script>
     $(document).ready(function() {
+        $("#submit_comment").on("click", function(e) {
+            e.preventDefault();
+            if ($("#review_comment_content").val() == "") {
+                alert("댓글을 입력해주세요.");
+            } else {
+                $("#form_comment").submit();
+            }
+        });
+
         $("#btn_delete_item").on('click', function() {
             if (confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
                 $.ajax({

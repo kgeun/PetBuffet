@@ -17,7 +17,7 @@
             </form>
           </div>
         </div>
-        <form {{#if petfood_data}}action="/petfood/modify"{{else}}action="/petfood/upload"{{/if}} method="post">
+        <form id="submit_petfood_form" {{#if petfood_data}}action="/petfood/modify"{{else}}action="/petfood/upload"{{/if}} method="post">
           <input id="petfood_photo_addr" type="hidden" name="petfood_photo_addr" value="{{petfood_data.petfood_photo_addr}}" />
           {{#if petfood_data}}<input id="petfood_id" type="hidden" name="petfood_id" value="{{petfood_data.petfood_id}}" />{{/if}}
           <div class="row mb-4">
@@ -33,7 +33,7 @@
           <div class="row mb-4">
             <div class="col-3">사료 이름</div>
             <div class="col-9">
-              <input value="{{petfood_data.petfood_name}}" name="petfood_name" type="text" class="form-control" placeholder="">
+              <input id="petfood_name" value="{{petfood_data.petfood_name}}" name="petfood_name" type="text" class="form-control" placeholder="">
             </div>
           </div>
           <div class="row mb-4">
@@ -59,29 +59,29 @@
           <div class="row mb-4">
             <div class="col-3">단백질</div>
             <div class="col-3">
-              <input value="{{petfood_data.protein}}" name="protein" type="number" step="0.01" class="form-control" id="exampleFormControlInput1" placeholder="">
+              <input id="protein" value="{{petfood_data.protein}}" name="protein" type="number" step="0.01" class="form-control" id="exampleFormControlInput1" placeholder="">
             </div>
             <div class="col-3">지방</div>
             <div class="col-3">
-              <input value="{{petfood_data.fat}}" name="fat" type="number" step="0.01" class="form-control" id="exampleFormControlInput1" placeholder="">
+              <input id="fat" value="{{petfood_data.fat}}" name="fat" type="number" step="0.01" class="form-control" id="exampleFormControlInput1" placeholder="">
             </div>
           </div>
 
           <div class="row mb-4">
             <div class="col-3">칼슘</div>
             <div class="col-3">
-              <input value="{{petfood_data.calcium}}" name="calcium" type="number" step="0.01" class="form-control" id="exampleFormControlInput1" placeholder="">
+              <input id="calcium" value="{{petfood_data.calcium}}" name="calcium" type="number" step="0.01" class="form-control" id="exampleFormControlInput1" placeholder="">
             </div>
             <div class="col-3">인</div>
             <div class="col-3">
-              <input value="{{petfood_data.phosphorus}}" name="phosphorus" type="number" step="0.01" class="form-control" id="exampleFormControlInput1" placeholder="">
+              <input id="phosphorus" value="{{petfood_data.phosphorus}}" name="phosphorus" type="number" step="0.01" class="form-control" id="exampleFormControlInput1" placeholder="">
             </div>
           </div>
 
           <div class="row mb-4">
-            <div class="col-3">주원료 (,로 구분)</div>
+            <div class="col-3">원료 (,로 구분)</div>
             <div class="col-9">
-              <input value="{{petfood_data.ingredients}}" name="ingredients" type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
+              <input id="ingredients" value="{{petfood_data.ingredients}}" name="ingredients" type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
             </div>
           </div>
 
@@ -121,6 +121,25 @@
           }
         });
       });
-  }); // pre-submit callback
+
+      $("#submit_petfood").on("click",function(e) {
+          e.preventDefault();
+          if($("#petfood_name").val() == "") {
+              alert("사료 이름을 입력해주세요.");
+          } else if ($("#protein").val() == "") {
+              alert("단백질 값을 입력해 주세요.");
+          } else if ($("#fat").val() == "") {
+              alert("지방 값을 입력해 주세요.");
+          } else if ($("#calcium").val() == "") {
+              alert("칼슘 값을 입력해 주세요.");
+          } else if ($("#phosphorus").val() == "") {
+              alert("인 값을 입력해 주세요.");
+          } else if ($("#ingredients").val() == "") {
+              alert("원료 성분을 입력해 주세요.");
+          } else {
+              $("#submit_petfood_form").submit();
+          }
+      });
+  });
 
   </script>

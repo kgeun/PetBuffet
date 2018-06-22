@@ -57,28 +57,28 @@
 
 <script>
 $(document).ready(function() {
-    $("#btn-form-submit").on('click', e => {
+    $("#btn-form-submit").on("click", e => {
         e.preventDefault();
-        if($("#petfood_rcmd_value option:selected").text() == '평점주기') {
-            alert('평점을 선택하지 않으셨습니다.');
-        } else if ($("#petfood_review_title").val() == '') {
-            alert('제목을 입력하지 않으셨습니다.');
-        } else if ($("#petfood_review_content").val() == '') {
-            alert('내용을 입력하지 않으셨습니다.');
+        if($("#petfood_rcmd_value option:selected").text() == "평점주기") {
+            alert("평점을 선택하지 않으셨습니다.");
+        } else if ($("#petfood_review_title").val() == "") {
+            alert("제목을 입력하지 않으셨습니다.");
+        } else if ($("#summernote").val() == "") {
+            alert("내용을 입력하지 않으셨습니다.");
         } else {
             $("#review_form").submit();
         }
     });
-    $('#summernote').summernote({
+    $("#summernote").summernote({
         height: 300,
         toolbar: [
           // [groupName, [list of button]]
-          ['style', ['bold', 'italic', 'underline', 'clear']],
-          ['font', ['strikethrough', 'superscript', 'subscript']],
-          ['fontsize', ['fontsize']],
-          ['color', ['color']],
-          ['para', ['ul', 'ol', 'paragraph']],
-          ['height', ['height']]
+          ["style", ["bold", "italic", "underline", "clear"]],
+          ["font", ["strikethrough", "superscript", "subscript"]],
+          ["fontsize", ["fontsize"]],
+          ["color", ["color"]],
+          ["para", ["ul", "ol", "paragraph"]],
+          ["height", ["height"]]
         ]
     });
 });

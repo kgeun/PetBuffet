@@ -68,6 +68,16 @@ class RcmdAlreadyExistError extends Error {
     }
 }
 
+class NonCharsInIdError extends Error {
+    constructor() {
+        super();
+        this.error_object = {
+            status : "ERROR",
+            message : "아이디에 들어갈 수 없는 문자가 들어갔습니다."
+        };
+    }
+}
+
 module.exports = {
     NoIdOrPasswordError,
     UserNotFoundError,
@@ -75,5 +85,6 @@ module.exports = {
     FormNotFilledError,
     IdDuplicateError,
     NoPermissionError,
-    RcmdAlreadyExistError
+    RcmdAlreadyExistError,
+    NonCharsInIdError
 }

@@ -71,10 +71,10 @@
     <div class="card mb-4 box-shadow">
       <div class="card-header">
         <div class="row">
-          <div class="col-2">최신순</div>
-          <div class="col-6"><span class="my-0 font-weight-normal">사료명</span></div>
-          <div class="col-2"><span class="my-0 font-weight-normal">영양점수</span></div>
-          <div class="col-2"><span class="my-0 font-weight-normal">소비자평점</span></div>
+          <div class="col-2"><a href="/petfood/list/1?order_method=1&{{#if search}}{{query_string}}{{/if}}">최신순</a></div>
+          <div class="col-6"><span class="my-0 font-weight-normal"><a href="/petfood/list/1?order_method=2&{{#if search}}{{query_string}}{{/if}}">사료명</a></span></div>
+          <div class="col-2"><span class="my-0 font-weight-normal"><a href="/petfood/list/1?order_method=3&{{#if search}}{{query_string}}{{/if}}">영양점수</a></span></div>
+          <div class="col-2"><span class="my-0 font-weight-normal"><a href="/petfood/list/1?order_method=4&{{#if search}}{{query_string}}{{/if}}">소비자평점</a></span></div>
         </div>
       </div>
 
@@ -100,20 +100,20 @@
         <nav style="float:right;">
           <ul class="pagination">
             <li class="page-item {{#if first_page}} disabled{{/if}}">
-              <a class="page-link" href="/petfood/list/{{prev_page}}?{{query_string}}" aria-label="Previous">
+              <a class="page-link" href="/petfood/list/{{prev_page}}?{{#if search}}order_method={{order_method}}&{{/if}}{{query_string}}" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
                 <span class="sr-only">Previous</span>
               </a>
             </li>
             {{#each paging}}
             <li class="page-item {{#if paging_currentpage}} disabled {{/if}}">
-                <a class="page-link" href="/petfood/list/{{paging_page}}?{{../query_string}}">
+                <a class="page-link" href="/petfood/list/{{paging_page}}?{{#if ../search}}order_method={{../order_method}}&{{/if}}{{../query_string}}">
                     {{paging_page}}
                 </a>
             </li>
             {{/each}}
             <li class="page-item {{#if last_page}}disabled{{/if}}">
-              <a class="page-link" href="/petfood/list/{{next_page}}?{{query_string}}" aria-label="Next">
+              <a class="page-link" href="/petfood/list/{{next_page}}?{{#if search}}order_method={{order_method}}&{{/if}}{{query_string}}" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
                 <span class="sr-only">Next</span>
               </a>

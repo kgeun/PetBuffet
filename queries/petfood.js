@@ -119,7 +119,13 @@ const SELECT_PETFOOD_NAME =
 FROM
     petfood`;
 
-let search_petfood_query = (data,petfood_items_per_page) => {
+const ORDER_BY_LATEST = 1;
+const ORDER_BY_NAME = 2;
+const ORDER_BY_NUTRITION_SCORE = 3;
+const ORDER_BY_CUSTOMER_SCORE = 4;
+
+let search_petfood_query = (data,petfood_items_per_page,order_method) => {
+
     let query =
     `SELECT
         petfood_photo_addr, petfood_id, petfood_name, nutrition_score,
@@ -132,10 +138,34 @@ let search_petfood_query = (data,petfood_items_per_page) => {
 
     query += get_where_query_in_search(data);
 
-    query +=
-    `ORDER BY
-        petfood_id DESC
-    LIMIT 5 OFFSET ${(data.current_page - 1) * petfood_items_per_page}`;
+    switch(Number(order_method)) {
+        default:
+        case ORDER_BY_LATEST:
+        query +=
+        `ORDER BY
+            petfood_id DESC `;
+        break;
+
+        case ORDER_BY_NAME:
+        query +=
+        `ORDER BY
+            petfood_name `;
+        break;
+
+        case ORDER_BY_CUSTOMER_SCORE:
+        query +=
+        `ORDER BY
+            customer_score DESC `;
+        break;
+
+        case ORDER_BY_NUTRITION_SCORE:
+        query +=
+        `ORDER BY
+            nutrition_score DESC `;
+        break;
+    }
+
+    query += `LIMIT ${petfood_items_per_page} OFFSET ${(data.current_page - 1) * petfood_items_per_page}`;
 
     return query;
 }
@@ -165,7 +195,7 @@ let get_where_query_in_search = data => {
         query_where += `AND target_age_id = ${data.target_age_id} `;
     }
     if(Number(data.main_ingredient_id)) {
-        query_where += `AND main_ingredient LIKE '%${data.main_ingredient[data.main_ingredient_id-1].main_ingredient}%' `;
+        query_where += `AND main_ingredient LIKE '%${data.main_ingredient[data.main_ingredient_id-1].main_ingredient_name}%' `;
     }
     if(Number(data.protein_content_id)) {
         if(data.protein_content_id == 1) {

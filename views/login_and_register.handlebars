@@ -2,10 +2,12 @@
   <div class="row">
 			<div class="col-md-6 offset-md-3">
                 {{#if required}}
-                <div class="jumbotron pt-2 pb-2">
-                    <p><h5>{{login_message}}</h5></p>
+                <div id="login_message" class="jumbotron pt-2 pb-2">
+                    <p><h5>{{{login_message}}}</h5></p>
                 </div>
                 {{/if}}
+                <div id="login_register_alert">
+                </div>
 				<div class="card panel-login">
 					<div class="card-header panel-heading">
 						<div class="row text-center">
@@ -23,6 +25,7 @@
 							<div class="col-12">
 								<form id="login-form" action="/user/login" method="post" role="form" style="display: block;">
                                     <input type="hidden" name="referer" value="{{referer}}"/>
+                                    <input type="hidden" id="login-hashed_password" name="hashed_password"/>
 									<div class="form-group">
 										<input type="text" name="userid" id="login-userid" tabindex="1" class="form-control" placeholder="아이디">
 									</div>
@@ -38,6 +41,7 @@
 									</div>
 								</form>
 								<form id="register-form" action="/user/register" method="post" role="form" style="display: none;">
+                                    <input type="hidden" id="register-hashed_password" name="hashed_password"/>
 									<div class="form-group">
 										<input type="text" name="userid" id="register-userid" tabindex="1" class="form-control" placeholder="아이디" value="">
 									</div>
@@ -66,6 +70,7 @@
 		</div>
 	</div>
 
+<script src="/js/sha256.js"></script>
 <script>
   $(document).ready(function() {
     $(function() {
@@ -86,26 +91,34 @@
     });
 
     $("#register-submit").on('click',function(e){
-      e.preventDefault();
-      if($("#register-confirm-password").prop("value") !== $("#register-password").prop("value")) {
-        alert('비밀번호와 비밀번호 확인이 같지 않습니다.');
-      } else {
-        $.ajax({
-            url:'/user/register',
-            type:'post',
-            data:$('#register-form').serialize(),
-            success:function(data){
-              alert(data.message);
-              if(data.status == "OK"){
-                location.href="/user/login";
-              }
-            }
-        });
+        e.preventDefault();
+        if($("#register-confirm-password").prop("value") !== $("#register-password").prop("value")) {
+            alert('비밀번호와 비밀번호 확인이 같지 않습니다.');
+        } else {
+            $("#register-hashed_password").val(SHA256($("#register-password").val()));
+            $.ajax({
+                url: '/user/register',
+                type: 'post',
+                data: $('#register-form').serialize(),
+                success: function(data){
+                    if(data.status == "OK"){
+                        location.href="/user/login?required=register";
+                    }
+                    else {
+                        let alert_html = "<div class='alert alert-danger' role='alert'>" +
+                                            data.message
+                                        + "</div>";
+                        $("#login_register_alert").html(alert_html);
+                    }
+                }
+            });
+
       }
     });
 
     $("#login-submit").on('click',function(e){
       e.preventDefault();
+      $("#login-hashed_password").val(SHA256($("#login-password").val()));
       $.ajax({
           url:'/user/login',
           type:'post',
@@ -117,6 +130,14 @@
                 } else {
                     location.href=data.referer;
                 }
+            }
+            else {
+                let alert_html = "<div class='alert alert-danger' role='alert'>" +
+                                    data.message
+                                + "</div>";
+                $("#login_register_alert").html(alert_html);
+                $("#login_message").hide();
+                $("#login-password").val("");
             }
           }
       });
