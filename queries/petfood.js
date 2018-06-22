@@ -119,6 +119,14 @@ const SELECT_PETFOOD_NAME =
 FROM
     petfood`;
 
+const SELECT_DELETING_PHOTO =
+`SELECT
+    petfood_photo_addr
+FROM
+    petfood
+WHERE
+    petfood_id = ?`;
+
 const ORDER_BY_LATEST = 1;
 const ORDER_BY_NAME = 2;
 const ORDER_BY_NUTRITION_SCORE = 3;
@@ -226,6 +234,7 @@ module.exports = {
     SELECT_MAIN_INGREDIENT,
     SELECT_PROTEIN_CONTENT,
     SELECT_PETFOOD_NAME,
+    SELECT_DELETING_PHOTO,
     search_petfood_query,
     count_search_petfood_query
 }

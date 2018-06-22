@@ -32,6 +32,7 @@ const {
     SELECT_MAIN_INGREDIENT,
     SELECT_PROTEIN_CONTENT,
     SELECT_PETFOOD_NAME,
+    SELECT_DELETING_PHOTO,
     search_petfood_query,
     count_search_petfood_query
 } = require("../queries/petfood");
@@ -70,12 +71,8 @@ router.get("/list/:page", auth, (req, res, next) => {
     if(req.query.petfood_company_id) {
         data.search = true;
         data = Object.assign(data, req.query);
-        //현재 get 파라미터(검색어, 검색 조건, 정렬 방법)를 저장하기
-        data.query_string = utils.serialize_get_parameter_petfood(req.query);
     } else {
         data.query = "";
-        // 정렬 방법만 저장
-        data.query_string = "order_method=" + data.order_method;
     }
 
     pool.getConnection()
@@ -325,7 +322,6 @@ router.post("/upload", (req, res, next) => {
 
     pool.getConnection()
         .then(conn => {
-            // 펼침연산자로 한번에 넣기 *** 종한쓰 HELP NEED
             connection = conn;
             return connection.query(INSERT_PETFOOD, [req.body.petfood_company_id, req.body.petfood_name, req.body.protein,
                 req.body.fat, req.body.calcium, req.body.phosphorus, req.body.ingredients,
@@ -377,7 +373,15 @@ router.post("/delete", (req, res, next) => {
 
     pool.getConnection()
         .then(conn => {
+            // 삭제할 사료의 사진 이름을 가져옴
             connection = conn;
+            return connection.query(SELECT_DELETING_PHOTO, [req.body.petfood_id]);
+        })
+        .then(result => {
+            // 사진 이름으로 사진 삭제
+            utils.remove_petfood_photo(result[0].petfood_photo_addr);
+
+            //DB에서 해당하는 row 삭제
             return connection.query(DELETE_PETFOOD, [req.body.petfood_id]);
         })
         .then(result => {

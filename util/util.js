@@ -1,5 +1,6 @@
 const hbs = require('handlebars');
 const nutrition = require('./nutrition');
+const fs = require("fs");
 
 const GOOD_HTML = `<td style="background-color:rgb(252, 255, 245);color:#2C662D;"><h5><i class="fas fa-check"></i> 적당</h5></td>`;
 const LACK_HTML = `<td style="background-color:rgb(255, 246, 246);color:#9F3A38;"><h5><i class="fas fa-exclamation-triangle"></i> 부족</h5></td>`;
@@ -208,12 +209,6 @@ module.exports.process_recent_review_content = recent_reviews => {
     }
 }
 
-module.exports.serialize_get_parameter_petfood = query => {
-    return `query=${query.query}&petfood_company_id=${query.petfood_company_id}
-    &main_ingredient_id=${query.main_ingredient_id}
-    &target_age_id=${query.target_age_id}&protein_content_id=${query.protein_content_id}`;
-}
-
-module.exports.serialize_get_parameter_review = query => {
-    return `query=${query.query}`;
+module.exports.remove_petfood_photo = photo_name => {
+    fs.unlinkSync("./public/petfood_images/" + photo_name);
 }

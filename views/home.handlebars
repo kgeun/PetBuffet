@@ -71,10 +71,10 @@
     <div class="card mb-4 box-shadow">
       <div class="card-header">
         <div class="row">
-          <div class="col-2"><a href="/petfood/list/1?order_method=1&{{#if search}}{{query_string}}{{/if}}">최신순</a></div>
-          <div class="col-6"><span class="my-0 font-weight-normal"><a href="/petfood/list/1?order_method=2&{{#if search}}{{query_string}}{{/if}}">사료명</a></span></div>
-          <div class="col-2"><span class="my-0 font-weight-normal"><a href="/petfood/list/1?order_method=3&{{#if search}}{{query_string}}{{/if}}">영양점수</a></span></div>
-          <div class="col-2"><span class="my-0 font-weight-normal"><a href="/petfood/list/1?order_method=4&{{#if search}}{{query_string}}{{/if}}">소비자평점</a></span></div>
+          <div class="col-2"><a id="order_by_latest">최신순</a></div>
+          <div class="col-6"><span class="my-0 font-weight-normal"><a id="order_by_name">사료명</a></span></div>
+          <div class="col-2"><span class="my-0 font-weight-normal"><a id="order_by_nutrition_score">영양점수</a></span></div>
+          <div class="col-2"><span class="my-0 font-weight-normal"><a id="order_by_customer_score">소비자평점</a></span></div>
         </div>
       </div>
 
@@ -100,20 +100,20 @@
         <nav style="float:right;">
           <ul class="pagination">
             <li class="page-item {{#if first_page}} disabled{{/if}}">
-              <a class="page-link" href="/petfood/list/{{prev_page}}?{{#if search}}order_method={{order_method}}&{{/if}}{{query_string}}" aria-label="Previous">
+              <a id="arrow_prev" class="page-link" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
                 <span class="sr-only">Previous</span>
               </a>
             </li>
             {{#each paging}}
             <li class="page-item {{#if paging_currentpage}} disabled {{/if}}">
-                <a class="page-link" href="/petfood/list/{{paging_page}}?{{#if ../search}}order_method={{../order_method}}&{{/if}}{{../query_string}}">
+                <a id="paging_button_{{paging_page}}" class="page-link">
                     {{paging_page}}
                 </a>
             </li>
             {{/each}}
             <li class="page-item {{#if last_page}}disabled{{/if}}">
-              <a class="page-link" href="/petfood/list/{{next_page}}?{{#if search}}order_method={{order_method}}&{{/if}}{{query_string}}" aria-label="Next">
+              <a id="arrow_next" class="page-link" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
                 <span class="sr-only">Next</span>
               </a>
@@ -126,6 +126,15 @@
 </div>
 
 <script>
+$.urlParam = function(name){
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results==null){
+       return "";
+    }
+    else{
+       return results[1];
+    }
+}
 
 $( document ).ready(function() {
     $("#btn_initialize").on('click', function() {
@@ -140,5 +149,33 @@ $( document ).ready(function() {
           source: data
         });
     });
+
+    var url_query;
+    {{#if search}}
+    url_query = "&query=" + $.urlParam("query") + "&petfood_company_id=" + $.urlParam("petfood_company_id")
+    + "&main_ingredient_id=" + $.urlParam("main_ingredient_id") + "&target_age_id="
+    + $.urlParam("target_age_id") + "&protein_content_id=" + $.urlParam("protein_content_id");
+    {{else}}
+    url_query = "";
+    {{/if}}
+
+    //정렬
+    $("#order_by_latest").attr("href","/petfood/list/1?order_method=1" + url_query);
+    $("#order_by_name").attr("href","/petfood/list/1?order_method=2" + url_query);
+    $("#order_by_nutrition_score").attr("href","/petfood/list/1?order_method=3" + url_query);
+    $("#order_by_customer_score").attr("href","/petfood/list/1?order_method=4" + url_query);
+
+    //pagination
+    $("#arrow_prev").attr("href","/petfood/list/{{prev_page}}?order_method="
+            + $.urlParam("order_method") + url_query);
+
+    $("#arrow_next").attr("href","/petfood/list/{{next_page}}?order_method="
+            + $.urlParam("order_method") + url_query);
+
+    for(var i = 1 ; i < {{number_of_page}}+1 ; i++ ) {
+        $("#paging_button_" + i).attr("href","/petfood/list/" + i + "?order_method="
+                + $.urlParam("order_method") + url_query);
+    }
+
 });
 </script>
