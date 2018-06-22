@@ -98,12 +98,11 @@
     {{#unless petfood_data}}$("#submit_petfood").hide();{{/unless}}
     $("#submit_petfood_image_form").submit(function (e) {
       e.preventDefault();
-      var formData = new FormData(this);
-      console.log(formData);
+      var form_data = new FormData(this);
       $.ajax({
           type: "POST",
           url: "/petfood/upload_image",
-          data: formData,
+          data: form_data,
           processData: false,
           contentType: false,
           success: function(r){
@@ -114,7 +113,9 @@
                 $("#petfood_photo_addr").attr("value",r.filename);
                 $("#uploaded_petfood_image").html(img);
                 $("#submit_petfood").show();
-              }
+            } else {
+                $("#uploaded_petfood_image").html("이미지 파일이 아닙니다. 다시 업로드하세요.");
+            }
           },
           error: function (e) {
               console.log("some error", e);

@@ -374,9 +374,7 @@ router.post("/delete", (req, res, next) => {
             message : "권한이 없습니다."
         });
     }
-    /* 이미 삭제된 것에 대해서 alert을 줄것인가
-     *********** 관리자가 유저의 권한을 설정하는 페이지도 있으면 good
-     */
+
     pool.getConnection()
         .then(conn => {
             connection = conn;
@@ -398,10 +396,10 @@ router.post("/upload_image", file_upload.middle_upload, (req, res) => {
     if (req.file.filename.endsWith(".jpg")
         || req.file.filename.endsWith(".png")
         || req.file.filename.endsWith(".gif")) {
-            data.status = "ERROR";
+            data.filename = req.file.filename;
+            data.status = "OK";
     } else {
-        data.filename = req.file.filename;
-        data.status = "OK";
+        data.status = "ERROR";
     }
     return res.json(data);
 });
