@@ -11,12 +11,22 @@ pool = mysql.createPool({
     connectionLimit: 5
 });
 */
-
+/*
 pool = mysql.createPool({
     host: 'sql12.freemysqlhosting.net',
     user: 'sql12241516',
     database: 'sql12241516',
     password: 'bwHklI8lF3',
+    port: '3306',
+    connectionLimit: 5
+});
+*/
+
+pool = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    database: 'petbuffet',
+    password: 'dlrudrms',
     port: '3306',
     connectionLimit: 5
 });

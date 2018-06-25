@@ -1,10 +1,10 @@
 <div class="container mb-4">
     <div class="row">
       <div class="col-12">
-        <a href="/petfood/list/{{current_page}}?{{query_string}}">
+        <a id="go_list" href="/petfood/list/{{current_page}}?">
           <button type="button" class="btn btn-lg btn-secondary" style="float:left;">&lt; 사료 목록</button>
         </a>
-        <a href="/review/list/{{petfood_item.petfood_id}}">
+        <a id="go_review" href="/review/list/{{petfood_item.petfood_id}}?">
           <button type="button" class="btn btn-lg btn-secondary ml-3" style="float:right;">리뷰 목록 &gt;</button>
         </a>
         {{#if is_user_admin}}
@@ -342,8 +342,19 @@
 
 <script src="/js/jquery-knob/js/jquery.knob.js"></script>
 <script>
+$.urlParam = function(name){
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results==null){
+       return "";
+    }
+    else{
+       return results[1];
+    }
+}
+
 $(document).ready(function() {
     $(".knob").knob();
+
     $("#btn_delete_item").on('click',function(){
         if (confirm('정말로 이 사료정보를 삭제하시겠습니까?')) {
             $.ajax({
@@ -381,7 +392,6 @@ $(document).ready(function() {
         });
     });
 
-
     $("#nutrition_score").rateYo({
         rating: {{petfood_item.nutrition_score}}/4*5,
         readOnly: true,
@@ -396,6 +406,15 @@ $(document).ready(function() {
         starWidth: "25px"
     });
     {{/if}}
+
+    if($.urlParam("petfood_company_id") != '') {
+        var url_query = "&query=" + $.urlParam("query") + "&petfood_company_id=" + $.urlParam("petfood_company_id")
+        + "&main_ingredient_id=" + $.urlParam("main_ingredient_id") + "&target_age_id="
+        + $.urlParam("target_age_id") + "&protein_content_id=" + $.urlParam("protein_content_id");
+
+        $("#go_list").attr("href",$("#go_list").attr("href") + url_query);
+        $("#go_review").attr("href",$("#go_review").attr("href") + "&current_page=" + $.urlParam("current_page") + url_query);
+    }
 
 });
 </script>

@@ -81,18 +81,33 @@
 
       <div class="card-body">
         {{#each result}}
-        <a id="petfood_link_{{@index}}" href="/petfood/info/{{petfood_id}}?current_page={{../current_page}}&" class="black-color-link">
+        <a id="petfood_link_{{@index}}" href="/petfood/info/{{petfood_id}}?current_page={{../current_page}}" class="black-color-link">
         <div class="row">
           <div class="col-md-2 col-sm-12"><img style="width:70px;" src="/petfood_images/{{petfood_photo_addr}}"/></div>
           <div class="col-md-6 col-sm-12"><div class="petfood-main-list-content"><h5 class="my-0 font-weight-normal">{{petfood_name}}</h5><small><i class="fas fa-check-circle"></i>&nbsp;주원료 : {{main_ingredient}} &nbsp;&nbsp; <i class="fas fa-utensils"></i>&nbsp;대상 연령 : {{target_age}}</small></div></div>
           <div class="col-md-2 col-sm-12"><h4 class="my-0 font-weight-normal">
               <div style="display:inline;width:73px;height:73px;margin:0px;">
-                  <input data-max="4" type="text" class="knob" value="{{nutrition_score}}" data-width="73" data-height="73"
-                  data-fgcolor="skyblue" data-readonly="true" readonly="readonly"
+                  <input data-linecap="round" data-max="4" type="text" class="knob" value="{{nutrition_score}}" data-width="73" data-height="73"
+                  data-fgcolor="#DE5B49" data-readonly="true" readonly="readonly" data-skin="tron"    data-thickness=".3"
                   style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
               </div>
           </h4></div>
-          <div class="col-md-2 col-sm-12"><div class="petfood-main-list-content"><h4 class="my-0 font-weight-normal">{{#if customer_score}}{{customer_score}}{{else}}<small>평가 없음</small>{{/if}}</h4></div></div>
+          <div class="col-md-2 col-sm-12">
+              <h4 class="my-0 font-weight-normal">
+                  {{#if customer_score}}
+                      <div style="display:inline;width:73px;height:73px;margin:0px;">
+                          <input data-linecap="round" data-max="5" type="text" class="knob" value="{{customer_score}}" data-width="73" data-height="73"
+                          data-fgcolor="#E37B40" data-readonly="true" readonly="readonly" data-skin="tron"    data-thickness=".3"
+                          style="width: 49px; height: 30px; position: absolute; vertical-align: middle;  margin-top: 30px; margin-left: -69px; border: 0px; background: none; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal;  font-size: 18px; line-height: normal; font-family: Arial; text-align: center;  color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none;"/>
+                      </div>
+
+                  {{else}}
+                    <div class="petfood-main-list-content">
+                        <small>평가 없음</small>
+                    </div>
+                  {{/if}}
+              </h4>
+          </div>
         </div>
         </a>
          {{#unless @last}}<hr>{{/unless}}
@@ -145,7 +160,9 @@ $.urlParam = function(name){
 }
 
 $( document ).ready(function() {
-    $(".knob").knob();
+    $(".knob").knob({
+        skin: "tron"
+    });
 
     $("#btn_initialize").on('click', function() {
         $("#petfood_company_id").val("0").prop("selected", true);
@@ -187,7 +204,7 @@ $( document ).ready(function() {
                 + $.urlParam("order_method") + url_query);
     }
 
-    for(var i = 1 ; i <= {{result.length}} ; i++ ) {
+    for(var i = 0 ; i <= {{result.length}} ; i++ ) {
         $("#petfood_link_" + i).attr("href",$("#petfood_link_" + i).attr("href") + url_query);
     }
 

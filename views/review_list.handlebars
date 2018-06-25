@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row mb-3">
         <div class="col-12">
-            <a href="/petfood/info/{{petfood_info.petfood_id}}">
+            <a id="go_info" href="/petfood/info/{{petfood_info.petfood_id}}">
           <button type="button" class="btn btn-lg btn-secondary">&lt; 사료 정보</button>
         </a>
         </div>
@@ -73,12 +73,43 @@
     <div class="row mt-5">
         <div class="col-md-6 offset-md-3">
             <div class="text-center">
-                <form method="get" action="/review/list/{{petfood_info.petfood_id}}" class="form-inline">
-                    <input type="text" value="{{query}}" name="query" id="login-submit" style="width:80%" class="form-control" placeholder="제목 또는 내용">
-                    <input type="submit" class="ml-2 btn btn-primary" id="login-submit" value="검색">
+                <form id="review_search_form" method="get" action="/review/list/{{petfood_info.petfood_id}}" class="form-inline">
+                    <input id="review_search_input" type="text" value="{{r_query}}" name="r_query" id="login-submit" style="width:80%" class="form-control" placeholder="제목 또는 내용">
+                    <input id="review_search_submit" type="submit" class="ml-2 btn btn-primary" id="login-submit" value="검색">
                 </form>
             </div>
         </div>
     </div>
 
 </div>
+<script>
+$.urlParam = function(name){
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results==null){
+       return "";
+    }
+    else{
+       return results[1];
+    }
+}
+
+$(document).ready(function() {
+    var url_query = "?current_page=" + $.urlParam("current_page") + "&query="
+    + $.urlParam("query") + "&petfood_company_id=" + $.urlParam("petfood_company_id")
+    + "&main_ingredient_id=" + $.urlParam("main_ingredient_id") + "&target_age_id="
+    + $.urlParam("target_age_id") + "&protein_content_id=" + $.urlParam("protein_content_id");
+
+    //$("#review_search_form").attr("action",$("#review_search_form").attr("action") + url_query);
+
+    if($.urlParam("petfood_company_id") != '') {
+        $("#review_search_submit").on('click',function(e){
+            e.preventDefault();
+            location.href = "/review/list/{{petfood_info.petfood_id}}" + url_query
+                                + "&r_query=" + $("#review_search_input").val();
+        });
+
+        $("#go_info").attr("href",$("#go_info").attr("href") + url_query);
+    }
+
+});
+</script>

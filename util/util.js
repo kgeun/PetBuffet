@@ -210,5 +210,9 @@ module.exports.process_recent_review_content = recent_reviews => {
 }
 
 module.exports.remove_petfood_photo = photo_name => {
-    fs.unlinkSync("./public/petfood_images/" + photo_name);
+    try {
+        fs.unlinkSync("./public/petfood_images/" + photo_name);
+    } catch(err) {
+        console.log(err.message);
+    }
 }

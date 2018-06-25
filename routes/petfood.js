@@ -148,9 +148,6 @@ router.get("/info/:petfood_id", auth, (req, res, next) => {
         data.is_user_admin = true;
     }
 
-    if(req.query.petfood_company_id) {
-        data.query_string = utils.serialize_get_parameter_petfood(req.query);
-    }
 
     let connection;
 

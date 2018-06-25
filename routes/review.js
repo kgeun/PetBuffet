@@ -45,9 +45,8 @@ router.get('/list/:petfood_id', auth, (req, res, next) => {
         data.current_page = req.query.page;
     }
 
-    if(req.query.query) {
-        data.query = req.query.query;
-        data.query_string = utils.serialize_get_parameter_review(req.query);
+    if(req.query.r_query) {
+        data.r_query = req.query.r_query;
     }
 
     pool.getConnection()
@@ -56,12 +55,12 @@ router.get('/list/:petfood_id', auth, (req, res, next) => {
         if (!data.query) {
             data.query = '';
         }
-        return connection.query(COUNT_REVIEW,[req.params.petfood_id, '%' + data.query + '%', '%' + data.query + '%']);
+        return connection.query(COUNT_REVIEW,[req.params.petfood_id, '%' + data.r_query + '%', '%' + data.r_query + '%']);
     })
     .then(result => {
         utils.inject_paging_information_data(data,result[0].count,REVIEW_ITEMS_PER_PAGE);
         return connection.query(SELECT_REVIEW_TITLE_INFO,
-            [req.params.petfood_id, '%' + data.query + '%', '%' + data.query + '%',
+            [req.params.petfood_id, '%' + data.r_query + '%', '%' + data.r_query + '%',
             REVIEW_ITEMS_PER_PAGE, (data.current_page-1)*REVIEW_ITEMS_PER_PAGE,]);
     })
     .then(result => {
