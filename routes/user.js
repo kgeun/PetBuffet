@@ -18,7 +18,8 @@ const {
     WrongPasswordError,
     FormNotFilledError,
     IdDuplicateError,
-    NonCharsInIdError
+    NonCharsInIdError,
+    IdValidationError
 } = require('../configs/errors')
 
 /** UTILS */
@@ -106,7 +107,7 @@ router.post('/register', (req, res, next) => {
     }
 
     if (userid.search(/[^a-zA-Z0-9_.-]+/) != -1) {
-        return next(new NonCharsInIdError());
+        return next(new IdValidationError());
     }
 
     pool.getConnection()

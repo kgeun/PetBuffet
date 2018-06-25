@@ -149,7 +149,6 @@ router.get("/info/:petfood_id", auth, image_url, (req, res, next) => {
         data.is_user_admin = true;
     }
 
-
     let connection;
 
     pool.getConnection()

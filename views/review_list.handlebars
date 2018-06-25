@@ -25,7 +25,7 @@
                         <div class="row">
                             <div class="col-1 text-center" scope="row">{{petfood_review_id}}</div>
                             <div class="col-1 text-center">{{petfood_rcmd_value}}</div>
-                            <div class="col-6"><a href="/review/content/{{petfood_review_id}}?page={{../current_page}}">{{petfood_review_title}}&nbsp;<small>({{number_of_comments}})</small></a></div>
+                            <div class="col-6"><a class="go_review_content" href="/review/content/{{petfood_review_id}}?page={{../current_page}}">{{petfood_review_title}}&nbsp;<small>({{number_of_comments}})</small></a></div>
                             <div class="col-2 text-center">{{username}}</div>
                             <div class="col-2 text-center">{{creation_datetime}}</div>
                         </div>
@@ -94,22 +94,28 @@ $.urlParam = function(name){
 }
 
 $(document).ready(function() {
-    var url_query = "?current_page=" + $.urlParam("current_page") + "&query="
+    var url_query = "current_page=" + $.urlParam("current_page") + "&query="
     + $.urlParam("query") + "&petfood_company_id=" + $.urlParam("petfood_company_id")
     + "&main_ingredient_id=" + $.urlParam("main_ingredient_id") + "&target_age_id="
     + $.urlParam("target_age_id") + "&protein_content_id=" + $.urlParam("protein_content_id");
 
     //$("#review_search_form").attr("action",$("#review_search_form").attr("action") + url_query);
 
-    if($.urlParam("petfood_company_id") != '') {
+    if($.urlParam("petfood_company_id") != "") {
         $("#review_search_submit").on('click',function(e){
             e.preventDefault();
-            location.href = "/review/list/{{petfood_info.petfood_id}}" + url_query
+            location.href = "/review/list/{{petfood_info.petfood_id}}?" + url_query
                                 + "&r_query=" + $("#review_search_input").val();
         });
 
-        $("#go_info").attr("href",$("#go_info").attr("href") + url_query);
+        $("#go_info").attr("href",$("#go_info").attr("href") + "?" + url_query);
+
+        $(".go_review_content").attr("href", $(".go_review_content").attr("href") + "&" + url_query);
     }
 
+    if($.urlParam("r_query") != "") {
+        $(".go_review_content").attr("href", $(".go_review_content").attr("href") + "&r_query="
+                                        + $.urlParam("r_query"));
+    }
 });
 </script>

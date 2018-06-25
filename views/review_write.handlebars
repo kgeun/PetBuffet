@@ -65,6 +65,10 @@ $(document).ready(function() {
             alert("제목을 입력하지 않으셨습니다.");
         } else if ($("#summernote").val() == "") {
             alert("내용을 입력하지 않으셨습니다.");
+        } else if ($("#petfood_review_title").val().length > 28) {
+            alert("제목이 너무 깁니다.");
+        } else if ($("#summernote").val().length > 2000) {
+            alert("본문이 너무 깁니다.");
         } else {
             $("#review_form").submit();
         }

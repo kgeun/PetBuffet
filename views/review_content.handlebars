@@ -1,8 +1,8 @@
 <div class="container">
     <div class="row mb-3">
         <div class="col-12">
-            <a href="/review/list/{{petfood_info.petfood_id}}?page={{page}}">
-          <button type="button" class="btn btn-lg btn-secondary">&lt; 리뷰 목록</button>
+            <a id="go_review_list" href="/review/list/{{petfood_info.petfood_id}}?page={{page}}">
+            <button type="button" class="btn btn-lg btn-secondary">&lt; 리뷰 목록</button>
         </a>
         </div>
     </div>
@@ -82,70 +82,55 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        $("#submit_comment").on("click", function(e) {
-            e.preventDefault();
-            if ($("#review_comment_content").val() == "") {
-                alert("댓글을 입력해주세요.");
-            } else {
-                $("#form_comment").submit();
-            }
-        });
+$.urlParam = function(name){
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results==null){
+       return "";
+    }
+    else{
+       return results[1];
+    }
+}
+$(document).ready(function() {
+    $("#submit_comment").on("click", function(e) {
+        e.preventDefault();
+        if ($("#review_comment_content").val() == "") {
+            alert("댓글을 입력해주세요.");
+        } else if($("#review_comment_content").val().length > 2000) {
+            alert("입력하신 내용이 너무 깁니다.");
+        } else {
+            $("#form_comment").submit();
+        }
+    });
 
-        $("#btn_delete_item").on('click', function() {
-            if (confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
-                $.ajax({
-                    url: "/review/delete",
-                    type: "POST",
-                    data: {
-                        "petfood_review_id": {{review_item.petfood_review_id}}
-                    },
-                    success: function(data) {
-                        alert("삭제가 완료되었습니다.");
-                        location.href = "/review/list/{{petfood_info.petfood_id}}?page={{page}}";
-                    },
-                    error: function(error) {
-                        alert("Error!");
-                    }
-                });
-            }
-        });
-
-        $(".remove_comment").on('click', function() {
-            if (confirm("이 댓글을 정말 삭제하시겠습니까?")) {
-                $.ajax({
-                    url: "/comment/delete",
-                    type: "POST",
-                    data: {
-                        "review_comment_id": $(this).attr('review_comment_id'),
-                        "user_num": $(this).attr('user_num'),
-                        "petfood_review_id": {{review_item.petfood_review_id}}
-                    },
-                    success: function(data) {
-                        alert(data.message);
-                        location.href = "/review/content/{{review_item.petfood_review_id}}";
-                    },
-                    error: function(error) {
-                        alert("Error!");
-                    }
-                });
-            }
-        });
-
-        $(".modify_comment").on('click', function() {
-            var review_comment_content = prompt("수정할 댓글 내용", $("#comment_" + $(this).attr('review_comment_id')).html());
-            if (review_comment_content === null) {
-                return;
-            }
-
+    $("#btn_delete_item").on('click', function() {
+        if (confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
             $.ajax({
-                url: "/comment/update",
+                url: "/review/delete",
+                type: "POST",
+                data: {
+                    "petfood_review_id": {{review_item.petfood_review_id}}
+                },
+                success: function(data) {
+                    alert("삭제가 완료되었습니다.");
+                    location.href = "/review/list/{{petfood_info.petfood_id}}?page={{page}}";
+                },
+                error: function(error) {
+                    alert("Error!");
+                }
+            });
+        }
+    });
+
+    $(".remove_comment").on('click', function() {
+        if (confirm("이 댓글을 정말 삭제하시겠습니까?")) {
+            $.ajax({
+                url: "/comment/delete",
                 type: "POST",
                 data: {
                     "review_comment_id": $(this).attr('review_comment_id'),
                     "user_num": $(this).attr('user_num'),
-                    "petfood_review_id": {{review_item.petfood_review_id}},
-                    "review_comment_content": review_comment_content
+                    "petfood_review_id": {{review_item.petfood_review_id}}
                 },
                 success: function(data) {
                     alert(data.message);
@@ -155,6 +140,50 @@
                     alert("Error!");
                 }
             });
+        }
+    });
+
+    $(".modify_comment").on('click', function() {
+        var review_comment_content = prompt("수정할 댓글 내용", $("#comment_" + $(this).attr('review_comment_id')).html());
+        if (review_comment_content === null) {
+            return;
+        }
+
+        $.ajax({
+            url: "/comment/update",
+            type: "POST",
+            data: {
+                "review_comment_id": $(this).attr('review_comment_id'),
+                "user_num": $(this).attr('user_num'),
+                "petfood_review_id": {{review_item.petfood_review_id}},
+                "review_comment_content": review_comment_content
+            },
+            success: function(data) {
+                alert(data.message);
+                location.href = "/review/content/{{review_item.petfood_review_id}}";
+            },
+            error: function(error) {
+                alert("Error!");
+            }
         });
     });
+
+
+    var url_query = "current_page=" + $.urlParam("current_page") + "&query="
+    + $.urlParam("query") + "&petfood_company_id=" + $.urlParam("petfood_company_id")
+    + "&main_ingredient_id=" + $.urlParam("main_ingredient_id") + "&target_age_id="
+    + $.urlParam("target_age_id") + "&protein_content_id=" + $.urlParam("protein_content_id");
+
+    if($.urlParam("petfood_company_id") != "") {
+        $("#go_review_list").attr("href",$("#go_review_list").attr("href") + "&" + url_query);
+    }
+
+    if($.urlParam("r_query") != "") {
+        $("#go_review_list").attr("href", $("#go_review_list").attr("href") + "&r_query="
+                                        + $.urlParam("r_query"));
+    }
+
+
+
+});
 </script>

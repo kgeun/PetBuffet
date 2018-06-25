@@ -94,8 +94,17 @@
 
     $("#register-submit").on('click',function(e){
         e.preventDefault();
-        if($("#register-confirm-password").prop("value") !== $("#register-password").prop("value")) {
+        if($("#register-confirm-password").val() !== $("#register-password").val()) {
             alert('비밀번호와 비밀번호 확인이 같지 않습니다.');
+        }
+        else if(!/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/
+                .test($("#register-confirm-password").val())){
+            let alert_html = "<div class='alert alert-danger' role='alert'>"
+                                + "비밀번호는 6글자 이상 16글자 이하이고 최소 하나의 영어, 숫자, 특수문자를 포함해야 합니다."
+                                + "</div>";
+
+            $("#login_register_alert").show();
+            $("#login_register_alert").html(alert_html);
         } else {
             $("#register-hashed_password").val(SHA256($("#register-password").val()));
             $.ajax({
@@ -103,6 +112,7 @@
                 type: 'post',
                 data: $('#register-form').serialize(),
                 success: function(data){
+
                     if(data.status == "OK"){
                         location.href="/user/login?required=register";
                     }
@@ -110,7 +120,10 @@
                         let alert_html = "<div class='alert alert-danger' role='alert'>" +
                                             data.message
                                         + "</div>";
+
+                        $("#login_register_alert").show();
                         $("#login_register_alert").html(alert_html);
+
                     }
                 }
             });

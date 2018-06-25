@@ -53,8 +53,8 @@ router.get('/list/:petfood_id', auth, image_url, (req, res, next) => {
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        if (!data.query) {
-            data.query = '';
+        if (!data.r_query) {
+            data.r_query = '';
         }
         return connection.query(COUNT_REVIEW,[req.params.petfood_id, '%' + data.r_query + '%', '%' + data.r_query + '%']);
     })
