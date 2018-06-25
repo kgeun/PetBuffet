@@ -108,7 +108,7 @@
           success: function(r){
               if(r.status === "OK"){
                 var img = $('<img/>');
-                img.attr("src","http://10.105.185.181:8080/petfood_images/" + r.filename);
+                img.attr("src","http://{{image_url}}/petfood_images/" + r.filename);
                 img.css("width","100px");
                 $("#petfood_photo_addr").attr("value",r.filename);
                 $("#uploaded_petfood_image").html(img);
