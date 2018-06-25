@@ -9,6 +9,7 @@ const file_upload = require("../configs/file_upload");
 
 /** MIDDLEWARE */
 const auth = require("../middleware/auth");
+const image_url = require("../middleware/image_url");
 
 /** UTILITY */
 const utils = require("../util/util");
@@ -50,7 +51,7 @@ const ADMIN_LEVEL = 2;
 const PETFOOD_ITEMS_PER_PAGE = 5;
 
 // 사료 리스트 페이지
-router.get("/list/:page", auth, (req, res, next) => {
+router.get("/list/:page", auth, image_url,  (req, res, next) => {
 
     let connection;
     let data = req.data;
@@ -134,7 +135,7 @@ router.get("/list/:page", auth, (req, res, next) => {
 });
 
 // 사료 정보 페이지
-router.get("/info/:petfood_id", auth, (req, res, next) => {
+router.get("/info/:petfood_id", auth, image_url, (req, res, next) => {
     let data = req.data;
 
     //목록을 누르면 돌아갈 페이지를 설정. get parameter인 current_page에 저장되어있음
@@ -237,7 +238,7 @@ router.get("/info/:petfood_id", auth, (req, res, next) => {
 });
 
 //사료 정보 수정
-router.get("/modify/:petfood_id", auth, (req, res, next) => {
+router.get("/modify/:petfood_id", auth, image_url, (req, res, next) => {
     if (req.session.user_level != ADMIN_LEVEL) {
         return res.redirect("/user/login?required=admin");
     }

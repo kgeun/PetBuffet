@@ -7,6 +7,7 @@ const pool = require('../configs/mysql');
 
 /** MIDDLEWARE */
 const auth = require('../middleware/auth');
+const image_url = require('../middleware/image_url');
 
 /** UTILITY */
 const utils = require('../util/util');
@@ -34,7 +35,7 @@ const ALL_REVIEW_ITEMS_PER_PAGE = 5;
 const ADMIN_LEVEL = 2;
 
 
-router.get('/list/:petfood_id', auth, (req, res, next) => {
+router.get('/list/:petfood_id', auth, image_url, (req, res, next) => {
     let data = req.data;
     let connection;
 
@@ -79,7 +80,7 @@ router.get('/list/:petfood_id', auth, (req, res, next) => {
     });
 });
 
-router.get('/content/:petfood_review_id', auth, (req, res, next) => {
+router.get('/content/:petfood_review_id', auth, image_url, (req, res, next) => {
     let data = req.data;
     let page;
     let connection;
@@ -138,7 +139,7 @@ router.get('/content/:petfood_review_id', auth, (req, res, next) => {
     });
 });
 
-router.get('/write/:petfood_id', auth, function(req, res) {
+router.get('/write/:petfood_id', auth, image_url, function(req, res) {
     let data = req.data;
     let connection;
 
@@ -228,7 +229,7 @@ router.post('/write/:petfood_id', auth, (req, res, next) => {
     });
 });
 
-router.get('/modify/:petfood_review_id', auth, (req, res, next) => {
+router.get('/modify/:petfood_review_id', auth, image_url, (req, res, next) => {
 
     let connection;
     let data = req.data;
@@ -312,7 +313,7 @@ router.post('/delete', (req, res, next) => {
     });
 });
 
-router.get('/all_list', auth, (req, res, next) => {
+router.get('/all_list', auth, image_url, (req, res, next) => {
 
     let data = req.data;
 
