@@ -78,6 +78,16 @@ class NoPermissionRedirect extends Error {
     }
 }
 
+class ReviewRcmdAlreadyExistError extends Error {
+    constructor() {
+        super();
+        this.error_object = {
+            status : "ERROR",
+            message : "이미 이 리뷰를 평가하셨습니다."
+        };
+    }
+}
+
 module.exports = {
     NoIdOrPasswordError,
     UserNotFoundError,
@@ -86,5 +96,6 @@ module.exports = {
     IdDuplicateError,
     NoPermissionError,
     RcmdAlreadyExistError,
-    NoPermissionRedirect
+    NoPermissionRedirect,
+    ReviewRcmdAlreadyExistError
 }

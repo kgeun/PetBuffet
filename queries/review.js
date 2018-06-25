@@ -134,6 +134,42 @@ WHERE
 OR
     petfood_review_content LIKE ?`;
 
+const SELECT_REVIEW_RCMD =
+`SELECT
+    COUNT(*) as count
+FROM
+    review_rcmd
+WHERE
+    petfood_review_id = ?
+AND
+    review_rcmd = 1`;
+
+const SELECT_REVIEW_NON_RCMD =
+`SELECT
+    COUNT(*) as count
+FROM
+    review_rcmd
+WHERE
+    petfood_review_id = ?
+AND
+    review_rcmd = -1`;
+
+const COUNT_SELECT_REVIEW_RCMD =
+`SELECT
+    COUNT(*) as count
+FROM
+    review_rcmd
+WHERE
+    petfood_review_id = ?
+AND
+    user_num = ?`;
+
+const INSERT_REVIEW_RCMD =
+`INSERT INTO
+    review_rcmd (review_rcmd, petfood_review_id, user_num)
+VALUES
+    ( ?, ?, ? )`;
+
 module.exports = {
     SELECT_CURRENT_PETFOOD,
     SELECT_REVIEW_TITLE_INFO,
@@ -145,5 +181,9 @@ module.exports = {
     UPDATE_REVIEW,
     DELETE_REVIEW,
     SELECT_ALL_REVIEW,
-    COUNT_SELECT_ALL_REVIEW
+    COUNT_SELECT_ALL_REVIEW,
+    SELECT_REVIEW_RCMD,
+    SELECT_REVIEW_NON_RCMD,
+    COUNT_SELECT_REVIEW_RCMD,
+    INSERT_REVIEW_RCMD
 }

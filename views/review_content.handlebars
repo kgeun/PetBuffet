@@ -24,6 +24,24 @@
                 </ul>
                 <div class="card-body">
                     {{{review_item.petfood_review_content}}}
+                    <div class="row mt-5">
+                        <div class="col-md-2 offset-md-4">
+                            <a id="btn_rcmd" href="#" style="color: inherit; text-decoration: inherit;">
+                                <div class="text-center mr-1 pt-4 pb-3" style="border: 3px solid royalblue;border-radius: 25px;">
+                                    <i class="fa fa-thumbs-o-up mb-2" style="font-size:50px;color:royalblue;"></i>
+                                    <br/> <span style="color:royalblue">추천 {{rcmd_value}}</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a id="btn_non_rcmd" href="#" style="color: inherit; text-decoration: inherit;">
+                                <div class="text-center mr-1 pt-4 pb-3" style="border: 3px solid firebrick;border-radius: 25px;">
+                                    <span><i class="fa fa-thumbs-o-down mb-2" style="font-size:50px;color:firebrick;"></i></span>
+                                    <br/> <span style="color:firebrick">비추천 {{non_rcmd_value}}</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
                 <ul class="list-group list-group-flush">
                     {{#each comments}}
@@ -92,6 +110,56 @@ $.urlParam = function(name){
     }
 }
 $(document).ready(function() {
+    $("#btn_rcmd").on("click", function(e){
+        if("{{session.user_num}}" == "") {
+            location.href = "/user/login?required=true"
+        } else {
+            $.ajax({
+                url: "/review/rcmd",
+                type: "POST",
+                data: {
+                    "petfood_review_id": {{review_item.petfood_review_id}},
+                    "user_num": "{{session.user_num}}",
+                    "review_rcmd": 1
+                },
+                success: function(data) {
+                    alert(data.message);
+                    if(data.status == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function(error) {
+                    alert("Error!");
+                }
+            });
+        }
+    });
+
+    $("#btn_non_rcmd").on("click", function(e){
+        if("{{session.user_num}}" == "") {
+            location.href = "/user/login?required=true"
+        } else {
+            $.ajax({
+                url: "/review/rcmd",
+                type: "POST",
+                data: {
+                    "petfood_review_id": {{review_item.petfood_review_id}},
+                    "user_num": "{{session.user_num}}",
+                    "review_rcmd": -1
+                },
+                success: function(data) {
+                    alert(data.message);
+                    if(data.status == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function(error) {
+                    alert("Error!");
+                }
+            });
+        }
+    });
+
     $("#submit_comment").on("click", function(e) {
         e.preventDefault();
         if ($("#review_comment_content").val() == "") {

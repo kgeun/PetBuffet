@@ -42,6 +42,7 @@ router.get('/login', (req, res) => {
         data.required = true;
         data.login_message = "회원 가입이 완료되었습니다. <br>로그인해주세요.";
     }
+    
     data.referer = req.headers.referer;
 
     return res.render("login_and_register",data);

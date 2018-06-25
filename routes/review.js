@@ -23,7 +23,11 @@ const {
   UPDATE_REVIEW,
   DELETE_REVIEW,
   SELECT_ALL_REVIEW,
-  COUNT_SELECT_ALL_REVIEW
+  COUNT_SELECT_ALL_REVIEW,
+  SELECT_REVIEW_RCMD,
+  SELECT_REVIEW_NON_RCMD,
+  COUNT_SELECT_REVIEW_RCMD,
+  INSERT_REVIEW_RCMD
 } = require('../queries/review.js')
 
 const {
@@ -31,7 +35,8 @@ const {
 } = require('../queries/comment.js')
 
 const {
-    NoPermissionRedirect
+    NoPermissionRedirect,
+    ReviewRcmdAlreadyExistError
 } = require('../configs/errors')
 
 const REVIEW_ITEMS_PER_PAGE = 10;
@@ -134,7 +139,14 @@ router.get('/content/:petfood_review_id', auth, image_url, (req, res, next) => {
                 }
             }
         }
-
+        return connection.query(SELECT_REVIEW_RCMD,[req.params.petfood_review_id]);
+    })
+    .then(result => {
+        data.rcmd_value = result[0].count;
+        return connection.query(SELECT_REVIEW_NON_RCMD,[req.params.petfood_review_id]);
+    })
+    .then(result => {
+        data.non_rcmd_value = result[0].count;
         connection.release();
         return res.render("review_content",data);
     })
@@ -360,6 +372,34 @@ router.get('/all_list', auth, image_url, (req, res, next) => {
         return next(err);
     });
 
+});
+
+router.post('/rcmd', (req, res, next) => {
+    let connection;
+
+    const { petfood_review_id, user_num, review_rcmd } = req.body;
+
+    pool.getConnection()
+    .then(conn => {
+        connection = conn;
+
+        return connection.query(COUNT_SELECT_REVIEW_RCMD, [Number(petfood_review_id), Number(user_num)]);
+    })
+    .then(result => {
+        if(result[0].count != 0) {
+            throw new ReviewRcmdAlreadyExistError();
+        }
+
+        return connection.query(INSERT_REVIEW_RCMD,[Number(review_rcmd), Number(petfood_review_id), Number(user_num)]);
+    })
+    .then(result => {
+        connection.release();
+        return res.json({ status : "OK",
+                        message : "이 리뷰를 평가했습니다."});
+    })
+    .catch(err => {
+        return next(err);
+    });
 });
 
 module.exports = router;
