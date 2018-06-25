@@ -25,7 +25,12 @@
                         <div class="row">
                             <div class="col-1 text-center" scope="row">{{petfood_review_id}}</div>
                             <div class="col-1 text-center">{{petfood_rcmd_value}}</div>
-                            <div class="col-6"><a class="go_review_content" href="/review/content/{{petfood_review_id}}?page={{../current_page}}">{{petfood_review_title}}&nbsp;<small>({{number_of_comments}})</small></a></div>
+                            <div class="col-6">
+                                <a class="go_review_content" href="/review/content/{{petfood_review_id}}?page={{../current_page}}">
+                                    {{petfood_review_title}}&nbsp;
+                                    <small>({{number_of_comments}} <span style="color:blue;">+{{number_of_rcmd}}</span> <span style="color:red;">-{{number_of_non_rcmd}}</span>)</small>
+                                </a>
+                            </div>
                             <div class="col-2 text-center">{{username}}</div>
                             <div class="col-2 text-center">{{creation_datetime}}</div>
                         </div>
