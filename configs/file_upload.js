@@ -2,11 +2,15 @@ let multer = require('multer');
 /*
     파일 서버를 따로 만들어서 처리하기
     로컬이랑 배포랑 property를 따로 해서 따로 저장
-    개발환경, 서버를 분리 
+    개발환경, 서버를 분리
 */
 let Storage = multer.diskStorage({
     destination: function(req, file, callback) {
-        callback(null, "./public/petfood_images");
+        if(process.env.NODE_ENV === "production") {
+            callback(null, "/usr/share/nginx/html/petfood_images");
+        } else {
+            callback(null, "C:/project/nginx-1.14.0/html/petfood_images");
+        }
     },
     filename: function(req, file, callback) {
         callback(null, file.fieldname + "_" + Date.now() + "_" + file.originalname);
