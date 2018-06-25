@@ -281,7 +281,7 @@ router.get("/modify/:petfood_id", auth, image_url, (req, res, next) => {
         });
 });
 
-router.get("/upload", auth, (req, res, next) => {
+router.get("/upload", auth, image_url, (req, res, next) => {
     if (req.session.user_level != ADMIN_LEVEL) {
         return res.redirect("/user/login?required=admin");
     }
