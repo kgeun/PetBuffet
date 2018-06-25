@@ -68,12 +68,12 @@ class RcmdAlreadyExistError extends Error {
     }
 }
 
-class IdValidationError extends Error {
+class NoPermissionRedirect extends Error {
     constructor() {
         super();
         this.error_object = {
-            status : "ERROR",
-            message : "아이디는 영문과 숫자로만 작성할 수 있습니다."
+            status : "REDIRECT",
+            message : "권한이 없습니다."
         };
     }
 }
@@ -86,5 +86,5 @@ module.exports = {
     IdDuplicateError,
     NoPermissionError,
     RcmdAlreadyExistError,
-    IdValidationError
+    NoPermissionRedirect
 }

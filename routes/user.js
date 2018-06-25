@@ -17,9 +17,7 @@ const {
     UserNotFoundError,
     WrongPasswordError,
     FormNotFilledError,
-    IdDuplicateError,
-    NonCharsInIdError,
-    IdValidationError
+    IdDuplicateError
 } = require('../configs/errors')
 
 /** UTILS */
@@ -104,10 +102,6 @@ router.post('/register', (req, res, next) => {
 
     if(!userid || !username || !password) {
         return next(new FormNotFilledError());
-    }
-
-    if (userid.search(/[^a-zA-Z0-9_.-]+/) != -1) {
-        return next(new IdValidationError());
     }
 
     pool.getConnection()

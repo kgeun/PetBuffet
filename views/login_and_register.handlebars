@@ -97,10 +97,18 @@
         if($("#register-confirm-password").val() !== $("#register-password").val()) {
             alert('비밀번호와 비밀번호 확인이 같지 않습니다.');
         }
-        else if(!/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/
-                .test($("#register-confirm-password").val())){
+        else if(/[^a-zA-Z0-9_.-]+/.test($("#register-userid").val())) {
             let alert_html = "<div class='alert alert-danger' role='alert'>"
-                                + "비밀번호는 6글자 이상 16글자 이하이고 최소 하나의 영어, 숫자, 특수문자를 포함해야 합니다."
+                                + "아이디는 50글자 이하로 영문과 숫자, _와 -로만 작성할 수 있습니다."
+                                + "</div>";
+
+            $("#login_register_alert").show();
+            $("#login_register_alert").html(alert_html);
+        }
+        else if(!/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,50}$/
+                .test($("#register-password").val())) {
+            let alert_html = "<div class='alert alert-danger' role='alert'>"
+                                + "비밀번호는 6글자 이상 50글자 이하로 최소 하나의 영어, 숫자, 특수문자를 포함해야 합니다."
                                 + "</div>";
 
             $("#login_register_alert").show();

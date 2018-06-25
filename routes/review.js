@@ -30,6 +30,10 @@ const {
   SELECT_COMMENTS_BY_REVIEW_ID
 } = require('../queries/comment.js')
 
+const {
+    NoPermissionRedirect
+} = require('../configs/errors')
+
 const REVIEW_ITEMS_PER_PAGE = 10;
 const ALL_REVIEW_ITEMS_PER_PAGE = 5;
 const ADMIN_LEVEL = 2;
@@ -253,7 +257,7 @@ router.get('/modify/:petfood_review_id', auth, image_url, (req, res, next) => {
         if (result[0].user_num != req.session.user_num &&
             req.session.user_level != ADMIN_LEVEL) {
             connection.release();
-            return res.redirect("/");
+            throw new NoPermissionRedirect();
         }
 
         data.review_item = result[0];
