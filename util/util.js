@@ -211,7 +211,11 @@ module.exports.process_recent_review_content = recent_reviews => {
 
 module.exports.remove_petfood_photo = photo_name => {
     try {
-        fs.unlinkSync("./public/petfood_images/" + photo_name);
+        if(process.env.NODE_ENV === "production") {
+            fs.unlinkSync("/usr/share/nginx/html/petfood_images/" + photo_name);
+        } else {
+            fs.unlinkSync("C:/project/nginx-1.14.0/html/petfood_images/" + photo_name);
+        }
     } catch(err) {
         console.log(err.message);
     }
