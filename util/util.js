@@ -195,9 +195,7 @@ module.exports.give_html_and_color_by_eval_phosphorus = eval_phosphorus => {
     }
 
     return phosphorus;
-
 }
-
 
 module.exports.process_recent_review_content = recent_reviews => {
     for (s of recent_reviews) {

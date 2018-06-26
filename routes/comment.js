@@ -21,6 +21,7 @@ const {
 
 const ADMIN_LEVEL = 2;
 
+//댓글 작성
 router.post('/write', auth, (req, res, next) => {
     let data = req.data;
 
@@ -32,6 +33,7 @@ router.post('/write', auth, (req, res, next) => {
                 req.body.petfood_review_id]);
     })
     .then(result => {
+        // 댓글 작성하고 보고있었던 페이지로 돌아가기
         connection.release();
         return res.redirect(`/review/content/${req.body.petfood_review_id}`);
     })
@@ -40,9 +42,11 @@ router.post('/write', auth, (req, res, next) => {
     });
 });
 
+//댓글 삭제 - ajax 비동기로 처리
 router.post('/delete', auth, (req, res, next) => {
     let data = req.data;
 
+    //권한 검사
     if (data.session && req.body.user_num != data.session.user_num
                         && data.session.user_level != ADMIN_LEVEL){
         return next(new NoPermissionError());
@@ -65,9 +69,11 @@ router.post('/delete', auth, (req, res, next) => {
     });
 });
 
+//댓글 수정
 router.post('/update', auth, (req, res, next) => {
     let data = req.data;
 
+    //권한 검사
     if (data.session && req.body.user_num != data.session.user_num
                         && data.session.user_level != ADMIN_LEVEL){
         return next(new NoPermissionError());
