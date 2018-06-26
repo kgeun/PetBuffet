@@ -4,7 +4,7 @@
 <p align="center">
   <img src="./readme_image/example.jpg">
 </p>
-[PetBuffet][petbuffet]은 시중에 나와있는 강아지 사료들의 성분 및 영양정보를 분석해주는 웹서비스입니다.<br>
+PetBuffet은 시중에 나와있는 강아지 사료들의 성분 및 영양정보를 분석해주는 웹서비스입니다.<br>
 각 사료들에 대한 리뷰 기능을 탑재해 사료에 대한 사람들의 평가 또한 확인 가능한 점이 특징입니다.
 
 ### 기능 소개

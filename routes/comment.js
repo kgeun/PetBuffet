@@ -1,27 +1,29 @@
-/** INITIALIZE */
+/* 초기화 */
 const express = require('express');
 const router = express.Router();
 
-/** DATABASE */
+/* 데이터베이스 */
 const pool = require('../configs/mysql');
 
-/** MIDDLEWARE */
+/* 미들웨어 (인증) */
 const auth = require('../middleware/auth');
 
-/** QUERIES */
+/* 쿼리 */
 const {
     INSERT_COMMENT,
     DELETE_COMMENT,
     UPDATE_COMMENT
 } = require('../queries/comment');
 
+/* 에러처리 */
 const {
     NoPermissionError
 } = require('../configs/errors')
 
+/* user 중 어드민 레벨 */
 const ADMIN_LEVEL = 2;
 
-//댓글 작성
+// 댓글 작성
 router.post('/write', auth, (req, res, next) => {
     let data = req.data;
 

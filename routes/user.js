@@ -1,17 +1,18 @@
-/** INITIALIZE */
+/* 초기화 */
 const express = require('express');
 const router = express.Router();
 
-/** DATABASE */
+/* 데이터베이스 */
 const pool = require('../configs/mysql');
 
-/** QUERIES */
+/* 쿼리 */
 const {
     FIND_USER_BY_ID,
     COUNT_USER,
     INSERT_USER
 } = require('../queries/user');
 
+/* 에러처리 */
 const {
     NoIdOrPasswordError,
     UserNotFoundError,
@@ -20,14 +21,16 @@ const {
     IdDuplicateError
 } = require('../configs/errors')
 
-/** UTILS */
+/* 유틸리티 */
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 
+// 로그인 페이지
 router.get('/login', (req, res) => {
 
     var data = {};
 
+    // 이미 로그인이 된 상태라면 첫 페이지로 redirect
     if(req.session.userid) {
         return res.redirect("/");
     }
@@ -42,7 +45,7 @@ router.get('/login', (req, res) => {
         data.required = true;
         data.login_message = "회원 가입이 완료되었습니다. <br>로그인해주세요.";
     }
-    
+
     data.referer = req.headers.referer;
 
     return res.render("login_and_register",data);
