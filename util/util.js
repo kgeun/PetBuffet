@@ -201,7 +201,7 @@ module.exports.give_html_and_color_by_eval_phosphorus = eval_phosphorus => {
 
 module.exports.process_recent_review_content = recent_reviews => {
     for (s of recent_reviews) {
-        s.petfood_review_content = s.petfood_review_content.replace(/<\/?[^>]+(>|$)/g, "");
+        s.petfood_review_content = s.petfood_review_content.replace(/<[^>]+>|&nbsp;/g, "");
         if(s.petfood_review_content.length > 200) {
             s.petfood_review_content = s.petfood_review_content.substr(0,200);
             s.petfood_review_content += "...";

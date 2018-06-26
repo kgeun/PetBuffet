@@ -12,7 +12,7 @@
 
 
 ### 프로젝트 실행
-    node app.js
+    NODE_ENV=production node app.js
 
 ### 배포된 서버 정보
     10.105.185.181
