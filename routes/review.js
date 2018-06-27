@@ -431,6 +431,7 @@ router.post('/rcmd', (req, res, next) => {
     .then(result => {
         // 이미 추천이나 비추천 했다면 에러 날리기
         if(result[0].count != 0) {
+            connection.release();
             throw new ReviewRcmdAlreadyExistError();
         }
 

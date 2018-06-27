@@ -470,6 +470,7 @@ router.post("/rcmd", auth, (req, res, next) => {
         if(result[0].count) {
             // 이미 평점이 있는 경우 그 pk를 가져옴
             current_petfood_rcmd_id = result[0].petfood_rcmd_id;
+            connection.release();
             throw new RcmdAlreadyExistError();
         } else {
             // 이미 평가된 평점이 없는 경우 평점 table에 insert
@@ -478,6 +479,7 @@ router.post("/rcmd", auth, (req, res, next) => {
         }
     })
     .then(result => {
+        connection.release();
         return res.json({
             status : "OK",
             message : "별점 주기에 성공했습니다."
