@@ -23,10 +23,10 @@ PetBuffet은 시중에 나와있는 강아지 사료들의 성분 및 영양정�
 * MySQL (DBMS)
 * jQuery
 
-### 기획서
+## 기획서
 <a href="https://oss.navercorp.com/nbp-internship-2018-team3/kyunggeun.lee/wiki/PetBuffet-%EA%B8%B0%ED%9A%8D%EC%84%9C">기획서 보기</a>
 
-### DB Schema
+## DB Schema
 <a href="https://oss.navercorp.com/nbp-internship-2018-team3/kyunggeun.lee/wiki/ER-Diagram">ERD 보기</a>
 
 ## 프로젝트 설치 및 실행
