@@ -73,17 +73,18 @@ router.get("/list/:petfood_id", auth, image_url, (req, res, next) => {
             data.r_query = "";
         }
 
+        let params = [req.params.petfood_id, "%" + data.r_query + "%", "%" + data.r_query + "%"];
         // 검색결과 갯수 찾기
-        return connection.query(COUNT_REVIEW,[req.params.petfood_id, "%" + data.r_query + "%", "%" + data.r_query + "%"]);
+        return connection.query(COUNT_REVIEW, params);
     })
     .then(result => {
         // 페이징 정보 주입
         utils.inject_paging_information_data(data,result[0].count,REVIEW_ITEMS_PER_PAGE);
 
+        let params = [req.params.petfood_id, "%" + data.r_query + "%", "%" + data.r_query + "%",
+        REVIEW_ITEMS_PER_PAGE, (data.current_page-1)*REVIEW_ITEMS_PER_PAGE];
         // 검색어로 검색
-        return connection.query(SELECT_REVIEW_TITLE_INFO,
-            [req.params.petfood_id, "%" + data.r_query + "%", "%" + data.r_query + "%",
-            REVIEW_ITEMS_PER_PAGE, (data.current_page-1)*REVIEW_ITEMS_PER_PAGE]);
+        return connection.query(SELECT_REVIEW_TITLE_INFO, params);
     })
     .then(result => {
         data.review_list = result;
@@ -191,8 +192,9 @@ router.get("/write/:petfood_id", auth, image_url, function(req, res) {
     pool.getConnection()
     .then(conn => {
         connection = conn;
+        let params = [req.params.petfood_id, data.session.user_num];
         // 이미 평점을 준 적이 있는지 검색하고 평점을 준적이 있다면 그 값을 가져옴
-        return connection.query(COUNT_AND_SELECT_RCMD, [req.params.petfood_id, data.session.user_num])
+        return connection.query(COUNT_AND_SELECT_RCMD, params);
     })
     .then(result => {
         if(result[0].count) {
@@ -228,8 +230,9 @@ router.post("/write/:petfood_id", auth, (req, res, next) => {
     pool.getConnection()
     .then(conn => {
         connection = conn;
+        let params = [req.params.petfood_id, data.session.user_num];
         // 평점 테이블에서 이 유저가 이 사료에 대해 평가한 평점 row가 있나 검색
-        return connection.query(COUNT_AND_SELECT_RCMD, [req.params.petfood_id, data.session.user_num]);
+        return connection.query(COUNT_AND_SELECT_RCMD, params);
     })
     .then(result => {
         if(result[0].count) {
@@ -237,9 +240,9 @@ router.post("/write/:petfood_id", auth, (req, res, next) => {
             current_petfood_rcmd_id = result[0].petfood_rcmd_id;
             return;
         } else {
+            let params = [req.session.user_num, review_item.petfood_id, review_item.petfood_rcmd_value];
             // 이미 평가된 평점이 없는 경우 평점 table에 insert
-            return connection.query(INSERT_RCMD,
-                [req.session.user_num, review_item.petfood_id, review_item.petfood_rcmd_value])
+            return connection.query(INSERT_RCMD, params)
                     .catch(queryError => {
                             connection.rollback();
                             connection.release();
@@ -252,10 +255,10 @@ router.post("/write/:petfood_id", auth, (req, res, next) => {
         if(!current_petfood_rcmd_id) {
             current_petfood_rcmd_id = result.insertId;
         }
+        let params = [review_item.petfood_review_title, review_item.petfood_review_content,
+            req.session.user_num, review_item.petfood_id, current_petfood_rcmd_id];
         // 검색되거나 추가된 평점 테이블 row의 pk를 새로운 리뷰 row에 insert함
-        return connection.query(INSERT_REVIEW,
-            [review_item.petfood_review_title, review_item.petfood_review_content,
-                req.session.user_num, review_item.petfood_id, current_petfood_rcmd_id])
+        return connection.query(INSERT_REVIEW, params)
                 .catch(queryError => {
                         connection.rollback();
                         connection.release();
@@ -334,9 +337,9 @@ router.post("/modify/:petfood_review_id", (req, res, next) => {
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return connection.query(UPDATE_REVIEW,
-            [req.body.petfood_review_title,req.body.petfood_review_content,
-            req.params.petfood_review_id]);
+        let params = [req.body.petfood_review_title,req.body.petfood_review_content,
+        req.params.petfood_review_id];
+        return connection.query(UPDATE_REVIEW, params);
     })
     .then(result => {
         connection.release();
@@ -394,15 +397,16 @@ router.get("/all_list", auth, image_url, (req, res, next) => {
         if(!data.query) {
             data.query = "";
         }
-        return connection.query(SELECT_ALL_REVIEW,
-            ["%" + data.query + "%", "%" + data.query + "%",
-            ALL_REVIEW_ITEMS_PER_PAGE, (data.current_page - 1) * ALL_REVIEW_ITEMS_PER_PAGE]);
+        let params = ["%" + data.query + "%", "%" + data.query + "%",
+        ALL_REVIEW_ITEMS_PER_PAGE, (data.current_page - 1) * ALL_REVIEW_ITEMS_PER_PAGE];
+        return connection.query(SELECT_ALL_REVIEW, params);
     })
     .then(result => {
         data.all_review_item = result;
         //리뷰를 간단히 리스트로 보여주기 위해 html, &nbsp; 중간에 자르고 ...붙이기
         utils.process_recent_review_content(data.all_review_item);
-        return connection.query(COUNT_SELECT_ALL_REVIEW,["%" + data.query + "%", "%" + data.query + "%"]);
+        let params = ["%" + data.query + "%", "%" + data.query + "%"];
+        return connection.query(COUNT_SELECT_ALL_REVIEW, params);
     })
     .then(result => {
         //페이징 정보 주입
@@ -425,8 +429,9 @@ router.post("/rcmd", (req, res, next) => {
     pool.getConnection()
     .then(conn => {
         connection = conn;
+        let params = [Number(petfood_review_id), Number(user_num)];
         //이미 추천이나 비추천을 했는지 판단하기 위해 COUNT 찾기
-        return connection.query(COUNT_SELECT_REVIEW_RCMD, [Number(petfood_review_id), Number(user_num)]);
+        return connection.query(COUNT_SELECT_REVIEW_RCMD, params);
     })
     .then(result => {
         // 이미 추천이나 비추천 했다면 에러 날리기
@@ -434,8 +439,8 @@ router.post("/rcmd", (req, res, next) => {
             connection.release();
             throw new ReviewRcmdAlreadyExistError();
         }
-
-        return connection.query(INSERT_REVIEW_RCMD,[Number(review_rcmd), Number(petfood_review_id), Number(user_num)]);
+        let params = [Number(review_rcmd), Number(petfood_review_id), Number(user_num)];
+        return connection.query(INSERT_REVIEW_RCMD, params);
     })
     .then(result => {
         connection.release();

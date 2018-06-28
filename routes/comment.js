@@ -30,9 +30,9 @@ router.post("/write", auth, (req, res, next) => {
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return connection.query(INSERT_COMMENT,
-            [data.session.user_num, req.body.review_comment_content,
-                req.body.petfood_review_id]);
+        let params = [data.session.user_num, req.body.review_comment_content,
+            req.body.petfood_review_id];
+        return connection.query(INSERT_COMMENT, params);
     })
     .then(result => {
         // 댓글 작성하고 보고있었던 페이지로 돌아가기
@@ -84,7 +84,8 @@ router.post("/update", auth, (req, res, next) => {
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        return connection.query(UPDATE_COMMENT,[req.body.review_comment_content, req.body.review_comment_id]);
+        let params = [req.body.review_comment_content, req.body.review_comment_id];
+        return connection.query(UPDATE_COMMENT, params);
     })
     .then(result => {
         connection.release();

@@ -97,9 +97,8 @@ router.post("/login", (req, res, next) => {
                 });
             } else {
                 //비밀번호가 틀렸다면 에러
-                next(new WrongPasswordError());
+                return next(new WrongPasswordError());
             }
-          return;
         });
     })
     .catch(err => {
@@ -128,7 +127,8 @@ router.post("/register", (req, res, next) => {
         if(!result[0].count) {
             //없는 아이디라면 bcrypt로 hash해서 INSERT
             bcrypt.hash(hashed_password, saltRounds, function(err, hash) {
-                return connection.query(INSERT_USER,[userid, hash, username, 1]);
+                let params = [userid, hash, username, 1];
+                return connection.query(INSERT_USER, params);
             });
         } else {
             //이미 있는 아이디라면 에러

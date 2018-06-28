@@ -357,11 +357,12 @@ router.post("/upload", (req, res, next) => {
     pool.getConnection()
         .then(conn => {
             connection = conn;
-            // 업로드 된 정보 insert
-            return connection.query(INSERT_PETFOOD, [req.body.petfood_company_id, req.body.petfood_name, req.body.protein,
+            let params = [req.body.petfood_company_id, req.body.petfood_name, req.body.protein,
                 req.body.fat, req.body.calcium, req.body.phosphorus, req.body.ingredients,
                 req.body.target_age_id, nutrition_info.nutrition_score, req.body.petfood_photo_addr,
-                main_ingredient]);
+                main_ingredient];
+            // 업로드 된 정보 insert
+            return connection.query(INSERT_PETFOOD, params);
         })
         .then(result => {
             connection.release();
@@ -388,11 +389,12 @@ router.post("/modify", (req, res, next) => {
     pool.getConnection()
         .then(conn => {
             connection = conn;
-            // UPDATE
-            return connection.query(UPDATE_PETFOOD, [req.body.petfood_company_id, req.body.petfood_name, req.body.protein,
+            let params = [req.body.petfood_company_id, req.body.petfood_name, req.body.protein,
                 req.body.fat, req.body.calcium, req.body.phosphorus, req.body.ingredients,
                 req.body.target_age_id, nutrition_info.nutrition_score, main_ingredient,
-                req.body.petfood_photo_addr, req.body.petfood_id]);
+                req.body.petfood_photo_addr, req.body.petfood_id];
+            // UPDATE
+            return connection.query(UPDATE_PETFOOD, params);
         })
         .then(result => {
             connection.release();
@@ -463,8 +465,9 @@ router.post("/rcmd", auth, (req, res, next) => {
     pool.getConnection()
     .then(conn => {
         connection = conn;
+        let params = [petfood_id, data.session.user_num];
         // 평점 테이블에서 이 유저가 이 사료에 대해 평가한 평점 row가 있나 검색
-        return connection.query(COUNT_AND_SELECT_RCMD, [petfood_id, data.session.user_num]);
+        return connection.query(COUNT_AND_SELECT_RCMD, params);
     })
     .then(result => {
         if(result[0].count) {
@@ -473,9 +476,9 @@ router.post("/rcmd", auth, (req, res, next) => {
             connection.release();
             throw new RcmdAlreadyExistError();
         } else {
+            let params = [data.session.user_num, petfood_id, petfood_rcmd_value];
             // 이미 평가된 평점이 없는 경우 평점 table에 insert
-            return connection.query(INSERT_RCMD,
-                [data.session.user_num, petfood_id, petfood_rcmd_value]);
+            return connection.query(INSERT_RCMD, params);
         }
     })
     .then(result => {
