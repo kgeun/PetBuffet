@@ -1,30 +1,30 @@
 /* 초기화 */
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 /* 데이터베이스 */
-const pool = require('../configs/mysql');
+const pool = require("../configs/mysql");
 
 /* 미들웨어 (인증) */
-const auth = require('../middleware/auth');
+const auth = require("../middleware/auth");
 
 /* 쿼리 */
 const {
     INSERT_COMMENT,
     DELETE_COMMENT,
     UPDATE_COMMENT
-} = require('../queries/comment');
+} = require("../queries/comment");
 
 /* 에러처리 */
 const {
     NoPermissionError
-} = require('../configs/errors')
+} = require("../configs/errors")
 
 /* user 중 어드민 레벨 */
 const ADMIN_LEVEL = 2;
 
 // 댓글 작성
-router.post('/write', auth, (req, res, next) => {
+router.post("/write", auth, (req, res, next) => {
     let data = req.data;
 
     pool.getConnection()
@@ -45,7 +45,7 @@ router.post('/write', auth, (req, res, next) => {
 });
 
 //댓글 삭제 - ajax 비동기로 처리
-router.post('/delete', auth, (req, res, next) => {
+router.post("/delete", auth, (req, res, next) => {
     let data = req.data;
 
     //권한 검사
@@ -72,7 +72,7 @@ router.post('/delete', auth, (req, res, next) => {
 });
 
 //댓글 수정
-router.post('/update', auth, (req, res, next) => {
+router.post("/update", auth, (req, res, next) => {
     let data = req.data;
 
     //권한 검사

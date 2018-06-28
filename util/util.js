@@ -46,77 +46,10 @@ module.exports.inject_paging_information_data = (data, posts_amount, num_of_post
     data.paging = paging;
 }
 
-module.exports.give_html_and_color_by_eval_nutrition = data => {
-
-    //switch 덩어리쪽에서 함수 하나씩으로 빼기
-    switch(data.eval_protein) {
-        // 주석 달기
-        //
-        case nutrition.NUTRITION_GOOD:
-            data.eval_protein_html = GOOD_HTML;
-            data.eval_protein_color = GOOD_COLOR;
-        break;
-        case nutrition.NUTRITION_LACK:
-            data.eval_protein_html = LACK_HTML;
-            data.eval_protein_color = LACK_OR_EXCESS_COLOR;
-        break;
-        case nutrition.NUTRITION_EXCESS:
-            data.eval_protein_html = EXCESS_HTML;
-            data.eval_protein_color = LACK_OR_EXCESS_COLOR;
-        break;
-    }
-
-    switch(data.eval_fat) {
-        case nutrition.NUTRITION_GOOD:
-            data.eval_fat_html = GOOD_HTML;
-            data.eval_fat_color = GOOD_COLOR;
-        break;
-        case nutrition.NUTRITION_LACK:
-            data.eval_fat_html = LACK_HTML;
-            data.eval_fat_color = LACK_OR_EXCESS_COLOR;
-        break;
-        case nutrition.NUTRITION_EXCESS:
-            data.eval_fat_html = EXCESS_HTML;
-            data.eval_fat_color = LACK_OR_EXCESS_COLOR;
-        break;
-    }
-
-    switch(data.eval_calcium) {
-        case nutrition.NUTRITION_GOOD:
-            data.eval_calcium_html = GOOD_HTML;
-            data.eval_calcium_color = GOOD_COLOR;
-        break;
-        case nutrition.NUTRITION_LACK:
-            data.eval_calcium_html = LACK_HTML;
-            data.eval_calcium_color = LACK_OR_EXCESS_COLOR;
-        break;
-        case nutrition.NUTRITION_EXCESS:
-            data.eval_calcium_html = EXCESS_HTML;
-            data.eval_calcium_color = LACK_OR_EXCESS_COLOR;
-        break;
-    }
-
-    switch(data.eval_phosphorus) {
-        case nutrition.NUTRITION_GOOD:
-            data.eval_phosphorus_html = GOOD_HTML;
-            data.eval_phosphorus_color = GOOD_COLOR;
-        break;
-        case nutrition.NUTRITION_LACK:
-            data.eval_phosphorus_html = LACK_HTML;
-            data.eval_phosphorus_color = LACK_OR_EXCESS_COLOR;
-        break;
-        case nutrition.NUTRITION_EXCESS:
-            data.eval_phosphorus_html = EXCESS_HTML;
-            data.eval_phosphorus_color = LACK_OR_EXCESS_COLOR;
-        break;
-    }
-}
-
 module.exports.give_html_and_color_by_eval_protein = eval_protein => {
 
     let protein = {};
     switch(eval_protein) {
-        // 주석
         case nutrition.NUTRITION_GOOD:
             protein.eval_protein_html = GOOD_HTML;
             protein.eval_protein_color = GOOD_COLOR;

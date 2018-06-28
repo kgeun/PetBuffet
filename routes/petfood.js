@@ -62,7 +62,7 @@ router.get("/list/:page", auth, image_url,  (req, res, next) => {
     // 현재 페이지를 view에 넘겨주기
     data.current_page = req.params.page;
 
-    // 정렬 방법이 정해지지 않았따면 자동으로 1(최신순)으로 설정
+    // 정렬 방법이 정해지지 않았다면 자동으로 1(최신순)으로 설정
     if(!req.query.order_method) {
         data.order_method = 1;
     } else{

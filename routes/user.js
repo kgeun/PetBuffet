@@ -1,16 +1,16 @@
 /* 초기화 */
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 /* 데이터베이스 */
-const pool = require('../configs/mysql');
+const pool = require("../configs/mysql");
 
 /* 쿼리 */
 const {
     FIND_USER_BY_ID,
     COUNT_USER,
     INSERT_USER
-} = require('../queries/user');
+} = require("../queries/user");
 
 /* 에러처리 */
 const {
@@ -19,14 +19,14 @@ const {
     WrongPasswordError,
     FormNotFilledError,
     IdDuplicateError
-} = require('../configs/errors')
+} = require("../configs/errors")
 
 /* 유틸리티 */
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 
 // 로그인 페이지
-router.get('/login', (req, res) => {
+router.get("/login", (req, res) => {
 
     var data = {};
 
@@ -37,15 +37,15 @@ router.get('/login', (req, res) => {
 
     // required 파라미터에 따라서 표시하는 메시지가 달라짐
     switch (req.query.required) {
-        case 'true':
+        case "true":
         data.required = true;
         data.login_message = "로그인이 필요한 기능입니다.";
         break;
-        case 'admin':
+        case "admin":
         data.required = true;
         data.login_message = "관리자 권한이 필요한 기능입니다.";
         break;
-        case 'register':
+        case "register":
         data.required = true;
         data.login_message = "회원 가입이 완료되었습니다. <br>로그인해주세요.";
         break;
@@ -58,7 +58,7 @@ router.get('/login', (req, res) => {
 });
 
 //로그인 post request, rest
-router.post('/login', (req, res, next) => {
+router.post("/login", (req, res, next) => {
 
     const {userid, password, hashed_password} = req.body;
     let connection;
@@ -77,7 +77,7 @@ router.post('/login', (req, res, next) => {
     .then(result => {
         let user = result[0];
         //유저가 없다면 에러
-        if(!user || !user.hasOwnProperty('password')) {
+        if(!user || !user.hasOwnProperty("password")) {
             connection.release();
             throw new UserNotFoundError();
         }
@@ -92,7 +92,7 @@ router.post('/login', (req, res, next) => {
 
                 return res.json({
                   status : "OK",
-                  message : '로그인에 성공했습니다.',
+                  message : "로그인에 성공했습니다.",
                   referer : req.body.referer
                 });
             } else {
@@ -108,7 +108,7 @@ router.post('/login', (req, res, next) => {
 });
 
 //가입 post request
-router.post('/register', (req, res, next) => {
+router.post("/register", (req, res, next) => {
 
     const {userid, username, password, hashed_password} = req.body;
     let connection;
@@ -140,7 +140,7 @@ router.post('/register', (req, res, next) => {
         connection.release();
         return res.json({
             status : "OK",
-            message : '가입에 성공했습니다.'
+            message : "가입에 성공했습니다."
         });
     })
     .catch(err => {
@@ -149,9 +149,9 @@ router.post('/register', (req, res, next) => {
 });
 
 //로그아웃
-router.get('/logout', function(req, res) {
+router.get("/logout", function(req, res) {
     req.session.destroy();  // 세션 삭제
-    res.clearCookie('sid'); // 세션 쿠키 삭제
+    res.clearCookie("sid"); // 세션 쿠키 삭제
     return res.redirect("/");
 });
 

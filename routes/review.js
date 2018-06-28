@@ -1,16 +1,16 @@
 /* 초기화 */
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 /* 데이터베이스 */
-const pool = require('../configs/mysql');
+const pool = require("../configs/mysql");
 
 /* 미들웨어 */
-const auth = require('../middleware/auth');
-const image_url = require('../middleware/image_url');
+const auth = require("../middleware/auth");
+const image_url = require("../middleware/image_url");
 
 /* 유틸리티 */
-const utils = require('../util/util');
+const utils = require("../util/util");
 
 /* 쿼리 */
 const {
@@ -29,17 +29,17 @@ const {
   SELECT_REVIEW_NON_RCMD,
   COUNT_SELECT_REVIEW_RCMD,
   INSERT_REVIEW_RCMD
-} = require('../queries/review.js')
+} = require("../queries/review.js")
 
 const {
   SELECT_COMMENTS_BY_REVIEW_ID
-} = require('../queries/comment.js')
+} = require("../queries/comment.js")
 
 /* 에러처리 */
 const {
     NoPermissionRedirect,
     ReviewRcmdAlreadyExistError
-} = require('../configs/errors')
+} = require("../configs/errors")
 
 // 사료 리뷰 페이지에서 한 페이지에서 보여줄 리뷰 갯수
 const REVIEW_ITEMS_PER_PAGE = 10;
@@ -49,7 +49,7 @@ const ALL_REVIEW_ITEMS_PER_PAGE = 5;
 const ADMIN_LEVEL = 2;
 
 // 사료 별 리뷰 리스트 페이지
-router.get('/list/:petfood_id', auth, image_url, (req, res, next) => {
+router.get("/list/:petfood_id", auth, image_url, (req, res, next) => {
     let data = req.data;
     let connection;
 
@@ -68,13 +68,13 @@ router.get('/list/:petfood_id', auth, image_url, (req, res, next) => {
     pool.getConnection()
     .then(conn => {
         connection = conn;
-        // 검색중이 아니라면 검색어를 ''로 해줘서 '%%'로 모든 데이터가 다 나오게 함
+        // 검색중이 아니라면 검색어를 ""로 해줘서 "%%"로 모든 데이터가 다 나오게 함
         if (!data.r_query) {
-            data.r_query = '';
+            data.r_query = "";
         }
 
         // 검색결과 갯수 찾기
-        return connection.query(COUNT_REVIEW,[req.params.petfood_id, '%' + data.r_query + '%', '%' + data.r_query + '%']);
+        return connection.query(COUNT_REVIEW,[req.params.petfood_id, "%" + data.r_query + "%", "%" + data.r_query + "%"]);
     })
     .then(result => {
         // 페이징 정보 주입
@@ -82,7 +82,7 @@ router.get('/list/:petfood_id', auth, image_url, (req, res, next) => {
 
         // 검색어로 검색
         return connection.query(SELECT_REVIEW_TITLE_INFO,
-            [req.params.petfood_id, '%' + data.r_query + '%', '%' + data.r_query + '%',
+            [req.params.petfood_id, "%" + data.r_query + "%", "%" + data.r_query + "%",
             REVIEW_ITEMS_PER_PAGE, (data.current_page-1)*REVIEW_ITEMS_PER_PAGE]);
     })
     .then(result => {
@@ -103,7 +103,7 @@ router.get('/list/:petfood_id', auth, image_url, (req, res, next) => {
 });
 
 // 사료 리뷰 내용 보기
-router.get('/content/:petfood_review_id', auth, image_url, (req, res, next) => {
+router.get("/content/:petfood_review_id", auth, image_url, (req, res, next) => {
     let data = req.data;
     let page;
     let connection;
@@ -179,7 +179,7 @@ router.get('/content/:petfood_review_id', auth, image_url, (req, res, next) => {
 });
 
 //리뷰 올리기 페이지
-router.get('/write/:petfood_id', auth, image_url, function(req, res) {
+router.get("/write/:petfood_id", auth, image_url, function(req, res) {
     let data = req.data;
     let connection;
 
@@ -218,7 +218,7 @@ router.get('/write/:petfood_id', auth, image_url, function(req, res) {
 });
 
 //리뷰 쓰기 post 요청
-router.post('/write/:petfood_id', auth, (req, res, next) => {
+router.post("/write/:petfood_id", auth, (req, res, next) => {
     let data = req.data;
     let review_item = req.body;
     let current_petfood_rcmd_id = 0;
@@ -273,7 +273,7 @@ router.post('/write/:petfood_id', auth, (req, res, next) => {
 });
 
 // 리뷰 수정 페이지
-router.get('/modify/:petfood_review_id', auth, image_url, (req, res, next) => {
+router.get("/modify/:petfood_review_id", auth, image_url, (req, res, next) => {
 
     let connection;
     let data = req.data;
@@ -326,7 +326,7 @@ router.get('/modify/:petfood_review_id', auth, image_url, (req, res, next) => {
 });
 
 // 리뷰 수정 modify 요청
-router.post('/modify/:petfood_review_id', (req, res, next) => {
+router.post("/modify/:petfood_review_id", (req, res, next) => {
 
     let connection;
     let data = {};
@@ -348,7 +348,7 @@ router.post('/modify/:petfood_review_id', (req, res, next) => {
 });
 
 // 리뷰 delete post 요청
-router.post('/delete', (req, res, next) => {
+router.post("/delete", (req, res, next) => {
 
     let connection;
 
@@ -368,7 +368,7 @@ router.post('/delete', (req, res, next) => {
 });
 
 //전체 리뷰 리스트
-router.get('/all_list', auth, image_url, (req, res, next) => {
+router.get("/all_list", auth, image_url, (req, res, next) => {
 
     let data = req.data;
 
@@ -390,19 +390,19 @@ router.get('/all_list', auth, image_url, (req, res, next) => {
     .then(conn => {
         connection = conn;
 
-        //검색어가 없다면 ''를 넣어서 전체 검색 (LIKE '%%')
+        //검색어가 없다면 ""를 넣어서 전체 검색 (LIKE "%%")
         if(!data.query) {
-            data.query = '';
+            data.query = "";
         }
         return connection.query(SELECT_ALL_REVIEW,
-            ['%' + data.query + '%', '%' + data.query + '%',
+            ["%" + data.query + "%", "%" + data.query + "%",
             ALL_REVIEW_ITEMS_PER_PAGE, (data.current_page - 1) * ALL_REVIEW_ITEMS_PER_PAGE]);
     })
     .then(result => {
         data.all_review_item = result;
         //리뷰를 간단히 리스트로 보여주기 위해 html, &nbsp; 중간에 자르고 ...붙이기
         utils.process_recent_review_content(data.all_review_item);
-        return connection.query(COUNT_SELECT_ALL_REVIEW,['%' + data.query + '%', '%' + data.query + '%']);
+        return connection.query(COUNT_SELECT_ALL_REVIEW,["%" + data.query + "%", "%" + data.query + "%"]);
     })
     .then(result => {
         //페이징 정보 주입
@@ -417,7 +417,7 @@ router.get('/all_list', auth, image_url, (req, res, next) => {
 });
 
 //리뷰 추천 post 요청, rest
-router.post('/rcmd', (req, res, next) => {
+router.post("/rcmd", (req, res, next) => {
     let connection;
 
     const { petfood_review_id, user_num, review_rcmd } = req.body;
