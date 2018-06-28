@@ -446,7 +446,10 @@ router.post("/upload_image", file_upload.middle_upload, (req, res) => {
     //파일 확장자가 jpg png gif가 아니면 에러 보내고 바로 삭제
     if (req.file.filename.endsWith(".jpg")
         || req.file.filename.endsWith(".png")
-        || req.file.filename.endsWith(".gif")) {
+        || req.file.filename.endsWith(".gif")
+        || req.file.filename.endsWith(".JPG")
+        || req.file.filename.endsWith(".PNG")
+        || req.file.filename.endsWith(".GIF")) {
             data.filename = req.file.filename;
             data.status = "OK";
     } else {
