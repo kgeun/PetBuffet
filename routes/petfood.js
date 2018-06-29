@@ -440,7 +440,7 @@ router.post("/delete", (req, res, next) => {
         });
 });
 
-//사료정보 upload
+//사료 사진 upload
 router.post("/upload_image", file_upload.middle_upload, (req, res) => {
     let data = {};
     //파일 확장자가 jpg png gif가 아니면 에러 보내고 바로 삭제
