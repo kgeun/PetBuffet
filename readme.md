@@ -38,5 +38,5 @@ PetBuffet은 시중에 나와있는 강아지 사료들의 성분 및 영양정�
 ### 프로젝트 실행
     NODE_ENV=production node app.js
 
-### 배포된 서버 정보 (테스트 아이디 / PW : aaaaa / aaaaa)
+### 배포된 서버 정보 (테스트 아이디 / PW : admin / admin, aaaaa / aaaaa)
     10.105.185.181
