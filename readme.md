@@ -29,6 +29,9 @@ PetBuffet은 시중에 나와있는 강아지 사료들의 성분 및 영양정�
 ## DB Schema
 <a href="https://oss.navercorp.com/nbp-internship-2018-team3/kyunggeun.lee/wiki/ER-Diagram">ERD 보기</a>
 
+## API Endpoint
+<a href="https://oss.navercorp.com/nbp-internship-2018-team3/kyunggeun.lee/wiki/API-Endpoint">API Endpoint</a>
+
 ## 프로젝트 설치 및 실행
 ### git clone, npm install
     git clone https://oss.navercorp.com/nbp-internship-2018-team3/kyunggeun.lee.git
@@ -38,5 +41,5 @@ PetBuffet은 시중에 나와있는 강아지 사료들의 성분 및 영양정�
 ### 프로젝트 실행
     NODE_ENV=production node app.js
 
-### 배포된 서버 정보 (테스트 아이디 / PW : admin / admin, aaaaa / aaaaa)
+### 배포된 서버 정보 (테스트 아이디 / PW : admin / admin (관리자), aaaaa / aaaaa (유저))
     10.105.185.181
