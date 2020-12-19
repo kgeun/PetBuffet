@@ -1,5 +1,9 @@
 [petbuffet]: http://10.105.185.181
 
+# Important
+### PetBuffet project was carried out during NBP internship and is currently being revised to work on github. Apologize for broken links  
+### This project was developed between May 2018 to July 2018
+
 # PetBuffet
 <p align="center">
   <img src="./readme_image/example.jpg">
