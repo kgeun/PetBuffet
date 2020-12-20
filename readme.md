@@ -1,7 +1,5 @@
-[petbuffet]: http://10.105.185.181
-
 # Important
-### PetBuffet project was carried out during NBP internship and is currently being revised to work on github. Apologize for broken links  
+### PetBuffet project was carried out during internship program and is currently being revised to work on github. Apologize for broken links  
 ### This project was developed between May 2018 to July 2018
 
 # PetBuffet
@@ -11,7 +9,7 @@
 PetBuffet은 시중에 나와있는 강아지 사료들의 성분 및 영양정보를 분석해주는 웹서비스입니다.<br>
 각 사료들에 대한 리뷰 기능을 탑재해 사료에 대한 사람들의 평가 또한 확인 가능한 점이 특징입니다.
 
-## 간략한 기능 소개 ( <a href="https://oss.navercorp.com/nbp-internship-2018-team3/kyunggeun.lee/wiki/Feature-list">Feature list 보러가기</a> )
+## 간략한 기능 소개 ( <a href="#">Feature list 보러가기</a> )
 * 사료정보, 리뷰, 댓글 CRUD
 * 사료정보, 리뷰 검색
 * 로그인 / 로그아웃 / 회원가입
@@ -28,17 +26,17 @@ PetBuffet은 시중에 나와있는 강아지 사료들의 성분 및 영양정�
 * jQuery
 
 ## 기획서
-<a href="https://oss.navercorp.com/nbp-internship-2018-team3/kyunggeun.lee/wiki/PetBuffet-%EA%B8%B0%ED%9A%8D%EC%84%9C">기획서 보기</a>
+<a href="#">기획서 보기</a>
 
 ## DB Schema
-<a href="https://oss.navercorp.com/nbp-internship-2018-team3/kyunggeun.lee/wiki/ER-Diagram">ERD 보기</a>
+<a href="#">ERD 보기</a>
 
 ## API Endpoint
-<a href="https://oss.navercorp.com/nbp-internship-2018-team3/kyunggeun.lee/wiki/API-Endpoint">API Endpoint</a>
+<a href="#">API Endpoint</a>
 
 ## 프로젝트 설치 및 실행
 ### git clone, npm install
-    git clone https://oss.navercorp.com/nbp-internship-2018-team3/kyunggeun.lee.git
+    git clone URL
     cd kyunggeun.lee
     npm install
 
